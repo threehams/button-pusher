@@ -1,6 +1,6 @@
-# ludum-dare 46
+# nx-game-engine
 
-Server and client for Ludum Dare 46 entry: (not yet named)
+Just a game engine made with nx, Next.js, Cypress, and a Web worker. There's a partially built game in here and a tiny/slow ECS thing.
 
 # Development
 
@@ -15,12 +15,11 @@ Install the latest stable version of node.js. Best done with NVM (node version m
 `$ nvm use 12.16.2`
 
 `$ npm install` to install all dependencies
-`$ npm run dev` to start and open a dev server
+`$ npx nx serve frontend` to start and open a dev server
 
 ## Tests
 
-`$ npm run cy:open` to run Cypress (browser) tests against an existing server
-`$ npm run cy:dev` to start a dev server and Cypress together (convenience!)
+`$ npx nx serve frontend-e2e` to run Cypress (browser) tests against an existing server
 
 # Continuous Integration
 

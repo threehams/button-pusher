@@ -68,6 +68,7 @@
     "@nrwl/react": "10.3.1",
     "@nrwl/web": "10.3.1",
     "@nrwl/workspace": "10.3.1",
+    "@testing-library/cypress": "^7.0.3",
     "@testing-library/react": "11.1.0",
     "@types/core-js": "^2.5.4",
     "@types/humps": "^2.0.0",
