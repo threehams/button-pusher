@@ -7,10 +7,10 @@ import { TerminalOverlay } from "../components/TerminalOverlay";
 import { useGameLoop } from "../hooks/useGameLoop";
 
 export const Index = () => {
-  const { heldItem, inventory, setHeldItem } = useStore();
+  const { heldItem, inventory, setHeldItem, items } = useStore();
 
   const theme = useTheme();
-  useGameLoop();
+  useGameLoop({ setHeldItem, heldItem, items });
 
   return (
     <>

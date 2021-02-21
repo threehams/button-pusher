@@ -17,7 +17,8 @@
       "@botnet/commands": ["libs/commands/src/index.ts"],
       "@botnet/utils": ["libs/utils/src/index.ts"],
       "@botnet/store": ["libs/store/src/index.ts"],
-      "@botnet/worker": ["libs/worker/src/index.ts"]
+      "@botnet/worker": ["libs/worker/src/index.ts"],
+      "@botnet/data": ["libs/data/src/index.ts"]
     },
     "rootDir": ".",
     "skipDefaultLibCheck": true,

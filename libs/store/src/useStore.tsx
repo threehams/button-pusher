@@ -3,6 +3,7 @@ import { State } from "./State";
 import { useCallback, useMemo } from "react";
 import { Container } from "@botnet/messages";
 import { v4 as uuid } from "uuid";
+import { items as availableItems } from "@botnet/data";
 
 const STARTING_CONTAINER: Container = {
   id: uuid(),
@@ -10,6 +11,8 @@ const STARTING_CONTAINER: Container = {
   width: 3,
   slotIds: [],
 };
+
+export type SetHeldItem = (itemId: string) => void;
 
 /**
  * Set up local state to hold onto messages received from the server.
@@ -20,16 +23,15 @@ const STARTING_CONTAINER: Container = {
  *
  */
 export const useStore = () => {
-  const [state, setState] = useImmer<State>({
+  const [state, setState] = useImmer<State>(() => ({
     messages: [],
     containerIds: [STARTING_CONTAINER.id],
     containerMap: { [STARTING_CONTAINER.id]: STARTING_CONTAINER },
     currentContainerId: undefined,
-    itemMap: {},
+    itemMap: Object.fromEntries(availableItems.map((item) => [item.id, item])),
     slotMap: {},
     heldItemId: undefined,
-  });
-  // This used to do more...
+  }));
 
   const clearHistory = useCallback(() => {
     setState((draft) => {
@@ -64,8 +66,8 @@ export const useStore = () => {
     },
     [setState],
   );
-  const setHeldItem = useCallback(
-    (itemId: string) => {
+  const setHeldItem: SetHeldItem = useCallback(
+    (itemId) => {
       setState((draft) => {
         draft.heldItemId = itemId;
       });
@@ -128,6 +130,10 @@ export const useStore = () => {
     return state.itemMap[state.heldItemId];
   }, [state.heldItemId, state.itemMap]);
 
+  const items = useMemo(() => {
+    return Object.values(state.itemMap);
+  }, [state.itemMap]);
+
   return {
     addSlot,
     setHeldItem,
@@ -136,5 +142,6 @@ export const useStore = () => {
     inventory,
     heldItem,
     setState,
+    items,
   };
 };
