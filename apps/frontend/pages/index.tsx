@@ -1,14 +1,16 @@
+import { useStore } from "@botnet/store";
+import { Box } from "@botnet/ui";
 import { css, useTheme } from "@emotion/react";
 import React from "react";
 import { HeldItemPanel, InventoryPanel } from "../components";
 import { TerminalOverlay } from "../components/TerminalOverlay";
-import { useStore } from "@botnet/store";
-import { Box } from "@botnet/ui";
+import { useGameLoop } from "../hooks/useGameLoop";
 
 export const Index = () => {
-  const { heldItem, inventory } = useStore();
+  const { heldItem, inventory, setHeldItem } = useStore();
 
   const theme = useTheme();
+  useGameLoop();
 
   return (
     <>

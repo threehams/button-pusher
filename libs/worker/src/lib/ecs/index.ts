@@ -1,1 +1,0 @@
-export { ecs } from "./ecs";

@@ -36,7 +36,7 @@ export const useStore = () => {
       draft.messages = [];
     });
   }, [setState]);
-  const addItem = useCallback(
+  const addSlot = useCallback(
     ({
       itemId,
       x,
@@ -60,6 +60,14 @@ export const useStore = () => {
         draft.slotMap[slot.id] = slot;
         draft.containerMap[containerId].slotIds.push(slot.id);
         draft.heldItemId = undefined;
+      });
+    },
+    [setState],
+  );
+  const setHeldItem = useCallback(
+    (itemId: string) => {
+      setState((draft) => {
+        draft.heldItemId = itemId;
       });
     },
     [setState],
@@ -121,7 +129,8 @@ export const useStore = () => {
   }, [state.heldItemId, state.itemMap]);
 
   return {
-    addItem,
+    addSlot,
+    setHeldItem,
     moveItem,
     clearHistory,
     inventory,
