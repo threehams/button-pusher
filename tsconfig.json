@@ -1,0 +1,15 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./apps/frontend/tsconfig.json" },
+    { "path": "./apps/frontend/tsconfig.spec.json" },
+    { "path": "./apps/frontend-e2e/tsconfig.json" },
+    { "path": "./apps/frontend-e2e/tsconfig.e2e.json" },
+    { "path": "./libs/commands/tsconfig.json" },
+    { "path": "./libs/messages/tsconfig.json" },
+    { "path": "./libs/store/tsconfig.json" },
+    { "path": "./libs/ui/tsconfig.json" },
+    { "path": "./libs/utils/tsconfig.json" },
+    { "path": "./libs/worker/tsconfig.json" }
+  ]
+}

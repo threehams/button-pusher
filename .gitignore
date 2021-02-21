@@ -1,0 +1,6 @@
+# Client
+node_modules
+.next
+dist
+.vscode
+yarn-error.log

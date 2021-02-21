@@ -1,0 +1,5 @@
+.circleci
+.next
+.vscode
+node_modules
+*.js

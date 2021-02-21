@@ -1,0 +1,13 @@
+{
+  "extends": ["../../.eslintrc.json"],
+  "ignorePatterns": ["!**/*"],
+  "env": {
+    "browser": true,
+    "commonjs": true,
+    "es6": true,
+    "jest": true,
+    "node": true
+  },
+  "settings": { "react": { "version": "detect" } },
+  "plugins": ["jsx-a11y", "react", "react-hooks"]
+}
