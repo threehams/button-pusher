@@ -1,29 +1,13 @@
-import {
-  Device,
-  Email,
-  Filesystem,
-  Resources,
-  Process,
-} from "@botnet/messages";
-import {
-  Static,
-  Record,
-  String,
-  Null,
-  Union,
-  Array,
-  Dictionary,
-} from "runtypes";
+import { ContainerMap, ItemMap, SlotMap } from "@botnet/messages";
+import { Array, Record, Static, String, Undefined, Union } from "runtypes";
 
 export const State = Record({
   messages: Array(String),
-  devices: Array(Device),
-  resources: Union(Resources, Null),
-  commandHistory: Array(String),
-  processes: Array(Process),
-  emails: Array(Email),
-  filesystems: Dictionary(Filesystem),
-  location: String,
-  cwd: String,
+  heldItemId: Union(String, Undefined),
+  containerIds: Array(String),
+  containerMap: ContainerMap,
+  itemMap: ItemMap,
+  slotMap: SlotMap,
+  currentContainerId: Union(String, Undefined),
 });
 export type State = Static<typeof State>;

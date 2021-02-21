@@ -1,9 +1,15 @@
 import { useImmer } from "use-immer";
 import { State } from "./State";
-import { useWorker } from "@botnet/worker";
-import { useEffect, useCallback, useRef } from "react";
-import { MailProcess } from "@botnet/messages";
-import { FILESYSTEM_ROOT } from "@botnet/utils";
+import { useCallback, useMemo } from "react";
+import { Container } from "@botnet/messages";
+import { v4 as uuid } from "uuid";
+
+const STARTING_CONTAINER: Container = {
+  id: uuid(),
+  height: 3,
+  width: 3,
+  slotIds: [],
+};
 
 /**
  * Set up local state to hold onto messages received from the server.
@@ -13,149 +19,113 @@ import { FILESYSTEM_ROOT } from "@botnet/utils";
  * - Provide functions to other hooks to modify state.
  *
  */
-export const useStore = (username: string) => {
-  const initial = useRef<boolean>(false);
+export const useStore = () => {
   const [state, setState] = useImmer<State>({
     messages: [],
-    devices: [],
-    resources: null,
-    commandHistory: [],
-    processes: [],
-    location: "local",
-    emails: [],
-    filesystems: {},
-    cwd: FILESYSTEM_ROOT,
+    containerIds: [STARTING_CONTAINER.id],
+    containerMap: { [STARTING_CONTAINER.id]: STARTING_CONTAINER },
+    currentContainerId: undefined,
+    itemMap: {},
+    slotMap: {},
+    heldItemId: undefined,
   });
-  const { lastMessage, ready, sendMessage } = useWorker();
-
-  useEffect(() => {
-    if (!username) {
-      return;
-    }
-
-    if (ready) {
-      if (!initial.current) {
-        setState((draft) => {
-          draft.messages.push(
-            `Authenticating with public key "imported-133+ssh-key"`,
-          );
-          draft.messages.push(`Logged in as ${username}`);
-          draft.messages.push(
-            `Type or click [help](help) for a list of commands.`,
-          );
-        });
-      }
-      initial.current = true;
-    }
-  }, [ready, setState, sendMessage, username]);
-
-  useEffect(() => {
-    if (!lastMessage) {
-      return;
-    }
-    if (lastMessage.update === "Terminal") {
-      setState((draft) => {
-        draft.messages.push(lastMessage.payload.message);
-      });
-    }
-    if (lastMessage.update === "Player") {
-      setState((draft) => {
-        draft.location = lastMessage.payload.location;
-      });
-    }
-    if (lastMessage.update === "Devices") {
-      setState((draft) => {
-        draft.devices = lastMessage.payload.devices;
-      });
-    }
-    if (lastMessage.update === "Emails") {
-      setState((draft) => {
-        draft.emails = lastMessage.payload.emails;
-      });
-    }
-    if (lastMessage.update === "Filesystem") {
-      setState((draft) => {
-        draft.filesystems[lastMessage.payload.ip] = lastMessage.payload;
-      });
-    }
-    if (
-      lastMessage.update === "PortscanProcess" ||
-      lastMessage.update === "SshCrackProcess" ||
-      lastMessage.update === "InfostealerProcess"
-    ) {
-      const newProcess = lastMessage.payload;
-      setState((draft) => {
-        const index = draft.processes.findIndex(
-          (process) => process.id === newProcess.id,
-        );
-        if (index === -1) {
-          draft.processes.push(newProcess);
-        } else {
-          draft.processes[index] = newProcess;
-        }
-      });
-    }
-  }, [lastMessage, setState]);
-
   // This used to do more...
-  const location = state.location;
-  const sendCommand = sendMessage;
 
   const clearHistory = useCallback(() => {
     setState((draft) => {
       draft.messages = [];
     });
   }, [setState]);
-  const addMessage = useCallback(
-    (message: string) => {
+  const addItem = useCallback(
+    ({
+      itemId,
+      x,
+      y,
+      containerId,
+    }: {
+      itemId: string;
+      x: number;
+      y: number;
+      containerId: string;
+    }) => {
+      const slot = {
+        id: uuid(),
+        x,
+        y,
+        itemId,
+        containerId,
+      };
+      // need to check overlaps here
       setState((draft) => {
-        draft.messages.push(message);
+        draft.slotMap[slot.id] = slot;
+        draft.containerMap[containerId].slotIds.push(slot.id);
+        draft.heldItemId = undefined;
       });
     },
     [setState],
   );
-  const addHistory = useCallback(
-    (message: string) => {
+  const moveItem = useCallback(
+    ({
+      slotId,
+      x,
+      y,
+      containerId,
+    }: {
+      slotId: string;
+      x: number;
+      y: number;
+      containerId: string;
+    }) => {
+      // need to check overlaps here
       setState((draft) => {
-        draft.commandHistory.push(message);
-      });
-    },
-    [setState],
-  );
-  const startProcess = useCallback(
-    (newProcess: MailProcess) => {
-      setState((draft) => {
-        const index = draft.processes.findIndex(
-          (process) => process.id === newProcess.id,
-        );
-        if (index === -1) {
-          draft.processes.push(newProcess);
-        } else {
-          draft.processes[index] = newProcess;
+        const slot = draft.slotMap[slotId];
+        const currentContainerId = slot.containerId;
+        if (currentContainerId !== containerId) {
+          draft.containerMap[currentContainerId].slotIds = draft.containerMap[
+            containerId
+          ].slotIds.filter((currentSlotId) => currentSlotId === slotId);
+          draft.containerMap[containerId].slotIds.push(slot.id);
+          slot.x = x;
+          slot.y = y;
         }
       });
     },
     [setState],
   );
-  const setCwd = useCallback(
-    (cwd: string) => {
-      setState((draft) => {
-        draft.cwd = cwd;
-      });
-    },
-    [setState],
-  );
+  const inventory = useMemo(() => {
+    if (!state.currentContainerId) {
+      return undefined;
+    }
+    const container = state.containerMap[state.currentContainerId];
+    return {
+      ...container,
+      slots: container.slotIds.map((slotId) => {
+        const slot = state.slotMap[slotId];
+        return {
+          ...slot,
+          item: state.itemMap[slot.itemId],
+        };
+      }),
+    };
+  }, [
+    state.containerMap,
+    state.currentContainerId,
+    state.itemMap,
+    state.slotMap,
+  ]);
+  const heldItem = useMemo(() => {
+    if (!state.heldItemId) {
+      return undefined;
+    }
+    return state.itemMap[state.heldItemId];
+  }, [state.heldItemId, state.itemMap]);
 
   return {
-    addHistory,
-    addMessage,
+    addItem,
+    moveItem,
     clearHistory,
-    location,
-    startProcess,
-    ready,
-    sendCommand,
-    state,
+    inventory,
+    heldItem,
     setState,
-    setCwd,
   };
 };

@@ -1,10 +1,5 @@
-import { Array, Union, Record, String, Literal, Static } from "runtypes";
-import { Device } from "./Device";
-import { Email } from "./Email";
-import { PortscanProcess } from "./PortscanProcess";
-import { SshCrackProcess } from "./SshCrackProcess";
-import { InfostealerProcess } from "./InfostealerProcess";
-import { Filesystem } from "./Filesystem";
+import { Union, Record, String, Literal, Static } from "runtypes";
+import { Container } from "./Container";
 
 export const TerminalMessage = Record({
   update: Literal("Terminal"),
@@ -14,64 +9,13 @@ export const TerminalMessage = Record({
 });
 export type TerminalMessage = Static<typeof TerminalMessage>;
 
-export const DevicesMessage = Record({
-  update: Literal("Devices"),
+export const InventoryMessage = Record({
+  update: Literal("Inventory"),
   payload: Record({
-    devices: Array(Device),
+    inventory: Container,
   }),
 });
-export type DevicesMessage = Static<typeof DevicesMessage>;
+export type InventoryMessage = Static<typeof InventoryMessage>;
 
-export const PlayerMessage = Record({
-  update: Literal("Player"),
-  payload: Record({
-    location: String,
-  }),
-});
-export type PlayerMessage = Static<typeof PlayerMessage>;
-
-export const EmailsMessage = Record({
-  update: Literal("Emails"),
-  payload: Record({
-    emails: Array(Email),
-  }),
-});
-export type EmailsMessage = Static<typeof EmailsMessage>;
-
-export const PortscanProcessMessage = Record({
-  update: Literal("PortscanProcess"),
-  payload: PortscanProcess,
-});
-export type PortscanProcessMessage = Static<typeof PortscanProcessMessage>;
-
-export const SshCrackProcessMessage = Record({
-  update: Literal("SshCrackProcess"),
-  payload: SshCrackProcess,
-});
-export type SshCrackProcessMessage = Static<typeof SshCrackProcessMessage>;
-
-export const InfostealerProcessMessage = Record({
-  update: Literal("InfostealerProcess"),
-  payload: InfostealerProcess,
-});
-export type InfostealerProcessMessage = Static<
-  typeof InfostealerProcessMessage
->;
-
-export const FilesystemMessage = Record({
-  update: Literal("Filesystem"),
-  payload: Filesystem,
-});
-export type FilesystemMessage = Static<typeof FilesystemMessage>;
-
-export const Message = Union(
-  TerminalMessage,
-  DevicesMessage,
-  EmailsMessage,
-  PlayerMessage,
-  PortscanProcessMessage,
-  SshCrackProcessMessage,
-  InfostealerProcessMessage,
-  FilesystemMessage,
-);
+export const Message = Union(TerminalMessage, InventoryMessage);
 export type Message = Static<typeof Message>;
