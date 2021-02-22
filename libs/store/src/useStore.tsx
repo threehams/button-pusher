@@ -1,9 +1,9 @@
-import { useImmer } from "use-immer";
-import { State } from "./State";
-import { useCallback, useMemo } from "react";
-import { Container } from "@botnet/messages";
-import { v4 as uuid } from "uuid";
 import { items as availableItems } from "@botnet/data";
+import { Container } from "@botnet/messages";
+import { useCallback, useMemo } from "react";
+import { useImmer } from "use-immer";
+import { v4 as uuid } from "uuid";
+import { State } from "./State";
 
 const STARTING_CONTAINER: Container = {
   id: uuid(),
@@ -13,6 +13,18 @@ const STARTING_CONTAINER: Container = {
 };
 
 export type SetHeldItem = (itemId: string) => void;
+export type MoveSlot = (options: {
+  slotId: string;
+  x: number;
+  y: number;
+  containerId: string;
+}) => void;
+export type AddSlot = (options: {
+  itemId: string;
+  x: number;
+  y: number;
+  containerId: string;
+}) => void;
 
 /**
  * Set up local state to hold onto messages received from the server.
@@ -27,7 +39,7 @@ export const useStore = () => {
     messages: [],
     containerIds: [STARTING_CONTAINER.id],
     containerMap: { [STARTING_CONTAINER.id]: STARTING_CONTAINER },
-    currentContainerId: undefined,
+    currentContainerId: STARTING_CONTAINER.id,
     itemMap: Object.fromEntries(availableItems.map((item) => [item.id, item])),
     slotMap: {},
     heldItemId: undefined,
@@ -38,18 +50,8 @@ export const useStore = () => {
       draft.messages = [];
     });
   }, [setState]);
-  const addSlot = useCallback(
-    ({
-      itemId,
-      x,
-      y,
-      containerId,
-    }: {
-      itemId: string;
-      x: number;
-      y: number;
-      containerId: string;
-    }) => {
+  const addSlot: AddSlot = useCallback(
+    ({ itemId, x, y, containerId }) => {
       const slot = {
         id: uuid(),
         x,
@@ -74,18 +76,8 @@ export const useStore = () => {
     },
     [setState],
   );
-  const moveItem = useCallback(
-    ({
-      slotId,
-      x,
-      y,
-      containerId,
-    }: {
-      slotId: string;
-      x: number;
-      y: number;
-      containerId: string;
-    }) => {
+  const moveSlot: MoveSlot = useCallback(
+    ({ slotId, x, y, containerId }) => {
       // need to check overlaps here
       setState((draft) => {
         const slot = draft.slotMap[slotId];
@@ -137,7 +129,7 @@ export const useStore = () => {
   return {
     addSlot,
     setHeldItem,
-    moveItem,
+    moveSlot,
     clearHistory,
     inventory,
     heldItem,

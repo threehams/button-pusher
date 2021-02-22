@@ -1,43 +1,55 @@
 import { useStore } from "@botnet/store";
 import { Box } from "@botnet/ui";
-import { css, useTheme } from "@emotion/react";
-import React from "react";
+import { css } from "@emotion/react";
+import React, { useState } from "react";
 import { HeldItemPanel, InventoryPanel } from "../components";
 import { TerminalOverlay } from "../components/TerminalOverlay";
 import { useGameLoop } from "../hooks/useGameLoop";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 
 export const Index = () => {
-  const { heldItem, inventory, setHeldItem, items } = useStore();
+  const {
+    heldItem,
+    inventory,
+    setHeldItem,
+    items,
+    addSlot,
+    moveSlot,
+  } = useStore();
 
-  const theme = useTheme();
   useGameLoop({ setHeldItem, heldItem, items });
-
   return (
-    <>
+    <DndProvider backend={HTML5Backend}>
       <TerminalOverlay />
       <Box
         css={css`
+          display: grid;
+          grid-template-areas: "sidebar main";
+          grid-template-columns: 75% 25%;
+          align-items: center;
+          justify-content: center;
           min-height: 100vh;
         `}
       >
         <>
           <Box
             css={css`
-              display: inline-block;
-              width: ${theme.tileWidth * 24}px;
-              position: sticky;
-              top: 0;
-              vertical-align: top;
+              grid-area: sidebar;
+              justify-self: flex-end;
             `}
             paddingLeft={2}
             paddingTop={1}
           >
-            <InventoryPanel inventory={inventory} />
+            <InventoryPanel
+              inventory={inventory}
+              addSlot={addSlot}
+              moveSlot={moveSlot}
+            />
           </Box>
           <Box
             css={css`
-              display: inline-block;
-              width: calc(100% - ${theme.tileWidth * 24}px);
+              grid-area: main;
             `}
             paddingX={1}
             paddingY={1}
@@ -46,7 +58,7 @@ export const Index = () => {
           </Box>
         </>
       </Box>
-    </>
+    </DndProvider>
   );
 };
 

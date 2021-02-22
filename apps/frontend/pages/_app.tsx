@@ -15,8 +15,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       <GlobalStyles />
       <ThemeProvider
         theme={{
-          tileWidth: 12,
-          tileHeight: 27,
+          tileSize: 50,
           spaceX: [...Array(12).keys()].map((num) => num * 12),
           spaceY: [...Array(12).keys()].map((num) => num * 26),
         }}

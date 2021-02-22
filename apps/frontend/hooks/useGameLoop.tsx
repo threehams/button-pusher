@@ -14,7 +14,7 @@ export const useGameLoop = ({ setHeldItem, heldItem, items }: UseGameLoop) => {
     (delta: number) => {
       lastItem.current = lastItem.current + delta;
       if (lastItem.current > 3000 && !heldItem) {
-        setHeldItem(Object.values(items)[0].id);
+        setHeldItem(Object.values(items)[2].id);
       }
     },
     [heldItem, items, setHeldItem],

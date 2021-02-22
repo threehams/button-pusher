@@ -31,14 +31,21 @@ export const GlobalStyles = () => {
             min-height: 100vh;
           }
 
+          button {
+            border: 0;
+            background: none;
+          }
+
           body,
           input,
+          button,
           pre {
             margin: 0;
             font-family: "IBM Plex Mono", monospace;
           }
 
           body,
+          button,
           input {
             word-break: break-all;
             color: #43d731;
