@@ -1,5 +1,20 @@
-import { ContainerMap, ItemMap, SlotMap } from "@botnet/messages";
-import { Array, Record, Static, String, Undefined, Union } from "runtypes";
+import {
+  ContainerMap,
+  ItemMap,
+  PurchasedUpgradeMap,
+  SlotMap,
+  Upgrade,
+} from "@botnet/messages";
+import {
+  Array,
+  Record,
+  Static,
+  String,
+  Number,
+  Undefined,
+  Union,
+  Dictionary,
+} from "runtypes";
 
 export const State = Record({
   messages: Array(String),
@@ -9,5 +24,8 @@ export const State = Record({
   itemMap: ItemMap,
   slotMap: SlotMap,
   currentContainerId: Union(String, Undefined),
+  moneys: Number,
+  upgradeMap: Dictionary(Upgrade),
+  purchasedUpgradeMap: PurchasedUpgradeMap,
 });
 export type State = Static<typeof State>;

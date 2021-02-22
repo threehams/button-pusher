@@ -3,5 +3,8 @@ export * from "./ContainerMap";
 export * from "./Item";
 export * from "./ItemMap";
 export * from "./Message";
+export * from "./PurchasedUpgrade";
+export * from "./PurchasedUpgradeMap";
 export * from "./Slot";
 export * from "./SlotMap";
+export * from "./Upgrade";

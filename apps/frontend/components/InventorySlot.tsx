@@ -6,11 +6,11 @@ import { DraggableItem } from "./DraggableItem";
 
 type InventorySlotProps = {
   addSlot: AddSlot;
+  children?: React.ReactNode;
+  containerId: string;
   moveSlot: MoveSlot;
-  children: React.ReactNode;
   x: number;
   y: number;
-  containerId: string;
 };
 export const InventorySlot = ({
   children,

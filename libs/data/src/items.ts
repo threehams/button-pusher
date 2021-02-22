@@ -8,7 +8,7 @@ export const items: Item[] = [
     width: 1,
     name: "Healing Potion",
     image: "https://www.placecage.com/50/50.png",
-    value: 1,
+    value: 10,
   },
   {
     id: uuid(),
@@ -16,7 +16,7 @@ export const items: Item[] = [
     width: 1,
     name: "Mana Potion",
     image: "https://www.placecage.com/c/50/50.png",
-    value: 1,
+    value: 15,
   },
   {
     id: uuid(),
@@ -24,6 +24,6 @@ export const items: Item[] = [
     width: 3,
     name: "Longsword",
     image: "https://www.placecage.com/150/50.png",
-    value: 1,
+    value: 100,
   },
 ];

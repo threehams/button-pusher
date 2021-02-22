@@ -1,24 +1,37 @@
 import { useStore } from "@botnet/store";
 import { Box } from "@botnet/ui";
 import { css } from "@emotion/react";
-import React from "react";
+import React, { useState } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { HeldItemPanel, InventoryPanel } from "../components";
+import { HeldItemPanel, InventoryPanel, UpgradePanel } from "../components";
 import { TerminalOverlay } from "../components/TerminalOverlay";
 import { useGameLoop } from "../hooks/useGameLoop";
+
+const fullQuotes = [
+  "I can't carry any more.",
+  "I am overburdened.",
+  "Where would I put this?",
+  "My bag is too heavy.",
+];
 
 export const Index = () => {
   const {
     heldItem,
     inventory,
     setHeldItem,
-    items,
+    availableItems,
     addSlot,
     moveSlot,
+    moneys,
+    sell,
+    availableUpgrades,
+    purchasedUpgradeMap,
+    buyUpgrade,
   } = useStore();
+  useGameLoop({ setHeldItem, heldItem, availableItems, purchasedUpgradeMap });
+  const [panel, setPanel] = useState<"Containers" | "Upgrades">("Containers");
 
-  useGameLoop({ setHeldItem, heldItem, items });
   return (
     <DndProvider backend={HTML5Backend}>
       <TerminalOverlay />
@@ -41,11 +54,39 @@ export const Index = () => {
             paddingLeft={2}
             paddingTop={1}
           >
-            <InventoryPanel
-              inventory={inventory}
-              addSlot={addSlot}
-              moveSlot={moveSlot}
+            <p>Moneys: {moneys.toFixed(2)}</p>
+            {panel === "Containers" && (
+              <InventoryPanel
+                inventory={inventory}
+                addSlot={addSlot}
+                moveSlot={moveSlot}
+              />
+            )}
+            {panel === "Upgrades" && <div />}
+            <button
+              css={css`
+                display: block;
+              `}
+              onClick={() => {
+                sell();
+              }}
+            >
+              Sell All
+            </button>
+            <UpgradePanel
+              buyUpgrade={buyUpgrade}
+              upgrades={availableUpgrades}
             />
+            <button
+              css={css`
+                display: block;
+              `}
+              onClick={() => {
+                setPanel("Upgrades");
+              }}
+            >
+              Buy Upgrades
+            </button>
           </Box>
           <Box
             css={css`
@@ -55,6 +96,7 @@ export const Index = () => {
             paddingY={1}
           >
             <HeldItemPanel item={heldItem} />
+            {heldItem && <p>{fullQuotes[1]}</p>}
           </Box>
         </>
       </Box>

@@ -60,9 +60,7 @@ export const InventoryPanel = ({
               key={cell}
               x={cell % height}
               y={Math.floor(cell / width)}
-            >
-              {cell}
-            </InventorySlot>
+            />
           );
         })}
       </div>
