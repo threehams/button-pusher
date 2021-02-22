@@ -1,12 +1,12 @@
 import { useStore } from "@botnet/store";
 import { Box } from "@botnet/ui";
 import { css } from "@emotion/react";
-import React, { useState } from "react";
+import React from "react";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 import { HeldItemPanel, InventoryPanel } from "../components";
 import { TerminalOverlay } from "../components/TerminalOverlay";
 import { useGameLoop } from "../hooks/useGameLoop";
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
 
 export const Index = () => {
   const {
