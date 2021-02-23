@@ -28,8 +28,15 @@ export const Index = () => {
     availableUpgrades,
     purchasedUpgradeMap,
     buyUpgrade,
+    pack,
   } = useStore();
-  useGameLoop({ setHeldItem, heldItem, availableItems, purchasedUpgradeMap });
+  useGameLoop({
+    setHeldItem,
+    heldItem,
+    availableItems,
+    purchasedUpgradeMap,
+    pack,
+  });
   const [panel, setPanel] = useState<"Containers" | "Upgrades">("Containers");
 
   return (

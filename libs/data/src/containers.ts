@@ -5,7 +5,7 @@ export const containers: Container[] = [
   {
     id: uuid(),
     height: 3,
-    width: 3,
+    width: 4,
     slotIds: [],
     cost: 0,
     upgrades: [

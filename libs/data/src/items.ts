@@ -26,4 +26,12 @@ export const items: Item[] = [
     image: "https://www.placecage.com/150/50.png",
     value: 100,
   },
+  {
+    id: uuid(),
+    height: 3,
+    width: 2,
+    name: "Pants",
+    image: "https://www.placecage.com/100/150.png",
+    value: 400,
+  },
 ];

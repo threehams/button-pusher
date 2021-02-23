@@ -1,4 +1,4 @@
-import { AddSlot, Inventory, MoveSlot } from "@botnet/store";
+import { AddSlot, findAvailable, Inventory, MoveSlot } from "@botnet/store";
 import React from "react";
 import { range } from "lodash";
 import { css, useTheme } from "@emotion/react";
@@ -19,7 +19,7 @@ export const InventoryPanel = ({
   if (!inventory) {
     return <div></div>;
   }
-  const { height, width, slots } = inventory;
+  const { height, width, slots, grid } = inventory;
   return (
     <div
       css={css`
@@ -47,21 +47,39 @@ export const InventoryPanel = ({
           display: grid;
           width: ${width * theme.tileSize}px;
           height: ${height * theme.tileSize}px;
-          grid-template-rows: 1fr 1fr 1fr;
-          grid-template-columns: 1fr 1fr 1fr;
+          grid-template-rows: ${range(0, height)
+            .map(() => "1fr")
+            .join(" ")};
+          grid-template-columns: ${range(0, width)
+            .map(() => "1fr")
+            .join(" ")};
         `}
       >
-        {range(0, height * width).map((cell) => {
-          return (
-            <InventorySlot
-              addSlot={addSlot}
-              moveSlot={moveSlot}
-              containerId={inventory.id}
-              key={cell}
-              x={cell % height}
-              y={Math.floor(cell / width)}
-            />
-          );
+        {grid.map((gridRow, row) => {
+          return gridRow.map((item, col) => {
+            const available = !item;
+            const { availableRight, availableDown } = findAvailable({
+              grid,
+              startX: col,
+              startY: row,
+              width,
+              height,
+            });
+
+            return (
+              <InventorySlot
+                available={available}
+                availableRight={availableRight}
+                availableDown={availableDown}
+                addSlot={addSlot}
+                moveSlot={moveSlot}
+                containerId={inventory.id}
+                key={`${row}${col}`}
+                x={col}
+                y={row}
+              />
+            );
+          });
         })}
       </div>
     </div>

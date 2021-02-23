@@ -11,6 +11,9 @@ type InventorySlotProps = {
   moveSlot: MoveSlot;
   x: number;
   y: number;
+  available: boolean;
+  availableRight: number;
+  availableDown: number;
 };
 export const InventorySlot = ({
   children,
@@ -19,10 +22,26 @@ export const InventorySlot = ({
   containerId,
   addSlot,
   moveSlot,
+  available,
+  availableRight,
+  availableDown,
 }: InventorySlotProps) => {
   const theme = useTheme();
   const [, drop] = useDrop<DraggableItem, void, void>({
     accept: ["ITEM", "SLOT"],
+    canDrop: (dragged) => {
+      if (dragged.type === "ITEM") {
+        const { width, height } = dragged.item;
+        return !!(
+          available &&
+          width <= availableRight + 1 &&
+          height <= availableDown + 1
+        );
+      } else {
+        // const { id: slotId } = dragged.item;
+        return false;
+      }
+    },
     drop: (dragged) => {
       if (dragged.type === "ITEM") {
         const { id: itemId } = dragged.item;

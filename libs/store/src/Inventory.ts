@@ -10,4 +10,5 @@ export type Inventory = {
     y: number;
     item: Item;
   }[];
+  grid: (string | false)[][];
 };

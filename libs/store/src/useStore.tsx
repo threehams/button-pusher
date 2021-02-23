@@ -1,15 +1,22 @@
-import { items as itemsData, upgrades as upgradesData } from "@botnet/data";
+import {
+  items,
+  items as itemsData,
+  upgrades as upgradesData,
+} from "@botnet/data";
 import { isNonNullable } from "@botnet/utils";
 import { Container, UpgradeType } from "@botnet/messages";
 import { useCallback, useMemo } from "react";
 import { useImmer } from "use-immer";
 import { v4 as uuid } from "uuid";
 import { State } from "./State";
+import { Inventory } from "./Inventory";
+import { range } from "lodash";
+import { findAvailable } from "./findAvailable";
 
 const STARTING_CONTAINER: Container = {
   id: uuid(),
   height: 3,
-  width: 3,
+  width: 4,
   slotIds: [],
   cost: 0,
 };
@@ -28,6 +35,8 @@ export type AddSlot = (options: {
   containerId: string;
 }) => void;
 export type BuyUpgrade = (options: { id: UpgradeType; level: number }) => void;
+export type Pack = (options: { itemId: string }) => void;
+
 /**
  * Set up local state to hold onto messages received from the server.
  *
@@ -75,6 +84,60 @@ export const useStore = () => {
     });
   }, [setState]);
 
+  const setHeldItem: SetHeldItem = useCallback(
+    (itemId) => {
+      setState((draft) => {
+        draft.heldItemId = itemId;
+      });
+    },
+    [setState],
+  );
+
+  const getInventory = useCallback(
+    (containerId: string): Inventory => {
+      const container = state.containerMap[containerId];
+      const grid: Inventory["grid"] = range(0, container.height).map(() => {
+        return range(0, container.width).map(() => false);
+      });
+      container.slotIds.forEach((slotId) => {
+        const slot = state.slotMap[slotId];
+        const item = state.itemMap[slot.itemId];
+        range(0, item.height).forEach((row) => {
+          range(0, item.width).forEach((col) => {
+            grid[slot.y + row][slot.x + col] = slotId;
+          });
+        });
+      });
+
+      return {
+        ...container,
+        slots: container.slotIds.map((slotId) => {
+          const slot = state.slotMap[slotId];
+          return {
+            ...slot,
+            item: state.itemMap[slot.itemId],
+          };
+        }),
+        grid,
+      };
+    },
+    [state.containerMap, state.itemMap, state.slotMap],
+  );
+
+  const inventory = useMemo(() => {
+    return state.currentContainerId
+      ? getInventory(state.currentContainerId)
+      : undefined;
+  }, [getInventory, state.currentContainerId]);
+
+  const allItems = useMemo(() => {
+    return state.containerIds.flatMap((id) => {
+      return state.containerMap[id].slotIds.map((slotId) => {
+        return state.itemMap[state.slotMap[slotId].itemId];
+      });
+    });
+  }, [state.containerIds, state.containerMap, state.itemMap, state.slotMap]);
+
   const addSlot: AddSlot = useCallback(
     ({ itemId, x, y, containerId }) => {
       const slot = {
@@ -84,6 +147,7 @@ export const useStore = () => {
         itemId,
         containerId,
       };
+
       // need to check overlaps here
       setState((draft) => {
         draft.slotMap[slot.id] = slot;
@@ -94,13 +158,39 @@ export const useStore = () => {
     [setState],
   );
 
-  const setHeldItem: SetHeldItem = useCallback(
-    (itemId) => {
-      setState((draft) => {
-        draft.heldItemId = itemId;
-      });
+  const pack: Pack = useCallback(
+    ({ itemId }) => {
+      console.log("trying to pack");
+      const { width, height } = state.itemMap[itemId];
+      for (const containerId of state.containerIds) {
+        const containerInv = getInventory(containerId);
+        for (const row of range(0, containerInv.height)) {
+          for (const col of range(0, containerInv.width)) {
+            const available = !containerInv.grid[row][col];
+            if (available) {
+              const { availableRight, availableDown } = findAvailable({
+                grid: containerInv.grid,
+                height: containerInv.height,
+                width: containerInv.width,
+                startX: col,
+                startY: row,
+              });
+              console.log({
+                row,
+                col,
+                availableRight,
+                availableDown,
+              });
+              if (availableRight + 1 >= width && availableDown + 1 >= height) {
+                addSlot({ containerId, x: col, y: row, itemId });
+                return;
+              }
+            }
+          }
+        }
+      }
     },
-    [setState],
+    [addSlot, getInventory, state.containerIds, state.itemMap],
   );
 
   const moveSlot: MoveSlot = useCallback(
@@ -121,36 +211,6 @@ export const useStore = () => {
     },
     [setState],
   );
-
-  const inventory = useMemo(() => {
-    if (!state.currentContainerId) {
-      return undefined;
-    }
-    const container = state.containerMap[state.currentContainerId];
-    return {
-      ...container,
-      slots: container.slotIds.map((slotId) => {
-        const slot = state.slotMap[slotId];
-        return {
-          ...slot,
-          item: state.itemMap[slot.itemId],
-        };
-      }),
-    };
-  }, [
-    state.containerMap,
-    state.currentContainerId,
-    state.itemMap,
-    state.slotMap,
-  ]);
-
-  const allItems = useMemo(() => {
-    return state.containerIds.flatMap((id) => {
-      return state.containerMap[id].slotIds.map((slotId) => {
-        return state.itemMap[state.slotMap[slotId].itemId];
-      });
-    });
-  }, [state.containerIds, state.containerMap, state.itemMap, state.slotMap]);
 
   const sell = useCallback(() => {
     const multiplier = Math.max(1, Math.sqrt(allItems.length));
@@ -227,5 +287,7 @@ export const useStore = () => {
     moneys: state.moneys,
     availableUpgrades,
     purchasedUpgradeMap: state.purchasedUpgradeMap,
+    getInventory,
+    pack,
   };
 };
