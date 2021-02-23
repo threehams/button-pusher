@@ -1,10 +1,10 @@
 import {
-  items,
   items as itemsData,
   upgrades as upgradesData,
+  containers as containersData,
 } from "@botnet/data";
 import { isNonNullable } from "@botnet/utils";
-import { Container, UpgradeType } from "@botnet/messages";
+import { PurchasedContainer, UpgradeType } from "@botnet/messages";
 import { useCallback, useMemo } from "react";
 import { useImmer } from "use-immer";
 import { v4 as uuid } from "uuid";
@@ -13,12 +13,12 @@ import { Inventory } from "./Inventory";
 import { range } from "lodash";
 import { findAvailable } from "./findAvailable";
 
-const STARTING_CONTAINER: Container = {
-  id: uuid(),
-  height: 3,
-  width: 4,
+const STARTING_CONTAINER: PurchasedContainer = {
+  id: containersData[0].id,
+  level: containersData[0].levels[0].level,
+  width: containersData[0].levels[0].width,
+  height: containersData[0].levels[0].height,
   slotIds: [],
-  cost: 0,
 };
 
 export type SetHeldItem = (itemId: string) => void;
@@ -48,8 +48,9 @@ export type Pack = (options: { itemId: string }) => void;
 export const useStore = () => {
   const [state, setState] = useImmer<State>(() => ({
     messages: [],
-    containerIds: [STARTING_CONTAINER.id],
-    containerMap: { [STARTING_CONTAINER.id]: STARTING_CONTAINER },
+    containerMap: Object.fromEntries(
+      containersData.map((item) => [item.id, item]),
+    ),
     currentContainerId: STARTING_CONTAINER.id,
     itemMap: Object.fromEntries(itemsData.map((item) => [item.id, item])),
     slotMap: {},
@@ -76,6 +77,9 @@ export const useStore = () => {
         level: 0,
       },
     },
+    purchasedContainerMap: {
+      [STARTING_CONTAINER.id]: STARTING_CONTAINER,
+    },
   }));
 
   const clearHistory = useCallback(() => {
@@ -95,7 +99,7 @@ export const useStore = () => {
 
   const getInventory = useCallback(
     (containerId: string): Inventory => {
-      const container = state.containerMap[containerId];
+      const container = state.purchasedContainerMap[containerId];
       const grid: Inventory["grid"] = range(0, container.height).map(() => {
         return range(0, container.width).map(() => false);
       });
@@ -121,7 +125,7 @@ export const useStore = () => {
         grid,
       };
     },
-    [state.containerMap, state.itemMap, state.slotMap],
+    [state.itemMap, state.purchasedContainerMap, state.slotMap],
   );
 
   const inventory = useMemo(() => {
@@ -131,12 +135,12 @@ export const useStore = () => {
   }, [getInventory, state.currentContainerId]);
 
   const allItems = useMemo(() => {
-    return state.containerIds.flatMap((id) => {
-      return state.containerMap[id].slotIds.map((slotId) => {
+    return Object.values(state.purchasedContainerMap).flatMap((container) => {
+      return container.slotIds.map((slotId) => {
         return state.itemMap[state.slotMap[slotId].itemId];
       });
     });
-  }, [state.containerIds, state.containerMap, state.itemMap, state.slotMap]);
+  }, [state.itemMap, state.purchasedContainerMap, state.slotMap]);
 
   const addSlot: AddSlot = useCallback(
     ({ itemId, x, y, containerId }) => {
@@ -151,7 +155,7 @@ export const useStore = () => {
       // need to check overlaps here
       setState((draft) => {
         draft.slotMap[slot.id] = slot;
-        draft.containerMap[containerId].slotIds.push(slot.id);
+        draft.purchasedContainerMap[containerId].slotIds.push(slot.id);
         draft.heldItemId = undefined;
       });
     },
@@ -160,10 +164,9 @@ export const useStore = () => {
 
   const pack: Pack = useCallback(
     ({ itemId }) => {
-      console.log("trying to pack");
       const { width, height } = state.itemMap[itemId];
-      for (const containerId of state.containerIds) {
-        const containerInv = getInventory(containerId);
+      for (const container of Object.values(state.purchasedContainerMap)) {
+        const containerInv = getInventory(container.id);
         for (const row of range(0, containerInv.height)) {
           for (const col of range(0, containerInv.width)) {
             const available = !containerInv.grid[row][col];
@@ -175,14 +178,8 @@ export const useStore = () => {
                 startX: col,
                 startY: row,
               });
-              console.log({
-                row,
-                col,
-                availableRight,
-                availableDown,
-              });
               if (availableRight + 1 >= width && availableDown + 1 >= height) {
-                addSlot({ containerId, x: col, y: row, itemId });
+                addSlot({ containerId: container.id, x: col, y: row, itemId });
                 return;
               }
             }
@@ -190,20 +187,21 @@ export const useStore = () => {
         }
       }
     },
-    [addSlot, getInventory, state.containerIds, state.itemMap],
+    [addSlot, getInventory, state.itemMap, state.purchasedContainerMap],
   );
 
   const moveSlot: MoveSlot = useCallback(
     ({ slotId, x, y, containerId }) => {
-      // need to check overlaps here
       setState((draft) => {
         const slot = draft.slotMap[slotId];
         const currentContainerId = slot.containerId;
         if (currentContainerId !== containerId) {
-          draft.containerMap[currentContainerId].slotIds = draft.containerMap[
-            containerId
-          ].slotIds.filter((currentSlotId) => currentSlotId === slotId);
-          draft.containerMap[containerId].slotIds.push(slot.id);
+          draft.purchasedContainerMap[
+            currentContainerId
+          ].slotIds = draft.purchasedContainerMap[containerId].slotIds.filter(
+            (currentSlotId) => currentSlotId === slotId,
+          );
+          draft.purchasedContainerMap[containerId].slotIds.push(slot.id);
           slot.x = x;
           slot.y = y;
         }
@@ -218,8 +216,8 @@ export const useStore = () => {
       draft.moneys =
         draft.moneys +
         allItems.reduce((sum, item) => sum + item.value * multiplier, 0);
-      draft.containerIds.forEach((id) => {
-        draft.containerMap[id].slotIds = [];
+      Object.values(draft.purchasedContainerMap).forEach((container) => {
+        container.slotIds = [];
       });
       draft.slotMap = {};
     });

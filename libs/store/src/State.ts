@@ -1,6 +1,7 @@
 import {
   ContainerMap,
   ItemMap,
+  PurchasedContainerMap,
   PurchasedUpgradeMap,
   SlotMap,
   Upgrade,
@@ -19,11 +20,11 @@ import {
 export const State = Record({
   messages: Array(String),
   heldItemId: Union(String, Undefined),
-  containerIds: Array(String),
+  purchasedContainerMap: PurchasedContainerMap,
   containerMap: ContainerMap,
+  currentContainerId: Union(String, Undefined),
   itemMap: ItemMap,
   slotMap: SlotMap,
-  currentContainerId: Union(String, Undefined),
   moneys: Number,
   upgradeMap: Dictionary(Upgrade),
   purchasedUpgradeMap: PurchasedUpgradeMap,

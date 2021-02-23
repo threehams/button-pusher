@@ -1,20 +1,15 @@
-import { Array, String, Record, Number, Lazy, Runtype } from "runtypes";
+import { Array, String, Record, Number, Static } from "runtypes";
 
-export type Container = {
-  id: string;
-  width: number;
-  height: number;
-  slotIds: string[];
-  cost: number;
-  upgrades?: Container[];
-};
-export const Container: Runtype<Container> = Lazy(() =>
-  Record({
-    id: String,
-    width: Number,
-    height: Number,
-    slotIds: Array(String),
-    cost: Number,
-    upgrades: Array(Container),
-  }),
-);
+export const ContainerLevel = Record({
+  level: Number,
+  cost: Number,
+  width: Number,
+  height: Number,
+});
+
+export const Container = Record({
+  id: String,
+  name: String,
+  levels: Array(ContainerLevel),
+});
+export type Container = Static<typeof Container>;
