@@ -211,9 +211,9 @@ export const useStore = () => {
             (currentSlotId) => currentSlotId === slotId,
           );
           draft.purchasedContainerMap[containerId].slotIds.push(slot.id);
-          slot.x = x;
-          slot.y = y;
         }
+        slot.x = x;
+        slot.y = y;
       });
     },
     [setState],

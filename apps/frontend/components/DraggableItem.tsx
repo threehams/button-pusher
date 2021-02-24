@@ -1,5 +1,3 @@
-import { Item, Slot } from "@botnet/messages";
+import { Item } from "@botnet/messages";
 
-export type DraggableItem =
-  | { type: "ITEM"; item: Item }
-  | { type: "SLOT"; item: Slot };
+export type DraggableItem = { type: "ITEM"; item: Item; slotId?: string };

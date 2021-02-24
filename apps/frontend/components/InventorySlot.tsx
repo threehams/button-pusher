@@ -28,27 +28,25 @@ export const InventorySlot = ({
 }: InventorySlotProps) => {
   const theme = useTheme();
   const [, drop] = useDrop<DraggableItem, void, void>({
-    accept: ["ITEM", "SLOT"],
+    accept: ["ITEM"],
     canDrop: (dragged) => {
-      if (dragged.type === "ITEM") {
+      if (dragged.slotId === "ITEM") {
+        return false;
+      } else {
         const { width, height } = dragged.item;
         return !!(
           available &&
           width <= availableRight + 1 &&
           height <= availableDown + 1
         );
-      } else {
-        // const { id: slotId } = dragged.item;
-        return false;
       }
     },
     drop: (dragged) => {
-      if (dragged.type === "ITEM") {
+      if (dragged.slotId) {
+        moveSlot({ slotId: dragged.slotId, x, y, containerId });
+      } else {
         const { id: itemId } = dragged.item;
         addSlot({ itemId, x, y, containerId });
-      } else {
-        const { id: slotId } = dragged.item;
-        moveSlot({ slotId, x, y, containerId });
       }
     },
   });

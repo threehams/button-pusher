@@ -9,6 +9,7 @@ import React from "react";
 import { range } from "lodash";
 import { css, useTheme } from "@emotion/react";
 import { InventorySlot } from "../InventorySlot";
+import { InventoryItem } from "../InventoryItem";
 
 type InventoryPanelProps = {
   inventory: Inventory | undefined;
@@ -37,7 +38,8 @@ export const InventoryPanel = ({
       >
         {slots.map((slot) => {
           return (
-            <img
+            <InventoryItem
+              key={slot.id}
               css={css`
                 position: absolute;
                 width: ${theme.tileSize * slot.item.width};
@@ -45,9 +47,8 @@ export const InventoryPanel = ({
                 top: ${theme.tileSize * slot.y}px;
                 left: ${theme.tileSize * slot.x}px;
               `}
-              alt={slot.item.name}
-              src={slot.item.image}
-              key={slot.id}
+              item={slot.item}
+              slotId={slot.id}
             />
           );
         })}

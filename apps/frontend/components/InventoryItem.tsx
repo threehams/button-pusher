@@ -6,8 +6,14 @@ import { DraggableItem } from "./DraggableItem";
 
 type InventoryItemProps = {
   item: Item;
+  slotId?: string;
+  className?: string;
 };
-export const InventoryItem = ({ item }: InventoryItemProps) => {
+export const InventoryItem = ({
+  item,
+  slotId,
+  className,
+}: InventoryItemProps) => {
   const imageRef = useRef<HTMLImageElement>(null!);
   const theme = useTheme();
   const [{ isDragging }, drag] = useDrag<
@@ -18,6 +24,7 @@ export const InventoryItem = ({ item }: InventoryItemProps) => {
     item: {
       type: "ITEM",
       item,
+      slotId,
     },
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
@@ -35,6 +42,7 @@ export const InventoryItem = ({ item }: InventoryItemProps) => {
           height: ${item.height * theme.tileSize}px;
           opacity: ${isDragging ? 0 : 1};
         `}
+        className={className}
       />
     </div>
   );
