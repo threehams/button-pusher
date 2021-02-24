@@ -22,6 +22,7 @@ type InventoryPanelProps = {
 export const InventoryPanel = ({
   inventory,
   buyContainerUpgrade,
+  addSlot,
 }: InventoryPanelProps) => {
   const { height, width, slots, grid, nextUpgrade } = inventory;
 
@@ -68,7 +69,7 @@ export const InventoryPanel = ({
         targetPos: targetPos!,
         tileSize: theme.tileSize,
       })!;
-      return { x: coords.x, y: coords.y };
+      return { x: coords.x, y: coords.y, containerId: inventory.id };
     },
   });
 
@@ -101,6 +102,7 @@ export const InventoryPanel = ({
                 top: ${theme.tileSize * slot.y}px;
                 left: ${theme.tileSize * slot.x}px;
               `}
+              addSlot={addSlot}
               item={slot.item}
               slotId={slot.id}
             />
@@ -178,7 +180,6 @@ const getTargetCoords = ({
   }
   let required = [];
   let valid = true;
-  console.log(x, y);
   for (const row of range(y, y + item.height)) {
     for (const col of range(x, x + item.width)) {
       if (row < height && col < width) {

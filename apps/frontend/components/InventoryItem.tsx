@@ -1,4 +1,5 @@
 import { Item } from "@botnet/messages";
+import { AddSlot } from "@botnet/store";
 import { css, useTheme } from "@emotion/react";
 import React, { useRef } from "react";
 import { useDrag } from "react-dnd";
@@ -8,11 +9,13 @@ type InventoryItemProps = {
   item: Item;
   slotId?: string;
   className?: string;
+  addSlot: AddSlot;
 };
 export const InventoryItem = ({
   item,
   slotId,
   className,
+  addSlot,
 }: InventoryItemProps) => {
   const imageRef = useRef<HTMLImageElement>(null!);
   const theme = useTheme();
@@ -32,7 +35,8 @@ export const InventoryItem = ({
     end: (_, monitor) => {
       const result: DraggableResult | undefined = monitor.getDropResult();
       if (result) {
-        console.log(result.x, result.y);
+        const { x, y, containerId } = result;
+        addSlot({ x, y, containerId, itemId: item.id });
       }
     },
   });
