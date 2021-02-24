@@ -6,6 +6,7 @@ export const ContainerLevel = Record({
   width: Number,
   height: Number,
 });
+export type ContainerLevel = Static<typeof ContainerLevel>;
 
 export const Container = Record({
   id: String,

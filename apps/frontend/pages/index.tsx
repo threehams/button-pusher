@@ -17,25 +17,26 @@ const fullQuotes = [
 
 export const Index = () => {
   const {
+    addSlot,
+    availableItems,
+    availableUpgrades,
+    buyContainerUpgrade,
+    buyUpgrade,
     heldItem,
     inventory,
-    setHeldItem,
-    availableItems,
-    addSlot,
-    moveSlot,
     moneys,
-    sell,
-    availableUpgrades,
-    purchasedUpgradeMap,
-    buyUpgrade,
+    moveSlot,
     pack,
+    purchasedUpgradeMap,
+    sell,
+    setHeldItem,
   } = useStore();
   useGameLoop({
-    setHeldItem,
-    heldItem,
     availableItems,
-    purchasedUpgradeMap,
+    heldItem,
     pack,
+    purchasedUpgradeMap,
+    setHeldItem,
   });
   const [panel, setPanel] = useState<"Containers" | "Upgrades">("Containers");
 
@@ -64,6 +65,7 @@ export const Index = () => {
             <p>Moneys: {moneys.toFixed(2)}</p>
             {panel === "Containers" && (
               <InventoryPanel
+                buyContainerUpgrade={buyContainerUpgrade}
                 inventory={inventory}
                 addSlot={addSlot}
                 moveSlot={moveSlot}

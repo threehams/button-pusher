@@ -1,4 +1,4 @@
-import { Item } from "@botnet/messages";
+import { ContainerLevel, Item } from "@botnet/messages";
 
 export type Inventory = {
   id: string;
@@ -11,4 +11,5 @@ export type Inventory = {
     item: Item;
   }[];
   grid: (string | false)[][];
+  nextUpgrade: ContainerLevel;
 };

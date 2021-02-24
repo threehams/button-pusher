@@ -35,6 +35,7 @@ export type AddSlot = (options: {
   containerId: string;
 }) => void;
 export type BuyUpgrade = (options: { id: UpgradeType; level: number }) => void;
+export type BuyContainerUpgrade = (options: { id: string }) => void;
 export type Pack = (options: { itemId: string }) => void;
 
 /**
@@ -112,6 +113,8 @@ export const useStore = () => {
           });
         });
       });
+      const nextUpgrade =
+        state.containerMap[containerId].levels[container.level];
 
       return {
         ...container,
@@ -123,9 +126,15 @@ export const useStore = () => {
           };
         }),
         grid,
+        nextUpgrade,
       };
     },
-    [state.itemMap, state.purchasedContainerMap, state.slotMap],
+    [
+      state.containerMap,
+      state.itemMap,
+      state.purchasedContainerMap,
+      state.slotMap,
+    ],
   );
 
   const inventory = useMemo(() => {
@@ -239,6 +248,24 @@ export const useStore = () => {
     [setState],
   );
 
+  const buyContainerUpgrade: BuyContainerUpgrade = useCallback(
+    ({ id }) => {
+      setState((draft) => {
+        const current = draft.purchasedContainerMap[id];
+        const next = draft.containerMap[id].levels.find(
+          (level) => level.level === current.level + 1,
+        );
+        if (next && draft.moneys >= next.cost) {
+          draft.moneys = draft.moneys - next.cost;
+          draft.purchasedContainerMap[id].level = next.level;
+          draft.purchasedContainerMap[id].width = next.width;
+          draft.purchasedContainerMap[id].height = next.height;
+        }
+      });
+    },
+    [setState],
+  );
+
   const availableUpgrades = useMemo(() => {
     return Object.values(state.upgradeMap)
       .map((available) => {
@@ -273,19 +300,20 @@ export const useStore = () => {
 
   return {
     addSlot,
-    buyUpgrade,
-    setHeldItem,
-    moveSlot,
-    clearHistory,
-    inventory,
-    heldItem,
-    setState,
     availableItems,
-    sell,
-    moneys: state.moneys,
     availableUpgrades,
-    purchasedUpgradeMap: state.purchasedUpgradeMap,
+    buyContainerUpgrade,
+    buyUpgrade,
+    clearHistory,
     getInventory,
+    heldItem,
+    inventory,
+    moneys: state.moneys,
+    moveSlot,
     pack,
+    purchasedUpgradeMap: state.purchasedUpgradeMap,
+    sell,
+    setHeldItem,
+    setState,
   };
 };
