@@ -18,14 +18,6 @@ module.exports = withBundleAnalyzer({
     ignoreBuildErrors: true,
   },
   webpack: (config, { isServer }) => {
-    if (!isServer) {
-      config.plugins.push(
-        new WorkerPlugin({
-          // use "self" as the global object when receiving hot updates.
-          globalObject: "self",
-        }),
-      );
-    }
     config.resolve.alias["lodash"] = "lodash-es";
 
     return config;
