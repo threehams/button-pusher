@@ -30,8 +30,10 @@ export const InventoryItem = ({
       isDragging: !!monitor.isDragging(),
     }),
     end: (_, monitor) => {
-      const result: DraggableResult = monitor.getDropResult();
-      console.log(result.x, result.y);
+      const result: DraggableResult | undefined = monitor.getDropResult();
+      if (result) {
+        console.log(result.x, result.y);
+      }
     },
   });
 

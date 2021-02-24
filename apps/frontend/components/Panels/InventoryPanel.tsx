@@ -10,24 +10,30 @@ import { range } from "lodash";
 import { css, useTheme } from "@emotion/react";
 import { InventorySlot } from "../InventorySlot";
 import { InventoryItem } from "../InventoryItem";
+import { useDrop } from "react-dnd";
+import { DraggableItem, DraggableResult } from "../DraggableItem";
 
 type InventoryPanelProps = {
-  inventory: Inventory | undefined;
+  inventory: Inventory;
   addSlot: AddSlot;
   moveSlot: MoveSlot;
   buyContainerUpgrade: BuyContainerUpgrade;
 };
 export const InventoryPanel = ({
   inventory,
-  addSlot,
-  moveSlot,
   buyContainerUpgrade,
 }: InventoryPanelProps) => {
   const theme = useTheme();
+  const [, drop] = useDrop<DraggableItem, DraggableResult, void>({
+    accept: ["ITEM"],
+    canDrop: (dragged) => {
+      return true;
+    },
+    drop: () => {
+      return { x, y };
+    },
+  });
 
-  if (!inventory) {
-    return <div></div>;
-  }
   const { height, width, slots, grid, nextUpgrade } = inventory;
   return (
     <div>
@@ -53,6 +59,7 @@ export const InventoryPanel = ({
           );
         })}
         <div
+          ref={drop}
           css={css`
             display: grid;
             width: ${width * theme.tileSize}px;
@@ -67,28 +74,7 @@ export const InventoryPanel = ({
         >
           {grid.map((gridRow, row) => {
             return gridRow.map((item, col) => {
-              const available = !item;
-              const { availableRight, availableDown } = findAvailable({
-                grid,
-                startX: col,
-                startY: row,
-                width,
-                height,
-              });
-
-              return (
-                <InventorySlot
-                  available={available}
-                  availableRight={availableRight}
-                  availableDown={availableDown}
-                  addSlot={addSlot}
-                  moveSlot={moveSlot}
-                  containerId={inventory.id}
-                  key={`${row}${col}`}
-                  x={col}
-                  y={row}
-                />
-              );
+              return <InventorySlot key={`${row}${col}`} />;
             });
           })}
         </div>
