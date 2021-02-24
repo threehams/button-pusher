@@ -2,7 +2,7 @@ import { Item } from "@botnet/messages";
 import { css, useTheme } from "@emotion/react";
 import React, { useRef } from "react";
 import { useDrag } from "react-dnd";
-import { DraggableItem } from "./DraggableItem";
+import { DraggableItem, DraggableResult } from "./DraggableItem";
 
 type InventoryItemProps = {
   item: Item;
@@ -18,7 +18,7 @@ export const InventoryItem = ({
   const theme = useTheme();
   const [{ isDragging }, drag] = useDrag<
     DraggableItem,
-    void,
+    DraggableResult,
     { isDragging: boolean }
   >({
     item: {
@@ -29,6 +29,10 @@ export const InventoryItem = ({
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
     }),
+    end: (_, monitor) => {
+      const result: DraggableResult = monitor.getDropResult();
+      console.log(result.x, result.y);
+    },
   });
 
   return (

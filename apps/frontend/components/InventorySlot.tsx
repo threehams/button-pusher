@@ -2,7 +2,7 @@ import { AddSlot, MoveSlot } from "@botnet/store";
 import { css, useTheme } from "@emotion/react";
 import React from "react";
 import { useDrop } from "react-dnd";
-import { DraggableItem } from "./DraggableItem";
+import { DraggableItem, DraggableResult } from "./DraggableItem";
 
 type InventorySlotProps = {
   addSlot: AddSlot;
@@ -27,7 +27,7 @@ export const InventorySlot = ({
   availableDown,
 }: InventorySlotProps) => {
   const theme = useTheme();
-  const [, drop] = useDrop<DraggableItem, void, void>({
+  const [, drop] = useDrop<DraggableItem, DraggableResult, void>({
     accept: ["ITEM"],
     canDrop: (dragged) => {
       if (dragged.slotId === "ITEM") {
@@ -41,13 +41,8 @@ export const InventorySlot = ({
         );
       }
     },
-    drop: (dragged) => {
-      if (dragged.slotId) {
-        moveSlot({ slotId: dragged.slotId, x, y, containerId });
-      } else {
-        const { id: itemId } = dragged.item;
-        addSlot({ itemId, x, y, containerId });
-      }
+    drop: () => {
+      return { x, y };
     },
   });
 
