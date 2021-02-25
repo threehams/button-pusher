@@ -29,7 +29,7 @@ export const InventoryPanel = ({
   buyContainerUpgrade,
   addSlot,
 }: InventoryPanelProps) => {
-  const { height, width, slots, grid, nextUpgrade } = inventory;
+  const { height, width, slots, nextUpgrade } = inventory;
   const [target, setTargetState] = useState<Bounds | undefined>();
 
   const setTarget = useCallback(
@@ -68,7 +68,7 @@ export const InventoryPanel = ({
               key={slot.id}
               css={css`
                 position: absolute;
-                pointer-events: none;
+                /* pointer-events: none; */
                 width: ${theme.tileSize * slot.item.width};
                 height: ${theme.tileSize * slot.item.height};
                 top: ${theme.tileSize * slot.y}px;
@@ -93,22 +93,22 @@ export const InventoryPanel = ({
               .join(" ")};
           `}
         >
-          {grid.map((gridRow, row) => {
-            return gridRow.map((_, col) => {
-              const required = !!targetCoords?.required.includes(
-                `${col},${row}`,
-              );
+          {range(0, height).map((y) => {
+            return range(0, width).map((x) => {
+              const required = !!targetCoords?.required.includes(`${x},${y}`);
               return (
                 <InventorySlot
                   containerId={inventory.id}
                   setTarget={setTarget}
                   canDrop={canDrop}
-                  x={col}
-                  y={row}
-                  key={`${col}${row}`}
+                  x={x}
+                  y={y}
+                  key={`${x}${y}`}
                   required={required}
                   state={required && targetCoords?.valid ? "VALID" : "INVALID"}
-                />
+                >
+                  {x},{y}
+                </InventorySlot>
               );
             });
           })}

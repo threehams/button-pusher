@@ -9,7 +9,7 @@ export const containers: Container[] = [
       {
         level: 1,
         height: 3,
-        width: 3,
+        width: 4,
         cost: 0,
       },
       {

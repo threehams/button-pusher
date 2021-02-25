@@ -1,7 +1,7 @@
 import { Item } from "@botnet/messages";
 import { AddSlot } from "@botnet/store";
 import { css, useTheme } from "@emotion/react";
-import React, { useRef } from "react";
+import React from "react";
 import { useDrag } from "react-dnd";
 import { DraggableItem, DraggableResult } from "./DraggableItem";
 

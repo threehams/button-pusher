@@ -101,8 +101,8 @@ export const useStore = () => {
   const getInventory = useCallback(
     (containerId: string): Inventory => {
       const container = state.purchasedContainerMap[containerId];
-      const grid: Inventory["grid"] = range(0, container.height).map(() => {
-        return range(0, container.width).map(() => false);
+      const grid: Inventory["grid"] = range(0, container.width).map(() => {
+        return range(0, container.height).map(() => false);
       });
       container.slotIds.forEach((slotId) => {
         const slot = state.slotMap[slotId];
@@ -176,7 +176,7 @@ export const useStore = () => {
         const containerInv = getInventory(container.id);
         for (const row of range(0, containerInv.height)) {
           for (const col of range(0, containerInv.width)) {
-            const available = !containerInv.grid[row][col];
+            const available = !containerInv.grid[col][row];
             if (available) {
               const { availableRight, availableDown } = findAvailable({
                 grid: containerInv.grid,
