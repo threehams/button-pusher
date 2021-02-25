@@ -3,6 +3,7 @@ import {
   BuyContainerUpgrade,
   Inventory,
   MoveSlot,
+  SlotInfo,
 } from "@botnet/store";
 import React, { useCallback, useState } from "react";
 import { range } from "lodash";
@@ -10,13 +11,7 @@ import { css, useTheme } from "@emotion/react";
 import { InventorySlot } from "../InventorySlot";
 import { InventoryItem } from "../InventoryItem";
 import deepEqual from "deep-equal";
-
-type Bounds = {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-};
+import { getTargetCoords } from "@botnet/store";
 
 type InventoryPanelProps = {
   inventory: Inventory;
@@ -28,12 +23,13 @@ export const InventoryPanel = ({
   inventory,
   buyContainerUpgrade,
   addSlot,
+  moveSlot,
 }: InventoryPanelProps) => {
   const { height, width, slots, nextUpgrade } = inventory;
-  const [target, setTargetState] = useState<Bounds | undefined>();
+  const [target, setTargetState] = useState<SlotInfo | undefined>();
 
   const setTarget = useCallback(
-    (tgt: Bounds | undefined) => {
+    (tgt: SlotInfo | undefined) => {
       if (!deepEqual(target, tgt)) {
         setTargetState(tgt);
       }
@@ -43,7 +39,7 @@ export const InventoryPanel = ({
 
   const theme = useTheme();
   const canDrop = useCallback(
-    (tgt: Bounds) => {
+    (tgt: SlotInfo) => {
       return !!getTargetCoords({ inventory, target: tgt })?.valid;
     },
     [inventory],
@@ -75,6 +71,7 @@ export const InventoryPanel = ({
                 left: ${theme.tileSize * slot.x}px;
               `}
               addSlot={addSlot}
+              moveSlot={moveSlot}
               item={slot.item}
               slotId={slot.id}
             />
@@ -95,7 +92,7 @@ export const InventoryPanel = ({
         >
           {range(0, height).map((y) => {
             return range(0, width).map((x) => {
-              const required = !!targetCoords?.required.includes(`${x},${y}`);
+              const required = !!targetCoords?.required.includes(`${y},${x}`);
               return (
                 <InventorySlot
                   containerId={inventory.id}
@@ -103,12 +100,10 @@ export const InventoryPanel = ({
                   canDrop={canDrop}
                   x={x}
                   y={y}
-                  key={`${x}${y}`}
+                  key={`${y}${x}`}
                   required={required}
                   state={required && targetCoords?.valid ? "VALID" : "INVALID"}
-                >
-                  {x},{y}
-                </InventorySlot>
+                ></InventorySlot>
               );
             });
           })}
@@ -125,35 +120,4 @@ export const InventoryPanel = ({
       )}
     </div>
   );
-};
-
-type GetTargetCoords = {
-  target: Bounds;
-  inventory: Inventory;
-};
-const getTargetCoords = ({ target, inventory }: GetTargetCoords) => {
-  const { x, y } = target;
-  const { width, height, grid } = inventory;
-  let required = [];
-  let valid = true;
-  for (const row of range(y, y + target.height)) {
-    for (const col of range(x, x + target.width)) {
-      if (row < height && col < width) {
-        required.push(`${col},${row}`);
-        if (grid[col][row]) {
-          valid = false;
-        }
-      } else {
-        valid = false;
-      }
-    }
-  }
-  return {
-    x,
-    y,
-    width: target.width,
-    height: target.height,
-    required,
-    valid,
-  };
 };

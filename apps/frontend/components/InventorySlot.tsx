@@ -1,21 +1,15 @@
+import { SlotInfo } from "@botnet/store";
 import { css, useTheme } from "@emotion/react";
 import React from "react";
 import { useDrop } from "react-dnd";
 import { DraggableItem, DraggableResult } from "./DraggableItem";
 
-type Bounds = {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-};
-
 type InventorySlotProps = {
   children?: React.ReactNode;
   state: "VALID" | "INVALID";
   required: boolean;
-  canDrop: (target: Bounds) => boolean;
-  setTarget: (target: Bounds | undefined) => void;
+  canDrop: (target: SlotInfo) => boolean;
+  setTarget: (target: SlotInfo | undefined) => void;
   x: number;
   y: number;
   containerId: string;
@@ -35,12 +29,18 @@ export const InventorySlot = React.memo(
     const [, drop] = useDrop<DraggableItem, DraggableResult, void>({
       accept: ["ITEM"],
       canDrop: (draggable) => {
-        const { width, height } = draggable.item;
-        return canDrop({ x, y, width, height });
+        const {
+          item: { width, height },
+          slotId,
+        } = draggable;
+        return canDrop({ x, y, width, height, slotId });
       },
       hover: (draggable) => {
-        const { width, height } = draggable.item;
-        setTarget({ x, y, width, height });
+        const {
+          item: { width, height },
+          slotId,
+        } = draggable;
+        setTarget({ x, y, width, height, slotId });
       },
       drop: () => {
         setTarget(undefined);

@@ -1,5 +1,5 @@
 import { Item } from "@botnet/messages";
-import { AddSlot } from "@botnet/store";
+import { AddSlot, MoveSlot } from "@botnet/store";
 import { css, useTheme } from "@emotion/react";
 import React from "react";
 import { useDrag } from "react-dnd";
@@ -10,12 +10,14 @@ type InventoryItemProps = {
   slotId?: string;
   className?: string;
   addSlot: AddSlot;
+  moveSlot: MoveSlot;
 };
 export const InventoryItem = ({
   item,
   slotId,
   className,
   addSlot,
+  moveSlot,
 }: InventoryItemProps) => {
   const theme = useTheme();
   const [{ isDragging }, drag] = useDrag<
@@ -37,7 +39,11 @@ export const InventoryItem = ({
       const result: DraggableResult | undefined = monitor.getDropResult();
       if (result) {
         const { x, y, containerId } = result;
-        addSlot({ x, y, containerId, itemId: item.id });
+        if (slotId) {
+          moveSlot({ x, y, containerId, slotId });
+        } else {
+          addSlot({ x, y, containerId, itemId: item.id });
+        }
       }
     },
   });
@@ -51,6 +57,7 @@ export const InventoryItem = ({
         width: ${item.width * theme.tileSize}px;
         height: ${item.height * theme.tileSize}px;
         opacity: ${isDragging ? 0 : 1};
+        pointer-events: ${isDragging ? "none" : "auto"};
       `}
       className={className}
     />

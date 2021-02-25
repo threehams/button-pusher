@@ -106,7 +106,11 @@ export const Index = () => {
             paddingX={1}
             paddingY={1}
           >
-            <HeldItemPanel addSlot={addSlot} item={heldItem} />
+            <HeldItemPanel
+              addSlot={addSlot}
+              moveSlot={moveSlot}
+              item={heldItem}
+            />
             {heldItem && <p>{fullQuotes[1]}</p>}
           </Box>
         </>

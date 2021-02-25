@@ -11,7 +11,7 @@ import { v4 as uuid } from "uuid";
 import { State } from "./State";
 import { Inventory } from "./Inventory";
 import { range } from "lodash";
-import { findAvailable } from "./findAvailable";
+import { getTargetCoords } from "./getTargetCoords";
 
 const STARTING_CONTAINER: PurchasedContainer = {
   id: containersData[0].id,
@@ -109,7 +109,7 @@ export const useStore = () => {
         const item = state.itemMap[slot.itemId];
         range(0, item.height).forEach((row) => {
           range(0, item.width).forEach((col) => {
-            grid[slot.x + col][slot.y + row] = slotId;
+            grid[slot.y + row][slot.x + col] = slotId;
           });
         });
       });
@@ -174,21 +174,21 @@ export const useStore = () => {
       const { width, height } = state.itemMap[itemId];
       for (const container of Object.values(state.purchasedContainerMap)) {
         const containerInv = getInventory(container.id);
-        for (const row of range(0, containerInv.height)) {
-          for (const col of range(0, containerInv.width)) {
-            const available = !containerInv.grid[col][row];
-            if (available) {
-              const { availableRight, availableDown } = findAvailable({
-                grid: containerInv.grid,
-                height: containerInv.height,
-                width: containerInv.width,
-                startX: col,
-                startY: row,
-              });
-              if (availableRight + 1 >= width && availableDown + 1 >= height) {
-                addSlot({ containerId: container.id, x: col, y: row, itemId });
-                return;
-              }
+        for (const y of range(0, containerInv.height)) {
+          for (const x of range(0, containerInv.width)) {
+            const targetCoords = getTargetCoords({
+              inventory: containerInv,
+              target: {
+                x,
+                y,
+                width,
+                height,
+                slotId: undefined,
+              },
+            });
+            if (targetCoords.valid) {
+              addSlot({ containerId: container.id, x, y, itemId });
+              return;
             }
           }
         }
