@@ -101,8 +101,8 @@ export const useStore = () => {
   const getInventory = useCallback(
     (containerId: string): Inventory => {
       const container = state.purchasedContainerMap[containerId];
-      const grid: Inventory["grid"] = range(0, container.width).map(() => {
-        return range(0, container.height).map(() => false);
+      const grid: Inventory["grid"] = range(0, container.height).map(() => {
+        return range(0, container.width).map(() => false);
       });
       container.slotIds.forEach((slotId) => {
         const slot = state.slotMap[slotId];

@@ -8,8 +8,8 @@ export const containers: Container[] = [
     levels: [
       {
         level: 1,
-        height: 3,
-        width: 4,
+        height: 4,
+        width: 3,
         cost: 0,
       },
       {

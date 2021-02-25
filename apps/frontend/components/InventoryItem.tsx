@@ -12,54 +12,50 @@ type InventoryItemProps = {
   addSlot: AddSlot;
   moveSlot: MoveSlot;
 };
-export const InventoryItem = ({
-  item,
-  slotId,
-  className,
-  addSlot,
-  moveSlot,
-}: InventoryItemProps) => {
-  const theme = useTheme();
-  const [{ isDragging }, drag] = useDrag<
-    DraggableItem,
-    DraggableResult,
-    { isDragging: boolean }
-  >({
-    item: {
-      type: "ITEM",
-      item,
-      slotId,
-    },
-    collect: (monitor) => {
-      return {
-        isDragging: !!monitor.isDragging(),
-      };
-    },
-    end: (_, monitor) => {
-      const result: DraggableResult | undefined = monitor.getDropResult();
-      if (result) {
-        const { x, y, containerId } = result;
-        if (slotId) {
-          moveSlot({ x, y, containerId, slotId });
-        } else {
-          addSlot({ x, y, containerId, itemId: item.id });
+export const InventoryItem = React.memo(
+  ({ item, slotId, className, addSlot, moveSlot }: InventoryItemProps) => {
+    const theme = useTheme();
+    const [{ isDragging }, drag] = useDrag<
+      DraggableItem,
+      DraggableResult,
+      { isDragging: boolean }
+    >({
+      item: {
+        type: "ITEM",
+        item,
+        slotId,
+      },
+      collect: (monitor) => {
+        return {
+          isDragging: !!monitor.isDragging(),
+        };
+      },
+      end: (_, monitor) => {
+        const result: DraggableResult | undefined = monitor.getDropResult();
+        if (result) {
+          const { x, y, containerId } = result;
+          if (slotId) {
+            moveSlot({ x, y, containerId, slotId });
+          } else {
+            addSlot({ x, y, containerId, itemId: item.id });
+          }
         }
-      }
-    },
-  });
+      },
+    });
 
-  return (
-    <img
-      ref={drag}
-      src={item.image}
-      alt={item.name}
-      css={css`
-        width: ${item.width * theme.tileSize}px;
-        height: ${item.height * theme.tileSize}px;
-        opacity: ${isDragging ? 0 : 1};
-        pointer-events: ${isDragging ? "none" : "auto"};
-      `}
-      className={className}
-    />
-  );
-};
+    return (
+      <img
+        ref={drag}
+        src={item.image}
+        alt={item.name}
+        css={css`
+          width: ${item.width * theme.tileSize}px;
+          height: ${item.height * theme.tileSize}px;
+          opacity: ${isDragging ? 0 : 1};
+          pointer-events: ${isDragging ? "none" : "auto"};
+        `}
+        className={className}
+      />
+    );
+  },
+);
