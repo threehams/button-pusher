@@ -28,9 +28,11 @@ export const InventoryItem = ({
       item,
       slotId,
     },
-    collect: (monitor) => ({
-      isDragging: !!monitor.isDragging(),
-    }),
+    collect: (monitor) => {
+      return {
+        isDragging: !!monitor.isDragging(),
+      };
+    },
     end: (_, monitor) => {
       const result: DraggableResult | undefined = monitor.getDropResult();
       if (result) {

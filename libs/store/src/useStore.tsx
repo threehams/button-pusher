@@ -116,7 +116,6 @@ export const useStore = () => {
       const nextUpgrade =
         state.containerMap[containerId].levels[container.level];
 
-      console.log(grid);
       return {
         ...container,
         slots: container.slotIds.map((slotId) => {

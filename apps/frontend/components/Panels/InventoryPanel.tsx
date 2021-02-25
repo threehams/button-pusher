@@ -4,14 +4,19 @@ import {
   Inventory,
   MoveSlot,
 } from "@botnet/store";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { range } from "lodash";
 import { css, useTheme } from "@emotion/react";
 import { InventorySlot } from "../InventorySlot";
 import { InventoryItem } from "../InventoryItem";
-import { useDrop, XYCoord } from "react-dnd";
-import { DraggableItem, DraggableResult } from "../DraggableItem";
-import { Item } from "@botnet/messages";
+import deepEqual from "deep-equal";
+
+type Bounds = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
 
 type InventoryPanelProps = {
   inventory: Inventory;
@@ -25,70 +30,30 @@ export const InventoryPanel = ({
   addSlot,
 }: InventoryPanelProps) => {
   const { height, width, slots, grid, nextUpgrade } = inventory;
+  const [target, setTargetState] = useState<Bounds | undefined>();
+
+  const setTarget = useCallback(
+    (tgt: Bounds | undefined) => {
+      if (!deepEqual(target, tgt)) {
+        setTargetState(tgt);
+      }
+    },
+    [target],
+  );
 
   const theme = useTheme();
-  const ref = useRef<HTMLDivElement | null>(null);
-  const [targetPos, setTargetPos] = useState<Coords | undefined>(undefined);
-
-  const [{ position, item, isOver }, drop] = useDrop<
-    DraggableItem,
-    DraggableResult,
-    { position: XYCoord | null; item: Item | undefined }
-  >({
-    collect: (monitor) => {
-      return {
-        position: monitor.getClientOffset(),
-        item: monitor.getItem(),
-        isOver: monitor.isOver(),
-      };
+  const canDrop = useCallback(
+    (tgt: Bounds) => {
+      return !!getTargetCoords({ inventory, target: tgt })?.valid;
     },
-    accept: ["ITEM"],
-    canDrop: (dragged, monitor) => {
-      if (!targetPos) {
-        return false;
-      }
-      const { x, y } = monitor.getClientOffset()!;
-      const coords = getTargetCoords({
+    [inventory],
+  );
+  const targetCoords = target
+    ? getTargetCoords({
         inventory,
-        item: dragged.item,
-        position: { x, y },
-        targetPos,
-        tileSize: theme.tileSize,
-      });
-      return !!coords?.valid;
-    },
-    drop: (dragged, monitor) => {
-      const { x, y } = monitor.getClientOffset()!;
-      const coords = getTargetCoords({
-        inventory,
-        item: dragged.item,
-        position: { x, y },
-        targetPos: targetPos!,
-        tileSize: theme.tileSize,
-      })!;
-      return { x: coords.x, y: coords.y, containerId: inventory.id };
-    },
-  });
-  useEffect(() => {
-    if (!ref.current) {
-      return;
-    }
-    const { x, y } = ref.current.getBoundingClientRect();
-    if (targetPos?.x !== x || targetPos?.y !== y) {
-      setTargetPos({ x, y });
-    }
-  }, [targetPos?.x, targetPos?.y, isOver]);
-
-  const targetCoords =
-    position && targetPos && item
-      ? getTargetCoords({
-          inventory,
-          item,
-          position: { x: position.x, y: position.y },
-          targetPos,
-          tileSize: theme.tileSize,
-        })
-      : undefined;
+        target,
+      })
+    : undefined;
 
   return (
     <div>
@@ -116,10 +81,6 @@ export const InventoryPanel = ({
           );
         })}
         <div
-          ref={(element) => {
-            drop(element);
-            ref.current = element;
-          }}
           css={css`
             display: grid;
             width: ${width * theme.tileSize}px;
@@ -132,13 +93,18 @@ export const InventoryPanel = ({
               .join(" ")};
           `}
         >
-          {grid.map((gridRow, col) => {
-            return gridRow.map((_, row) => {
+          {grid.map((gridRow, row) => {
+            return gridRow.map((_, col) => {
               const required = !!targetCoords?.required.includes(
                 `${col},${row}`,
               );
               return (
                 <InventorySlot
+                  containerId={inventory.id}
+                  setTarget={setTarget}
+                  canDrop={canDrop}
+                  x={col}
+                  y={row}
                   key={`${col}${row}`}
                   required={required}
                   state={required && targetCoords?.valid ? "VALID" : "INVALID"}
@@ -161,34 +127,17 @@ export const InventoryPanel = ({
   );
 };
 
-type Coords = { x: number; y: number };
-
 type GetTargetCoords = {
-  item: Item;
-  position: Coords;
-  tileSize: number;
-  targetPos: Coords;
+  target: Bounds;
   inventory: Inventory;
 };
-const getTargetCoords = ({
-  item,
-  position,
-  tileSize,
-  targetPos,
-  inventory,
-}: GetTargetCoords) => {
+const getTargetCoords = ({ target, inventory }: GetTargetCoords) => {
+  const { x, y } = target;
   const { width, height, grid } = inventory;
-  // const offsetX = ((item.width - 1) * tileSize) / 2;
-  // const offsetY = ((item.height - 1) * tileSize) / 2;
-  const x = Math.floor((position.x - targetPos.x) / tileSize);
-  const y = Math.floor((position.y - targetPos.y) / tileSize);
-  if (x < 0 || y < 0 || x >= width || y >= height) {
-    return undefined;
-  }
   let required = [];
   let valid = true;
-  for (const row of range(y, y + item.height)) {
-    for (const col of range(x, x + item.width)) {
+  for (const row of range(y, y + target.height)) {
+    for (const col of range(x, x + target.width)) {
       if (row < height && col < width) {
         required.push(`${col},${row}`);
         if (grid[col][row]) {
@@ -202,8 +151,8 @@ const getTargetCoords = ({
   return {
     x,
     y,
-    width: item.width,
-    height: item.height,
+    width: target.width,
+    height: target.height,
     required,
     valid,
   };
