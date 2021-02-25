@@ -109,13 +109,14 @@ export const useStore = () => {
         const item = state.itemMap[slot.itemId];
         range(0, item.height).forEach((row) => {
           range(0, item.width).forEach((col) => {
-            grid[slot.y + row][slot.x + col] = slotId;
+            grid[slot.x + col][slot.y + row] = slotId;
           });
         });
       });
       const nextUpgrade =
         state.containerMap[containerId].levels[container.level];
 
+      console.log(grid);
       return {
         ...container,
         slots: container.slotIds.map((slotId) => {
@@ -138,9 +139,7 @@ export const useStore = () => {
   );
 
   const inventory = useMemo(() => {
-    return state.currentContainerId
-      ? getInventory(state.currentContainerId)
-      : undefined;
+    return getInventory(state.currentContainerId);
   }, [getInventory, state.currentContainerId]);
 
   const allItems = useMemo(() => {

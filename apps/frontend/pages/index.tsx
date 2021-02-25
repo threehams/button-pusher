@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { HeldItemPanel, InventoryPanel, UpgradePanel } from "../components";
+import { CustomDragLayer } from "../components/DragLayer";
 import { TerminalOverlay } from "../components/TerminalOverlay";
 import { useGameLoop } from "../hooks/useGameLoop";
 
@@ -54,6 +55,7 @@ export const Index = () => {
         `}
       >
         <>
+          <CustomDragLayer />
           <Box
             css={css`
               grid-area: sidebar;

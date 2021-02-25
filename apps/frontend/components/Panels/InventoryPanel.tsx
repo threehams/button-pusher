@@ -29,22 +29,18 @@ export const InventoryPanel = ({
   const theme = useTheme();
   const ref = useRef<HTMLDivElement | null>(null);
   const [targetPos, setTargetPos] = useState<Coords | undefined>(undefined);
-  useEffect(() => {
-    if (!ref.current) {
-      return;
-    }
-    const { x, y } = ref.current.getBoundingClientRect();
-    if (targetPos?.x !== x || targetPos?.y !== y) {
-      setTargetPos({ x, y });
-    }
-  }, [targetPos?.x, targetPos?.y]);
-  const [{ position, item }, drop] = useDrop<
+
+  const [{ position, item, isOver }, drop] = useDrop<
     DraggableItem,
     DraggableResult,
     { position: XYCoord | null; item: Item | undefined }
   >({
     collect: (monitor) => {
-      return { position: monitor.getClientOffset(), item: monitor.getItem() };
+      return {
+        position: monitor.getClientOffset(),
+        item: monitor.getItem(),
+        isOver: monitor.isOver(),
+      };
     },
     accept: ["ITEM"],
     canDrop: (dragged, monitor) => {
@@ -52,13 +48,14 @@ export const InventoryPanel = ({
         return false;
       }
       const { x, y } = monitor.getClientOffset()!;
-      return !!getTargetCoords({
+      const coords = getTargetCoords({
         inventory,
         item: dragged.item,
         position: { x, y },
         targetPos,
         tileSize: theme.tileSize,
-      })?.valid;
+      });
+      return !!coords?.valid;
     },
     drop: (dragged, monitor) => {
       const { x, y } = monitor.getClientOffset()!;
@@ -72,6 +69,15 @@ export const InventoryPanel = ({
       return { x: coords.x, y: coords.y, containerId: inventory.id };
     },
   });
+  useEffect(() => {
+    if (!ref.current) {
+      return;
+    }
+    const { x, y } = ref.current.getBoundingClientRect();
+    if (targetPos?.x !== x || targetPos?.y !== y) {
+      setTargetPos({ x, y });
+    }
+  }, [targetPos?.x, targetPos?.y, isOver]);
 
   const targetCoords =
     position && targetPos && item
@@ -97,6 +103,7 @@ export const InventoryPanel = ({
               key={slot.id}
               css={css`
                 position: absolute;
+                pointer-events: none;
                 width: ${theme.tileSize * slot.item.width};
                 height: ${theme.tileSize * slot.item.height};
                 top: ${theme.tileSize * slot.y}px;
@@ -125,8 +132,8 @@ export const InventoryPanel = ({
               .join(" ")};
           `}
         >
-          {grid.map((gridRow, row) => {
-            return gridRow.map((_, col) => {
+          {grid.map((gridRow, col) => {
+            return gridRow.map((_, row) => {
               const required = !!targetCoords?.required.includes(
                 `${col},${row}`,
               );
@@ -171,10 +178,10 @@ const getTargetCoords = ({
   inventory,
 }: GetTargetCoords) => {
   const { width, height, grid } = inventory;
-  const offsetX = ((item.width - 1) * tileSize) / 2;
-  const offsetY = ((item.height - 1) * tileSize) / 2;
-  const x = Math.floor((position.x - targetPos.x - offsetX) / tileSize);
-  const y = Math.floor((position.y - targetPos.y - offsetY) / tileSize);
+  // const offsetX = ((item.width - 1) * tileSize) / 2;
+  // const offsetY = ((item.height - 1) * tileSize) / 2;
+  const x = Math.floor((position.x - targetPos.x) / tileSize);
+  const y = Math.floor((position.y - targetPos.y) / tileSize);
   if (x < 0 || y < 0 || x >= width || y >= height) {
     return undefined;
   }

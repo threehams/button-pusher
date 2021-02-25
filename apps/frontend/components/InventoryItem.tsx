@@ -17,7 +17,6 @@ export const InventoryItem = ({
   className,
   addSlot,
 }: InventoryItemProps) => {
-  const imageRef = useRef<HTMLImageElement>(null!);
   const theme = useTheme();
   const [{ isDragging }, drag] = useDrag<
     DraggableItem,
@@ -42,18 +41,16 @@ export const InventoryItem = ({
   });
 
   return (
-    <div ref={drag}>
-      <img
-        ref={imageRef}
-        src={item.image}
-        alt={item.name}
-        css={css`
-          width: ${item.width * theme.tileSize}px;
-          height: ${item.height * theme.tileSize}px;
-          opacity: ${isDragging ? 0 : 1};
-        `}
-        className={className}
-      />
-    </div>
+    <img
+      ref={drag}
+      src={item.image}
+      alt={item.name}
+      css={css`
+        width: ${item.width * theme.tileSize}px;
+        height: ${item.height * theme.tileSize}px;
+        opacity: ${isDragging ? 0 : 1};
+      `}
+      className={className}
+    />
   );
 };

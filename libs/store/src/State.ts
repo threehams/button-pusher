@@ -22,7 +22,7 @@ export const State = Record({
   heldItemId: Union(String, Undefined),
   purchasedContainerMap: PurchasedContainerMap,
   containerMap: ContainerMap,
-  currentContainerId: Union(String, Undefined),
+  currentContainerId: String,
   itemMap: ItemMap,
   slotMap: SlotMap,
   moneys: Number,
