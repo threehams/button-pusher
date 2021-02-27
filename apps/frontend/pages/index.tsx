@@ -1,13 +1,12 @@
 import { useStore } from "@botnet/store";
 import { Box } from "@botnet/ui";
 import { css } from "@emotion/react";
-import React, { useState } from "react";
+import React from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { HeldItemPanel, InventoryPanel, UpgradePanel } from "../components";
 import { CustomDragLayer } from "../components/DragLayer";
-import { TerminalOverlay } from "../components/TerminalOverlay";
-import { useGameLoop } from "../hooks/useGameLoop";
+import { useGameLoop } from "../hooks/gameLoop";
 
 const fullQuotes = [
   "I can't carry any more.",
@@ -31,19 +30,22 @@ export const Index = () => {
     purchasedUpgradeMap,
     sell,
     setHeldItem,
+    sort,
   } = useStore();
   useGameLoop({
+    full: inventory.full,
+    containerId: inventory.id,
+    sort,
     availableItems,
     heldItem,
     pack,
     purchasedUpgradeMap,
     setHeldItem,
+    sell,
   });
-  const [panel, setPanel] = useState<"Containers" | "Upgrades">("Containers");
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <TerminalOverlay />
       <Box
         css={css`
           display: grid;
@@ -65,15 +67,12 @@ export const Index = () => {
             paddingTop={1}
           >
             <p>Moneys: {moneys.toFixed(2)}</p>
-            {panel === "Containers" && (
-              <InventoryPanel
-                buyContainerUpgrade={buyContainerUpgrade}
-                inventory={inventory}
-                addSlot={addSlot}
-                moveSlot={moveSlot}
-              />
-            )}
-            {panel === "Upgrades" && <div />}
+            <InventoryPanel
+              buyContainerUpgrade={buyContainerUpgrade}
+              inventory={inventory}
+              addSlot={addSlot}
+              moveSlot={moveSlot}
+            />
             <button
               css={css`
                 display: block;
@@ -88,16 +87,18 @@ export const Index = () => {
               buyUpgrade={buyUpgrade}
               upgrades={availableUpgrades}
             />
-            <button
-              css={css`
-                display: block;
-              `}
-              onClick={() => {
-                setPanel("Upgrades");
-              }}
-            >
-              Buy Upgrades
-            </button>
+            {purchasedUpgradeMap.SORT.level ? (
+              <button
+                css={css`
+                  display: block;
+                `}
+                onClick={() => {
+                  sort({ containerId: inventory.id });
+                }}
+              >
+                Sort
+              </button>
+            ) : null}
           </Box>
           <Box
             css={css`

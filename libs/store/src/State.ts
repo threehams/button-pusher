@@ -15,6 +15,7 @@ import {
   Undefined,
   Union,
   Dictionary,
+  Boolean,
 } from "runtypes";
 
 export const State = Record({
@@ -28,5 +29,6 @@ export const State = Record({
   moneys: Number,
   upgradeMap: Dictionary(Upgrade),
   purchasedUpgradeMap: PurchasedUpgradeMap,
+  selling: Boolean,
 });
 export type State = Static<typeof State>;

@@ -4,7 +4,12 @@ import {
   containers as containersData,
 } from "@botnet/data";
 import { isNonNullable } from "@botnet/utils";
-import { PurchasedContainer, UpgradeType } from "@botnet/messages";
+import {
+  Item,
+  PurchasedContainer,
+  PurchasedUpgrade,
+  UpgradeType,
+} from "@botnet/messages";
 import { useCallback, useMemo } from "react";
 import { useImmer } from "use-immer";
 import { v4 as uuid } from "uuid";
@@ -12,6 +17,14 @@ import { State } from "./State";
 import { Inventory } from "./Inventory";
 import { range } from "lodash";
 import { getTargetCoords } from "./getTargetCoords";
+
+type FullSlot = {
+  id: string;
+  x: number;
+  y: number;
+  item: Item;
+  containerId: string;
+};
 
 const STARTING_CONTAINER: PurchasedContainer = {
   id: containersData[0].id,
@@ -37,6 +50,9 @@ export type AddSlot = (options: {
 export type BuyUpgrade = (options: { id: UpgradeType; level: number }) => void;
 export type BuyContainerUpgrade = (options: { id: string }) => void;
 export type Pack = (options: { itemId: string }) => void;
+export type Sort = (options: { containerId: string }) => void;
+export type Sell = () => void;
+type SortMethod = "horizontal" | "vertical";
 
 /**
  * Set up local state to hold onto messages received from the server.
@@ -62,25 +78,31 @@ export const useStore = () => {
     ),
     purchasedUpgradeMap: {
       AUTOMATE_PACK: {
-        id: "AUTOMATE_PACK",
         level: 0,
       },
       AUTOMATE_SELL: {
-        id: "AUTOMATE_PACK",
         level: 0,
       },
       AUTOMATE_SORT: {
-        id: "AUTOMATE_PACK",
         level: 0,
       },
       SORT: {
-        id: "AUTOMATE_PACK",
+        level: 0,
+      },
+      PACK: {
+        level: 0,
+      },
+      APPRAISE: {
+        level: 0,
+      },
+      AUTOMATE_APPRAISE: {
         level: 0,
       },
     },
     purchasedContainerMap: {
       [STARTING_CONTAINER.id]: STARTING_CONTAINER,
     },
+    selling: false,
   }));
 
   const clearHistory = useCallback(() => {
@@ -101,38 +123,57 @@ export const useStore = () => {
   const getInventory = useCallback(
     (containerId: string): Inventory => {
       const container = state.purchasedContainerMap[containerId];
-      const grid: Inventory["grid"] = range(0, container.height).map(() => {
-        return range(0, container.width).map(() => false);
+      const grid = initializeGrid({
+        width: container.width,
+        height: container.height,
       });
-      container.slotIds.forEach((slotId) => {
+      const slots = container.slotIds.map((slotId) => {
         const slot = state.slotMap[slotId];
-        const item = state.itemMap[slot.itemId];
-        range(0, item.height).forEach((row) => {
-          range(0, item.width).forEach((col) => {
-            grid[slot.y + row][slot.x + col] = slotId;
-          });
-        });
+        return {
+          ...slot,
+          item: state.itemMap[slot.itemId],
+        };
       });
+      recalculateGrid({
+        slots,
+        grid,
+      });
+
       const nextUpgrade =
         state.containerMap[containerId].levels[container.level];
 
+      let full = false;
+      if (state.heldItemId) {
+        const item = state.itemMap[state.heldItemId];
+        const slot = findSlot({
+          containerInv: {
+            grid,
+            width: container.width,
+            height: container.height,
+          },
+          height: item.height,
+          width: item.width,
+          method: sortMethod(state.purchasedUpgradeMap.SORT),
+        });
+        if (!slot) {
+          full = true;
+        }
+      }
+
       return {
         ...container,
-        slots: container.slotIds.map((slotId) => {
-          const slot = state.slotMap[slotId];
-          return {
-            ...slot,
-            item: state.itemMap[slot.itemId],
-          };
-        }),
+        slots,
         grid,
         nextUpgrade,
+        full,
       };
     },
     [
       state.containerMap,
+      state.heldItemId,
       state.itemMap,
       state.purchasedContainerMap,
+      state.purchasedUpgradeMap.SORT,
       state.slotMap,
     ],
   );
@@ -151,6 +192,9 @@ export const useStore = () => {
 
   const addSlot: AddSlot = useCallback(
     ({ itemId, x, y, containerId }) => {
+      if (state.selling) {
+        return;
+      }
       const slot = {
         id: uuid(),
         x,
@@ -166,39 +210,110 @@ export const useStore = () => {
         draft.heldItemId = undefined;
       });
     },
-    [setState],
+    [setState, state.selling],
+  );
+
+  const sort: Sort = useCallback(
+    ({ containerId }) => {
+      if (state.selling) {
+        return;
+      }
+      const upgrade = state.purchasedUpgradeMap.SORT;
+      const method = upgrade.level > 1 ? "vertical" : "horizontal";
+      const container = state.purchasedContainerMap[containerId];
+      const currentSlots = container.slotIds.map((slotId) => {
+        const slot = state.slotMap[slotId];
+        return {
+          ...slot,
+          item: state.itemMap[slot.itemId],
+        };
+      });
+      let grid = initializeGrid({
+        width: container.width,
+        height: container.height,
+      });
+      const sorted = currentSlots.slice().sort((a, b) => {
+        return a.item.width * a.item.height < b.item.width * b.item.height
+          ? 1
+          : -1;
+      });
+      const targetSlots: FullSlot[] = [];
+      for (const slot of sorted) {
+        const target = findSlot({
+          containerInv: {
+            grid,
+            width: container.width,
+            height: container.height,
+          },
+          height: slot.item.height,
+          width: slot.item.width,
+          method,
+        });
+        if (!target) {
+          return;
+        }
+        targetSlots.push({
+          ...slot,
+          x: target.x,
+          y: target.y,
+        });
+
+        recalculateGrid({
+          slots: targetSlots,
+          grid,
+        });
+      }
+      setState((draft) => {
+        targetSlots.forEach((slot) => {
+          draft.slotMap[slot.id].x = slot.x;
+          draft.slotMap[slot.id].y = slot.y;
+        });
+      });
+    },
+    [
+      setState,
+      state.itemMap,
+      state.purchasedContainerMap,
+      state.purchasedUpgradeMap.SORT,
+      state.selling,
+      state.slotMap,
+    ],
   );
 
   const pack: Pack = useCallback(
     ({ itemId }) => {
+      if (state.selling) {
+        return;
+      }
       const { width, height } = state.itemMap[itemId];
       for (const container of Object.values(state.purchasedContainerMap)) {
         const containerInv = getInventory(container.id);
-        for (const y of range(0, containerInv.height)) {
-          for (const x of range(0, containerInv.width)) {
-            const targetCoords = getTargetCoords({
-              inventory: containerInv,
-              target: {
-                x,
-                y,
-                width,
-                height,
-                slotId: undefined,
-              },
-            });
-            if (targetCoords.valid) {
-              addSlot({ containerId: container.id, x, y, itemId });
-              return;
-            }
-          }
+        const target = findSlot({
+          containerInv,
+          height,
+          width,
+          method: "horizontal",
+        });
+        if (target) {
+          const { x, y } = target;
+          addSlot({ containerId: container.id, itemId, x, y });
         }
       }
     },
-    [addSlot, getInventory, state.itemMap, state.purchasedContainerMap],
+    [
+      addSlot,
+      getInventory,
+      state.itemMap,
+      state.purchasedContainerMap,
+      state.selling,
+    ],
   );
 
   const moveSlot: MoveSlot = useCallback(
     ({ slotId, x, y, containerId }) => {
+      if (state.selling) {
+        return;
+      }
       setState((draft) => {
         const slot = draft.slotMap[slotId];
         const currentContainerId = slot.containerId;
@@ -214,10 +329,10 @@ export const useStore = () => {
         slot.y = y;
       });
     },
-    [setState],
+    [setState, state.selling],
   );
 
-  const sell = useCallback(() => {
+  const sell: Sell = useCallback(() => {
     const multiplier = Math.max(1, Math.sqrt(allItems.length));
     setState((draft) => {
       draft.moneys =
@@ -313,5 +428,92 @@ export const useStore = () => {
     sell,
     setHeldItem,
     setState,
+    sort,
+    selling: state.selling,
   };
+};
+
+const initializeGrid = ({
+  width,
+  height,
+}: {
+  width: number;
+  height: number;
+}) => {
+  const grid: Inventory["grid"] = range(0, height).map(() => {
+    return range(0, width).map(() => false);
+  });
+  return grid;
+};
+
+const findSlot = ({
+  containerInv,
+  width,
+  height,
+  method,
+}: {
+  containerInv: Pick<Inventory, "width" | "height" | "grid">;
+  width: number;
+  height: number;
+  method: SortMethod;
+}) => {
+  if (method === "horizontal") {
+    for (const y of range(0, containerInv.height)) {
+      for (const x of range(0, containerInv.width)) {
+        const targetCoords = getTargetCoords({
+          inventory: containerInv,
+          target: {
+            x,
+            y,
+            width,
+            height,
+            slotId: undefined,
+          },
+        });
+        if (targetCoords.valid) {
+          return { x, y };
+        }
+      }
+    }
+  } else if (method === "vertical") {
+    for (const x of range(0, containerInv.width)) {
+      for (const y of range(0, containerInv.height)) {
+        const targetCoords = getTargetCoords({
+          inventory: containerInv,
+          target: {
+            x,
+            y,
+            width,
+            height,
+            slotId: undefined,
+          },
+        });
+        if (targetCoords.valid) {
+          return { x, y };
+        }
+      }
+    }
+  }
+};
+function recalculateGrid({
+  slots,
+  grid,
+}: {
+  slots: FullSlot[];
+  grid: (string | false)[][];
+}) {
+  slots.forEach((slot) => {
+    range(0, slot.item.height).forEach((row) => {
+      range(0, slot.item.width).forEach((col) => {
+        grid[slot.y + row][slot.x + col] = slot.id;
+      });
+    });
+  });
+}
+
+const sortMethod = (upgrade: PurchasedUpgrade): SortMethod => {
+  if (upgrade.level > 1) {
+    return "vertical";
+  }
+  return "horizontal";
 };

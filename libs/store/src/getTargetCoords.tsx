@@ -11,7 +11,7 @@ export type SlotInfo = {
 
 type GetTargetCoords = {
   target: SlotInfo;
-  inventory: Inventory;
+  inventory: Pick<Inventory, "width" | "height" | "grid">;
 };
 export const getTargetCoords = ({ target, inventory }: GetTargetCoords) => {
   const { x, y } = target;

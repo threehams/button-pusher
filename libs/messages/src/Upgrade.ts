@@ -9,10 +9,13 @@ import {
 } from "runtypes";
 
 export const UpgradeType = Union(
+  Literal("PACK"),
   Literal("AUTOMATE_PACK"),
-  Literal("AUTOMATE_SELL"),
-  Literal("AUTOMATE_SORT"),
   Literal("SORT"),
+  Literal("AUTOMATE_SORT"),
+  Literal("AUTOMATE_SELL"),
+  Literal("APPRAISE"),
+  Literal("AUTOMATE_APPRAISE"),
 );
 export type UpgradeType = Static<typeof UpgradeType>;
 

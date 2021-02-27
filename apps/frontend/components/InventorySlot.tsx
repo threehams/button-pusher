@@ -52,7 +52,8 @@ export const InventorySlot = React.memo(
       <button
         ref={drop}
         css={css`
-          border: 1px solid white;
+          border-right: 1px solid #888;
+          border-bottom: 1px solid #888;
           width: ${theme.tileSize};
           height: ${theme.tileSize};
           background-color: ${required && state === "VALID"

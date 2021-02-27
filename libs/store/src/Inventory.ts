@@ -12,4 +12,5 @@ export type Inventory = {
   }[];
   grid: (string | false)[][];
   nextUpgrade: ContainerLevel;
+  full: boolean;
 };

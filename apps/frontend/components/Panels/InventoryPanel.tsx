@@ -80,6 +80,8 @@ export const InventoryPanel = ({
         <div
           css={css`
             display: grid;
+            border-top: 1px solid #888;
+            border-left: 1px solid #888;
             width: ${width * theme.tileSize}px;
             height: ${height * theme.tileSize}px;
             grid-template-rows: ${range(0, height)

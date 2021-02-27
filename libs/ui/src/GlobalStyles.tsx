@@ -24,8 +24,6 @@ export const GlobalStyles = () => {
 
           body {
             margin: 0;
-            text-shadow: 0.02956275843481219px 0 1px rgba(0, 30, 255, 0.5),
-              -0.02956275843481219px 0 1px rgba(255, 0, 80, 0.3), 0 0 3px;
             background-color: black;
             background-image: radial-gradient(#111, #181818 120%);
             min-height: 100vh;
@@ -48,7 +46,7 @@ export const GlobalStyles = () => {
           button,
           input {
             word-break: break-all;
-            color: #43d731;
+            color: #f8f8f8;
             font-size: 20px;
           }
 
@@ -92,8 +90,6 @@ export const GlobalStyles = () => {
               color: black;
               background-color: #bff3b8;
               outline: 0;
-              text-shadow: 0.02956275843481219px 0 1px rgba(0, 30, 255, 0.5),
-                -0.02956275843481219px 0 1px rgba(255, 0, 80, 0.3), 0 0 2px;
             }
           }
 
