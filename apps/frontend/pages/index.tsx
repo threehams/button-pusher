@@ -148,7 +148,7 @@ export const Index = () => {
                 margin-left: 40px;
               `}
             >
-              Location: {playerLocation}
+              Location: {playerLocation === "TOWN" ? "Town" : "Killing Fields"}
             </div>
           </div>{" "}
           <Box

@@ -1,11 +1,6 @@
 import { Item, PlayerAction, PlayerLocation } from "@botnet/messages";
 import { Adventure, Loot, PurchasedUpgrade } from "@botnet/store";
-import { alea } from "seedrandom";
-
-const random = alea(Math.random().toString());
-const choice = <T extends unknown>(arr: T[]): T => {
-  return arr[Math.floor(random() * arr.length)];
-};
+import { choice } from "./choice";
 
 type Kill = {
   heldItem: Item | undefined;
