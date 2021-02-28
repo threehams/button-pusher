@@ -12,5 +12,6 @@ export type Inventory = {
   }[];
   grid: (string | false)[][];
   full: boolean;
-  cost: Number;
+  cost: number;
+  nextAvailable: number;
 };

@@ -59,6 +59,11 @@ export type Travel = (options: { destination: PlayerLocation }) => void;
 export type Adventure = () => void;
 export type SellItem = () => void;
 export type Arrive = () => void;
+export type BuyContainer = () => void;
+export type NextInventory = string | undefined;
+export type PrevInventory = string | undefined;
+export type GoInventory = (options: { containerId: string }) => void;
+
 type SortMethod = "horizontal" | "vertical";
 
 /**
@@ -89,7 +94,7 @@ export const useStore = () => {
     ),
     slotMap: {},
     heldItemId: undefined,
-    moneys: 0,
+    moneys: 10000000,
     upgradeMap: upgradesData,
     purchasedUpgradeMap: {
       AUTOMATE_PACK: {
@@ -214,6 +219,19 @@ export const useStore = () => {
       });
 
       const { cost } = getNextLevel(container, currentCapacity);
+      const cont = containersData[0];
+      const nextContainer = getNextLevel(
+        {
+          height: cont.baseHeight,
+          width: cont.baseWidth,
+          maxHeight: cont.maxHeight,
+          maxWidth: cont.maxWidth,
+        },
+        currentCapacity,
+      );
+      const isLast =
+        state.purchasedContainerIds.indexOf(containerId) ===
+        state.purchasedContainerIds.length - 1;
 
       let full = false;
       if (state.heldItemId) {
@@ -238,6 +256,7 @@ export const useStore = () => {
         slots,
         grid,
         cost,
+        nextAvailable: cost !== 0 || !isLast ? 0 : nextContainer.cost,
         full,
       };
     },
@@ -245,6 +264,7 @@ export const useStore = () => {
       currentCapacity,
       state.heldItemId,
       state.itemMap,
+      state.purchasedContainerIds,
       state.purchasedContainerMap,
       state.slotMap,
     ],
@@ -358,6 +378,7 @@ export const useStore = () => {
       if (target) {
         const { x, y } = target;
         addSlot({ containerId: container.id, itemId: state.heldItemId, x, y });
+        return;
       }
     }
   }, [
@@ -465,6 +486,55 @@ export const useStore = () => {
     [purchasedUpgrades, setState],
   );
 
+  const buyContainer: BuyContainer = useCallback(() => {
+    setState((draft) => {
+      const cont = containersData[0];
+      const next = getNextLevel(
+        {
+          height: cont.baseHeight,
+          width: cont.baseWidth,
+          maxHeight: cont.maxHeight,
+          maxWidth: cont.maxWidth,
+        },
+        currentCapacity,
+      );
+      if (next.cost <= state.moneys) {
+        const id = uuid();
+        draft.containerMap[id] = {
+          ...cont,
+        };
+        draft.purchasedContainerIds.push(id);
+        draft.purchasedContainerMap[id] = {
+          id,
+          height: cont.baseHeight,
+          width: cont.baseWidth,
+          level: 0,
+          maxHeight: cont.maxHeight,
+          maxWidth: cont.maxWidth,
+          slotIds: [],
+        };
+      }
+    });
+  }, [currentCapacity, setState, state.moneys]);
+
+  const nextInventory = () => {
+    const current = state.purchasedContainerIds.indexOf(
+      state.currentContainerId,
+    );
+    return state.purchasedContainerIds[current + 1];
+  };
+  const prevInventory = () => {
+    const current = state.purchasedContainerIds.indexOf(
+      state.currentContainerId,
+    );
+    return state.purchasedContainerIds[current - 1];
+  };
+  const goInventory: GoInventory = ({ containerId }) => {
+    setState((draft) => {
+      draft.currentContainerId = containerId;
+    });
+  };
+
   const buyContainerUpgrade: BuyContainerUpgrade = useCallback(
     ({ id }) => {
       setState((draft) => {
@@ -524,6 +594,10 @@ export const useStore = () => {
     sellItem,
     purchasedUpgrades,
     highestMoneys: state.highestMoneys,
+    buyContainer,
+    nextInventory: nextInventory(),
+    prevInventory: prevInventory(),
+    goInventory,
   };
 };
 
@@ -609,7 +683,12 @@ function recalculateGrid({
 const TILE_COST = 25;
 
 const getNextLevel = (
-  container: PurchasedContainer,
+  container: {
+    width: number;
+    height: number;
+    maxHeight: number;
+    maxWidth: number;
+  },
   currentCapacity: number,
 ) => {
   const { width, height, maxWidth, maxHeight } = container;
@@ -617,9 +696,11 @@ const getNextLevel = (
   let newWidth;
   let newHeight;
   if (width >= maxWidth && height >= maxHeight) {
-    diff = 0;
-    newWidth = width;
-    newHeight = height;
+    return {
+      cost: 0,
+      width,
+      height,
+    };
   } else if (width >= maxWidth) {
     diff = width;
     newWidth = width;

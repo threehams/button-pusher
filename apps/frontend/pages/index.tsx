@@ -1,7 +1,7 @@
 import { useStore } from "@botnet/store";
 import { Box } from "@botnet/ui";
 import { css } from "@emotion/react";
-import React, { useState } from "react";
+import React from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { HeldItemPanel, InventoryPanel, UpgradePanel } from "../components";
@@ -41,6 +41,10 @@ export const Index = () => {
     sellItem,
     travel,
     highestMoneys,
+    nextInventory,
+    prevInventory,
+    goInventory,
+    buyContainer,
   } = store;
   const progress = useGameLoop({
     adventure,
@@ -69,7 +73,6 @@ export const Index = () => {
     autoPackProgress,
     autoTravelProgress,
   } = progress;
-  const [debug, setDebug] = useState(false);
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -159,6 +162,10 @@ export const Index = () => {
             `}
           >
             <InventoryPanel
+              nextInventory={nextInventory}
+              prevInventory={prevInventory}
+              goInventory={goInventory}
+              buyContainer={buyContainer}
               moneys={moneys}
               buyContainerUpgrade={buyContainerUpgrade}
               inventory={inventory}
@@ -309,15 +316,6 @@ export const Index = () => {
           </Box>
         </>
       </Box>
-      <button
-        onClick={() => {
-          setDebug((current) => !current);
-        }}
-      >
-        debug do not press
-      </button>
-      {debug && <div>{JSON.stringify(store)}</div>}
-      {debug && <div>{JSON.stringify(progress)}</div>}
     </DndProvider>
   );
 };
