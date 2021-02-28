@@ -29,7 +29,7 @@ export const Index = () => {
     moneys,
     moveSlot,
     pack,
-    purchasedUpgradeMap,
+    purchasedUpgrades,
     sell,
     loot,
     sort,
@@ -44,10 +44,12 @@ export const Index = () => {
   const {
     killProgress,
     packProgress,
-    sellItemProgress,
     sellProgress,
     sortProgress,
     travelProgress,
+    autoKillProgress,
+    autoPackProgress,
+    autoTravelProgress,
   } = useGameLoop({
     adventure,
     storeHeldItem,
@@ -61,7 +63,7 @@ export const Index = () => {
     availableItems,
     heldItem,
     pack,
-    purchasedUpgradeMap,
+    purchasedUpgrades,
     loot,
     sell,
   });
@@ -173,7 +175,7 @@ export const Index = () => {
               buyUpgrade={buyUpgrade}
               upgrades={availableUpgrades}
             />
-            {purchasedUpgradeMap.SORT.level ? (
+            {purchasedUpgrades.SORT.level ? (
               <button
                 css={css`
                   display: block;
@@ -194,8 +196,9 @@ export const Index = () => {
             paddingX={1}
             paddingY={1}
           >
-            {playerAction === "KILLING" && (
+            {!!killProgress && (
               <>
+                Killing something...
                 <Progress percent={killProgress} />
               </>
             )}

@@ -1,18 +1,15 @@
-import {
-  PlayerAction,
-  PlayerLocation,
-  PurchasedUpgrade,
-} from "@botnet/messages";
-import { Arrive, Inventory, Travel } from "@botnet/store";
-
-const TRAVEL_INTERVAL = 2000;
+import { PlayerAction, PlayerLocation } from "@botnet/messages";
+import { Arrive, Inventory, PurchasedUpgrade, Travel } from "@botnet/store";
 
 type AutoTravel = {
   lastTravel: number;
   setLastTravel: (value: number) => void;
+  lastAutoTravel: number;
+  setLastAutoTravel: (value: number) => void;
   arrive: Arrive;
   delta: number;
   playerAction: PlayerAction;
+  autoUpgrade: PurchasedUpgrade;
   upgrade: PurchasedUpgrade;
   inventory: Inventory;
   travel: Travel;
@@ -28,17 +25,20 @@ export const autoTravel = ({
   inventory,
   travel,
   playerLocation,
+  lastAutoTravel,
+  setLastAutoTravel,
+  autoUpgrade,
 }: AutoTravel) => {
   if (playerAction === "TRAVELLING") {
     setLastTravel(lastTravel + delta);
-    if (lastTravel > TRAVEL_INTERVAL) {
+    if (lastTravel > upgrade.time) {
       arrive();
       setLastTravel(0);
       return;
     }
   }
 
-  if (!upgrade.level) {
+  if (!autoUpgrade.level) {
     return;
   }
 
@@ -47,10 +47,20 @@ export const autoTravel = ({
     playerAction === "IDLE" &&
     inventory.slots.length === 0
   ) {
-    travel({ destination: "KILLING_FIELDS" });
+    setLastTravel(lastAutoTravel + delta);
+    if (lastAutoTravel > autoUpgrade.time) {
+      travel({ destination: "KILLING_FIELDS" });
+      setLastAutoTravel(0);
+      return;
+    }
   }
 
   if (playerLocation !== "TOWN" && playerAction === "IDLE" && inventory.full) {
-    travel({ destination: "TOWN" });
+    setLastTravel(lastAutoTravel + delta);
+    if (lastAutoTravel > autoUpgrade.time) {
+      travel({ destination: "TOWN" });
+      setLastAutoTravel(0);
+      return;
+    }
   }
 };

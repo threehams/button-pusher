@@ -4,3 +4,5 @@ export * from "./getTargetCoords";
 export * from "./useStore";
 export * from "./findAvailable";
 export * from "./AvailableUpgrade";
+export * from "./PurchasedUpgrade";
+export * from "./PurchasedUpgradeMap";

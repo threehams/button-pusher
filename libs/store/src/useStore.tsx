@@ -8,7 +8,7 @@ import {
   Item,
   PlayerLocation,
   PurchasedContainer,
-  PurchasedUpgrade,
+  PurchasedUpgradeState,
   UpgradeType,
 } from "@botnet/messages";
 import { useCallback, useMemo } from "react";
@@ -119,6 +119,18 @@ export const useStore = () => {
         level: 0,
         enabled: true,
       },
+      KILL: {
+        level: 0,
+        enabled: true,
+      },
+      SELL: {
+        level: 0,
+        enabled: true,
+      },
+      TRAVEL: {
+        level: 0,
+        enabled: true,
+      },
     },
     purchasedContainerMap: {
       [STARTING_CONTAINER.id]: STARTING_CONTAINER,
@@ -129,7 +141,17 @@ export const useStore = () => {
   }));
 
   const purchasedUpgrades = useMemo(() => {
-    return Object.fromEntries(Object.entries(state.purchasedUpgradeMap));
+    return Object.fromEntries(
+      Object.entries(state.purchasedUpgradeMap).map(([id, value]) => {
+        return [
+          id,
+          {
+            ...value,
+            time: 1000,
+          },
+        ];
+      }),
+    );
   }, [state.purchasedUpgradeMap]);
 
   const clearHistory = useCallback(() => {
@@ -489,7 +511,6 @@ export const useStore = () => {
     playerAction: state.playerAction,
     playerDestination: state.playerDestination,
     playerLocation: state.playerLocation,
-    purchasedUpgradeMap: state.purchasedUpgradeMap,
     storeHeldItem,
     sell,
     loot,
@@ -499,6 +520,7 @@ export const useStore = () => {
     arrive,
     adventure,
     sellItem,
+    purchasedUpgrades,
   };
 };
 
@@ -580,7 +602,7 @@ function recalculateGrid({
   });
 }
 
-const sortMethod = (upgrade: PurchasedUpgrade): SortMethod => {
+const sortMethod = (upgrade: PurchasedUpgradeState): SortMethod => {
   if (upgrade.level > 1) {
     return "vertical";
   }

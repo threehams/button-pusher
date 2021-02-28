@@ -1,19 +1,19 @@
+import { PlayerAction, PlayerLocation } from "@botnet/messages";
 import {
-  PlayerAction,
-  PlayerLocation,
+  Adventure,
+  Sell,
+  SellItem,
+  Inventory,
   PurchasedUpgrade,
-} from "@botnet/messages";
-import { Adventure, Sell, SellItem, Inventory } from "@botnet/store";
-
-const SELL_INTERVAL = 2000;
-const SELL_ITEM_INTERVAL = 1000;
+} from "@botnet/store";
 
 type AutoSell = {
   upgrade: PurchasedUpgrade;
+  autoUpgrade: PurchasedUpgrade;
+  lastAutoSell: number;
+  setLastAutoSell: (value: number) => void;
   lastSell: number;
   setLastSell: (value: number) => void;
-  lastSellItem: number;
-  setLastSellItem: (value: number) => void;
   sell: Sell;
   adventure: Adventure;
   sellItem: SellItem;
@@ -23,41 +23,41 @@ type AutoSell = {
   inventory: Inventory;
 };
 export const autoSell = ({
-  lastSell,
-  lastSellItem,
+  lastAutoSell: lastAutoSell,
+  lastSell: lastSell,
+  setLastAutoSell,
   setLastSell,
-  setLastSellItem,
   sell,
   sellItem,
   delta,
   upgrade,
+  autoUpgrade,
   playerAction,
   playerLocation,
   inventory,
 }: AutoSell) => {
-  if (!upgrade.level) {
-    return;
+  if (playerAction === "SELLING") {
+    setLastSell(lastSell + delta);
+    if (lastSell > upgrade.time) {
+      sellItem();
+      setLastSell(0);
+      return;
+    }
   }
   if (
+    autoUpgrade.level &&
     playerLocation === "TOWN" &&
     playerAction === "IDLE" &&
     inventory.slots.length
   ) {
-    setLastSell(lastSell + delta);
-    if (lastSell > SELL_INTERVAL) {
+    setLastAutoSell(lastAutoSell + delta);
+    if (lastAutoSell > autoUpgrade.time) {
       sell();
       return;
     }
   }
-  if (playerAction === "SELLING") {
-    setLastSellItem(lastSellItem + delta);
-    if (lastSellItem > SELL_ITEM_INTERVAL) {
-      sellItem();
-      setLastSellItem(0);
-      return;
-    }
-  }
   if (
+    autoUpgrade.level &&
     playerAction === "IDLE" &&
     playerLocation === "TOWN" &&
     inventory.slots.length

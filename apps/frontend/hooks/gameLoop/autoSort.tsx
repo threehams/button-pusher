@@ -1,10 +1,7 @@
-import { PurchasedUpgrade } from "@botnet/messages";
-import { Inventory, Sort } from "@botnet/store";
-
-const SORT_INTERVAL = 1000;
+import { Inventory, PurchasedUpgrade, Sort } from "@botnet/store";
 
 type AutoSort = {
-  upgrade: PurchasedUpgrade;
+  autoUpgrade: PurchasedUpgrade;
   inventory: Inventory;
   lastSort: number;
   setLastSort: (value: number) => void;
@@ -17,13 +14,13 @@ export const autoSort = ({
   setLastSort,
   sort,
   delta,
-  upgrade,
+  autoUpgrade,
 }: AutoSort) => {
-  if (!upgrade.level) {
+  if (!autoUpgrade.level) {
     return;
   }
   setLastSort(lastSort + delta);
-  if (lastSort > SORT_INTERVAL) {
+  if (lastSort > autoUpgrade.time) {
     sort({
       containerId: inventory.id,
     });

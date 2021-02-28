@@ -1,19 +1,11 @@
-import {
-  Item,
-  PlayerAction,
-  PlayerLocation,
-  PurchasedUpgrade,
-} from "@botnet/messages";
-import { Adventure, Loot } from "@botnet/store";
+import { Item, PlayerAction, PlayerLocation } from "@botnet/messages";
+import { Adventure, Loot, PurchasedUpgrade } from "@botnet/store";
 import { alea } from "seedrandom";
 
 const random = alea();
 const choice = <T extends unknown>(arr: T[]): T => {
   return arr[Math.floor(random() * arr.length)];
 };
-
-const KILL_INTERVAL = 1000;
-const AUTOKILL_INTERVAL = 1000;
 
 type Kill = {
   heldItem: Item | undefined;
@@ -26,6 +18,7 @@ type Kill = {
   delta: number;
   playerAction: PlayerAction;
   upgrade: PurchasedUpgrade;
+  autoUpgrade: PurchasedUpgrade;
   playerLocation: PlayerLocation;
   adventure: Adventure;
 };
@@ -42,6 +35,7 @@ export const kill = ({
   upgrade,
   adventure,
   playerLocation,
+  autoUpgrade,
 }: Kill) => {
   if (heldItem) {
     return;
@@ -49,15 +43,19 @@ export const kill = ({
 
   if (playerAction === "KILLING") {
     setLastKill(lastKill + delta);
-    if (lastKill > KILL_INTERVAL) {
+    if (lastKill > upgrade.time) {
       loot({ itemId: choice(availableItems).id });
       setLastKill(0);
     }
   }
 
-  if (upgrade.level && playerAction === "IDLE" && playerLocation !== "TOWN") {
+  if (
+    autoUpgrade.level &&
+    playerAction === "IDLE" &&
+    playerLocation !== "TOWN"
+  ) {
     setLastAutoKill(lastAutoKill + delta);
-    if (lastAutoKill > AUTOKILL_INTERVAL) {
+    if (lastAutoKill > autoUpgrade.time) {
       adventure();
       setLastAutoKill(0);
     }

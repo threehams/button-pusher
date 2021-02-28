@@ -1,11 +1,12 @@
-import { Item, PlayerAction, PurchasedUpgrade } from "@botnet/messages";
-import { Pack, StoreHeldItem } from "@botnet/store";
+import { Item, PlayerAction } from "@botnet/messages";
+import { Pack, PurchasedUpgrade, StoreHeldItem } from "@botnet/store";
 
-const PACK_INTERVAL = 500;
-const AUTOPACK_INTERVAL = 1000;
+// const PACK_INTERVAL = 500;
+// const AUTOPACK_INTERVAL = 1000;
 
 type AutoPack = {
   upgrade: PurchasedUpgrade;
+  autoUpgrade: PurchasedUpgrade;
   heldItem: Item | undefined;
   lastPack: number;
   setLastPack: (value: number) => void;
@@ -17,6 +18,7 @@ type AutoPack = {
   playerAction: PlayerAction;
 };
 export const autoPack = ({
+  autoUpgrade,
   upgrade,
   heldItem,
   lastPack,
@@ -30,15 +32,15 @@ export const autoPack = ({
 }: AutoPack) => {
   if (playerAction === "STORING" && heldItem) {
     setLastPack(lastPack + delta);
-    if (lastPack > PACK_INTERVAL) {
+    if (lastPack > upgrade.time) {
       storeHeldItem();
       setLastPack(0);
     }
   }
 
-  if (upgrade.level && heldItem && playerAction === "IDLE") {
+  if (autoUpgrade.level && heldItem && playerAction === "IDLE") {
     setLastAutoPack(lastAutoPack + delta);
-    if (lastAutoPack > AUTOPACK_INTERVAL) {
+    if (lastAutoPack > autoUpgrade.time) {
       pack();
       setLastPack(0);
     }

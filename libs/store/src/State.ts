@@ -4,7 +4,7 @@ import {
   PlayerLocation,
   PlayerAction,
   PurchasedContainerMap,
-  PurchasedUpgradeMap,
+  PurchasedUpgradeMapState,
   SlotMap,
   Upgrade,
 } from "@botnet/messages";
@@ -30,7 +30,7 @@ export const State = Record({
   slotMap: SlotMap,
   moneys: Number,
   upgradeMap: Dictionary(Upgrade),
-  purchasedUpgradeMap: PurchasedUpgradeMap,
+  purchasedUpgradeMap: PurchasedUpgradeMapState,
   playerAction: PlayerAction,
   playerDestination: Union(PlayerLocation, Undefined),
 });
