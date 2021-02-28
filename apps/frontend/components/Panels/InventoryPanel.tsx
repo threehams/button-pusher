@@ -19,14 +19,16 @@ type InventoryPanelProps = {
   addSlot: AddSlot;
   moveSlot: MoveSlot;
   buyContainerUpgrade: BuyContainerUpgrade;
+  moneys: number;
 };
 export const InventoryPanel = ({
   inventory,
   buyContainerUpgrade,
   addSlot,
   moveSlot,
+  moneys,
 }: InventoryPanelProps) => {
-  const { height, width, slots, nextUpgrade } = inventory;
+  const { height, width, slots, cost } = inventory;
   const [target, setTargetState] = useState<SlotInfo | undefined>();
 
   const setTarget = useCallback(
@@ -55,12 +57,12 @@ export const InventoryPanel = ({
   return (
     <div>
       <Button
-        disabled={!nextUpgrade}
+        disabled={!cost || cost > moneys}
         onClick={() => {
           buyContainerUpgrade({ id: inventory.id });
         }}
       >
-        Upgrade Bag: {nextUpgrade ? `$${nextUpgrade.cost}` : "MAX"}
+        Upgrade Bag: {cost ? `$${cost}` : "MAX"}
       </Button>
 
       <div

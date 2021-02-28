@@ -23,6 +23,7 @@ export const State = Record({
   playerLocation: PlayerLocation,
   messages: Array(String),
   heldItemId: Union(String, Undefined),
+  purchasedContainerIds: Array(String),
   purchasedContainerMap: PurchasedContainerMap,
   containerMap: ContainerMap,
   currentContainerId: String,
@@ -33,5 +34,6 @@ export const State = Record({
   purchasedUpgradeMap: PurchasedUpgradeMapState,
   playerAction: PlayerAction,
   playerDestination: Union(PlayerLocation, Undefined),
+  highestMoneys: Number,
 });
 export type State = Static<typeof State>;

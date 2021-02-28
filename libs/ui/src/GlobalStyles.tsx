@@ -73,7 +73,7 @@ export const GlobalStyles = () => {
             margin-top: 0;
             font-weight: inherit;
             font-size: inherit;
-            margin-bottom: 27px;
+            margin-bottom: 0;
           }
 
           p {

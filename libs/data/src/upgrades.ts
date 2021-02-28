@@ -1,166 +1,64 @@
-import { Upgrade } from "@botnet/messages";
+import { UpgradeMap } from "@botnet/messages";
 
-export const upgrades: Upgrade[] = [
-  {
-    name: "Kill things automatically",
-    id: "AUTOMATE_KILL",
-    levels: [
-      {
-        level: 1,
-        cost: 1,
-      },
-      {
-        level: 2,
-        cost: 1,
-      },
-      {
-        level: 3,
-        cost: 1,
-      },
-    ],
+export const upgrades: UpgradeMap = {
+  KILL: {
+    name: "Kill things faster",
+    baseCost: 100,
+    maxLevel: undefined,
   },
-  {
-    name: "Store stuff in inventory",
-    id: "PACK",
-    levels: [
-      {
-        level: 1,
-        cost: 1,
-      },
-      {
-        level: 2,
-        cost: 1,
-      },
-      {
-        level: 3,
-        cost: 1,
-      },
-    ],
-  },
-  {
-    name: "Autopack inventory",
-    id: "AUTOMATE_PACK",
-    levels: [
-      {
-        level: 1,
-        cost: 1,
-      },
-      {
-        level: 2,
-        cost: 1,
-      },
-      {
-        level: 3,
-        cost: 1,
-      },
-    ],
-  },
-  {
-    name: "Travel faster",
-    id: "TRAVEL",
-    levels: [
-      {
-        level: 1,
-        cost: 1,
-      },
-      {
-        level: 2,
-        cost: 1,
-      },
-      {
-        level: 3,
-        cost: 1,
-      },
-    ],
-  },
-  {
-    name: "Auto travel",
-    id: "AUTOMATE_TRAVEL",
-    levels: [
-      {
-        level: 1,
-        cost: 1,
-      },
-      {
-        level: 2,
-        cost: 1,
-      },
-      {
-        level: 3,
-        cost: 1,
-      },
-    ],
-  },
-  {
-    name: "Sort inventory",
-    id: "SORT",
-    levels: [
-      {
-        level: 1,
-        cost: 1,
-      },
-      {
-        level: 2,
-        cost: 1,
-      },
-      {
-        level: 3,
-        cost: 1,
-      },
-    ],
-  },
-  {
-    name: "Autosort inventory",
-    id: "AUTOMATE_SORT",
-    levels: [
-      {
-        level: 1,
-        cost: 1,
-      },
-      {
-        level: 2,
-        cost: 1,
-      },
-      {
-        level: 3,
-        cost: 1,
-      },
-    ],
-  },
-  {
+  SELL: {
     name: "Sell stuff faster",
-    id: "SELL",
-    levels: [
-      {
-        level: 1,
-        cost: 1,
-      },
-      {
-        level: 2,
-        cost: 1,
-      },
-      {
-        level: 3,
-        cost: 1,
-      },
-    ],
+    baseCost: 500,
+    maxLevel: undefined,
   },
-  {
+  AUTOMATE_KILL: {
+    name: "Kill things automatically",
+    baseCost: 1000,
+    maxLevel: undefined,
+  },
+  PACK: {
+    name: "Store stuff in inventory",
+    baseCost: 2000,
+    maxLevel: undefined,
+  },
+  SORT: {
+    name: "Sort inventory",
+    baseCost: 5000,
+    maxLevel: undefined,
+  },
+  TRAVEL: {
+    name: "Travel faster",
+    baseCost: 5000,
+    maxLevel: undefined,
+  },
+  AUTOMATE_PACK: {
+    name: "Autopack inventory",
+    baseCost: 10000,
+    maxLevel: undefined,
+  },
+  AUTOMATE_TRAVEL: {
+    name: "Auto travel",
+    baseCost: 20000,
+    maxLevel: undefined,
+  },
+  AUTOMATE_SORT: {
+    name: "Autosort inventory",
+    baseCost: 100,
+    maxLevel: undefined,
+  },
+  AUTOMATE_SELL: {
     name: "Autosell when inventory is full",
-    id: "AUTOMATE_SELL",
-    levels: [
-      {
-        level: 1,
-        cost: 1,
-      },
-      {
-        level: 2,
-        cost: 1,
-      },
-      {
-        level: 3,
-        cost: 1,
-      },
-    ],
+    baseCost: 100,
+    maxLevel: undefined,
   },
-];
+  APPRAISE: {
+    name: "Appraise inventory value",
+    baseCost: 100,
+    maxLevel: undefined,
+  },
+  AUTOMATE_APPRAISE: {
+    name: "Automatically appraise inventory value",
+    baseCost: 100,
+    maxLevel: undefined,
+  },
+};

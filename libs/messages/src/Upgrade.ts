@@ -1,11 +1,11 @@
 import {
-  Array,
   Record,
   Union,
   Literal,
   String,
   Number,
   Static,
+  Undefined,
 } from "runtypes";
 
 export const UpgradeType = Union(
@@ -25,13 +25,10 @@ export const UpgradeType = Union(
 export type UpgradeType = Static<typeof UpgradeType>;
 
 export const Upgrade = Record({
-  id: UpgradeType,
   name: String,
-  levels: Array(
-    Record({
-      cost: Number,
-      level: Number,
-    }),
-  ),
+  baseCost: Number,
+  // costScaling: Number,
+  // softCap: Number,
+  maxLevel: Union(Number, Undefined),
 });
 export type Upgrade = Static<typeof Upgrade>;

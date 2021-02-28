@@ -49,6 +49,7 @@ export const InventoryItem = React.memo(
         src={item.image}
         alt={item.name}
         css={css`
+          cursor: pointer;
           filter: Chroma(Color = #000000) Glow(Color=#00FF00, Strength=20);
           width: ${item.width * theme.tileSize}px;
           height: ${item.height * theme.tileSize}px;

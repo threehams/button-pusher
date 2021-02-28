@@ -3,7 +3,6 @@ import {
   upgrades as upgradesData,
   containers as containersData,
 } from "@botnet/data";
-import { isNonNullable } from "@botnet/utils";
 import {
   Item,
   PlayerLocation,
@@ -11,13 +10,14 @@ import {
   PurchasedUpgradeState,
   UpgradeType,
 } from "@botnet/messages";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useImmer } from "use-immer";
 import { v4 as uuid } from "uuid";
 import { State } from "./State";
 import { Inventory } from "./Inventory";
 import { range } from "lodash";
 import { getTargetCoords } from "./getTargetCoords";
+import { PurchasedUpgradeMap } from "./PurchasedUpgradeMap";
 
 type FullSlot = {
   id: string;
@@ -29,9 +29,11 @@ type FullSlot = {
 
 const STARTING_CONTAINER: PurchasedContainer = {
   id: containersData[0].id,
-  level: containersData[0].levels[0].level,
-  width: containersData[0].levels[0].width,
-  height: containersData[0].levels[0].height,
+  level: 0,
+  width: containersData[0].baseWidth,
+  height: containersData[0].baseHeight,
+  maxWidth: containersData[0].maxWidth,
+  maxHeight: containersData[0].maxHeight,
   slotIds: [],
 };
 
@@ -48,7 +50,7 @@ export type AddSlot = (options: {
   y: number;
   containerId: string;
 }) => void;
-export type BuyUpgrade = (options: { id: UpgradeType; level: number }) => void;
+export type BuyUpgrade = (options: { id: UpgradeType }) => void;
 export type BuyContainerUpgrade = (options: { id: string }) => void;
 export type Pack = () => void;
 export type StoreHeldItem = () => void;
@@ -78,10 +80,8 @@ export const useStore = () => {
     itemMap: Object.fromEntries(itemsData.map((item) => [item.id, item])),
     slotMap: {},
     heldItemId: undefined,
-    moneys: 1000,
-    upgradeMap: Object.fromEntries(
-      upgradesData.map((upgrade) => [upgrade.id, upgrade]),
-    ),
+    moneys: 0,
+    upgradeMap: upgradesData,
     purchasedUpgradeMap: {
       AUTOMATE_PACK: {
         level: 0,
@@ -100,7 +100,7 @@ export const useStore = () => {
         enabled: true,
       },
       SORT: {
-        level: 1,
+        level: 0,
         enabled: true,
       },
       PACK: {
@@ -120,39 +120,45 @@ export const useStore = () => {
         enabled: true,
       },
       KILL: {
-        level: 1,
+        level: 0,
         enabled: true,
       },
       SELL: {
-        level: 1,
+        level: 0,
         enabled: true,
       },
       TRAVEL: {
-        level: 1,
+        level: 0,
         enabled: true,
       },
     },
+    purchasedContainerIds: [STARTING_CONTAINER.id],
     purchasedContainerMap: {
       [STARTING_CONTAINER.id]: STARTING_CONTAINER,
     },
     playerAction: "IDLE",
     playerLocation: "TOWN",
     playerDestination: undefined,
+    highestMoneys: 0,
   }));
 
-  const purchasedUpgrades = useMemo(() => {
-    return Object.fromEntries(
-      Object.entries(state.purchasedUpgradeMap).map(([id, upgrade]) => {
-        return [
-          id,
-          {
-            ...upgrade,
-            time: 2000 * (1 / upgrade.level),
-          },
-        ];
-      }),
+  const purchasedUpgrades: PurchasedUpgradeMap = useMemo(() => {
+    return Object.entries(state.purchasedUpgradeMap).reduce(
+      (result, [id, purchasedUpgrade]) => {
+        const upgradeType = id as UpgradeType;
+        const upgrade = state.upgradeMap[id];
+        result[upgradeType] = {
+          ...purchasedUpgrade,
+          id: upgradeType,
+          name: upgrade.name,
+          time: 2000 * (1 / (purchasedUpgrade.level + 1)),
+          cost: upgrade.baseCost * (purchasedUpgrade.level + 1) ** 2,
+        };
+        return result;
+      },
+      {} as PurchasedUpgradeMap,
     );
-  }, [state.purchasedUpgradeMap]);
+  }, [state.purchasedUpgradeMap, state.upgradeMap]);
 
   const clearHistory = useCallback(() => {
     setState((draft) => {
@@ -169,6 +175,13 @@ export const useStore = () => {
     },
     [setState],
   );
+
+  const currentCapacity = useMemo(() => {
+    return state.purchasedContainerIds.reduce((sum, id) => {
+      const { width, height } = state.purchasedContainerMap[id];
+      return sum + width * height;
+    }, 0);
+  }, [state.purchasedContainerIds, state.purchasedContainerMap]);
 
   const getInventory = useCallback(
     (containerId: string): Inventory => {
@@ -189,8 +202,7 @@ export const useStore = () => {
         grid,
       });
 
-      const nextUpgrade =
-        state.containerMap[containerId].levels[container.level];
+      const { cost } = getNextLevel(container, currentCapacity);
 
       let full = false;
       if (state.heldItemId) {
@@ -214,12 +226,12 @@ export const useStore = () => {
         ...container,
         slots,
         grid,
-        nextUpgrade,
+        cost,
         full,
       };
     },
     [
-      state.containerMap,
+      currentCapacity,
       state.heldItemId,
       state.itemMap,
       state.purchasedContainerMap,
@@ -332,7 +344,8 @@ export const useStore = () => {
     }
     const heldItem = state.itemMap[state.heldItemId];
     const { width, height } = heldItem;
-    for (const container of Object.values(state.purchasedContainerMap)) {
+    for (const containerId of state.purchasedContainerIds) {
+      const container = state.purchasedContainerMap[containerId];
       const containerInv = getInventory(container.id);
       const target = findSlot({
         containerInv,
@@ -351,8 +364,10 @@ export const useStore = () => {
     setState,
     state.heldItemId,
     state.itemMap,
+    state.purchasedContainerIds,
     state.purchasedContainerMap,
   ]);
+
   const pack: Pack = useCallback(() => {
     setState((draft) => {
       draft.playerAction = "STORING";
@@ -431,59 +446,34 @@ export const useStore = () => {
   }, [setState]);
 
   const buyUpgrade: BuyUpgrade = useCallback(
-    ({ id, level: levelNumber }) => {
+    ({ id }) => {
       setState((draft) => {
-        const upgradeToBuy = draft.upgradeMap[id];
-        const level = upgradeToBuy.levels.find(
-          (item) => item.level === levelNumber,
-        )!;
-        if (draft.moneys >= level.cost) {
-          draft.moneys = draft.moneys - level.cost;
-          draft.purchasedUpgradeMap[id].level = level.level;
+        const upgrade = purchasedUpgrades[id];
+        if (draft.moneys >= upgrade.cost) {
+          draft.moneys = draft.moneys - upgrade.cost;
+          draft.purchasedUpgradeMap[id].level += 1;
         }
       });
     },
-    [setState],
+    [purchasedUpgrades, setState],
   );
 
   const buyContainerUpgrade: BuyContainerUpgrade = useCallback(
     ({ id }) => {
       setState((draft) => {
         const current = draft.purchasedContainerMap[id];
-        const next = draft.containerMap[id].levels.find(
-          (level) => level.level === current.level + 1,
-        );
-        if (next && draft.moneys >= next.cost) {
-          draft.moneys = draft.moneys - next.cost;
-          draft.purchasedContainerMap[id].level = next.level;
+        const next = getNextLevel(current, currentCapacity);
+        const cost = 100;
+        if (cost && draft.moneys >= cost) {
+          draft.moneys = draft.moneys - cost;
+          draft.purchasedContainerMap[id].level += 1;
           draft.purchasedContainerMap[id].width = next.width;
           draft.purchasedContainerMap[id].height = next.height;
         }
       });
     },
-    [setState],
+    [currentCapacity, setState],
   );
-
-  const availableUpgrades = useMemo(() => {
-    return Object.values(state.upgradeMap)
-      .map((available) => {
-        const currentLevel = state.purchasedUpgradeMap[available.id].level;
-        const nextLevel = available.levels.find(
-          (level) => level.level === currentLevel + 1,
-        );
-        if (!nextLevel) {
-          return undefined;
-        }
-        return {
-          name: available.name,
-          id: available.id,
-          level: nextLevel.level,
-          cost: nextLevel.cost,
-          canAfford: state.moneys >= nextLevel.cost,
-        };
-      })
-      .filter(isNonNullable);
-  }, [state.moneys, state.purchasedUpgradeMap, state.upgradeMap]);
 
   const heldItem = useMemo(() => {
     if (!state.heldItemId) {
@@ -496,10 +486,15 @@ export const useStore = () => {
     return Object.values(state.itemMap);
   }, [state.itemMap]);
 
+  useEffect(() => {
+    setState((draft) => {
+      draft.highestMoneys = Math.max(draft.highestMoneys, draft.moneys);
+    });
+  }, [setState, state.moneys]);
+
   return {
     addSlot,
     availableItems,
-    availableUpgrades,
     buyContainerUpgrade,
     buyUpgrade,
     clearHistory,
@@ -522,6 +517,7 @@ export const useStore = () => {
     adventure,
     sellItem,
     purchasedUpgrades,
+    highestMoneys: state.highestMoneys,
   };
 };
 
@@ -587,6 +583,7 @@ const findSlot = ({
     }
   }
 };
+
 function recalculateGrid({
   slots,
   grid,
@@ -610,33 +607,40 @@ const sortMethod = (upgrade: PurchasedUpgradeState): SortMethod => {
   return "horizontal";
 };
 
-type ValueOf<T> = T[keyof T];
-type UnionToIntersection<T> = (T extends T ? (p: T) => void : never) extends (
-  p: infer U,
-) => void
-  ? U
-  : never;
-type FromEntries<T extends readonly [PropertyKey, any]> = T extends T
-  ? Record<T[0], T[1]>
-  : never;
-type Flatten<T> = {} & {
-  [P in keyof T]: T[P];
-};
-
-declare global {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
-  interface ObjectConstructor {
-    // keys: <T>(o: T) => Array<Extract<keyof T, string>>;
-    keys<T>(o: T): Array<Extract<keyof T, string>>;
-    entries<T extends { [key: string]: unknown }, K extends keyof T>(
-      o: T,
-    ): Array<[Extract<keyof T, string>, T[K]]>;
-    values<T extends { [key: string]: any }>(o: T): ValueOf<T>[];
-    fromEntries<
-      V extends PropertyKey,
-      T extends [readonly [V, any]] | Array<readonly [V, any]>
-    >(
-      entries: T,
-    ): Flatten<UnionToIntersection<FromEntries<T[number]>>>;
+const getNextLevel = (
+  container: PurchasedContainer,
+  currentCapacity: number,
+) => {
+  const { width, height, maxWidth, maxHeight } = container;
+  let diff;
+  let newWidth;
+  let newHeight;
+  if (width >= maxWidth && height >= maxHeight) {
+    diff = 0;
+    newWidth = width;
+    newHeight = height;
+  } else if (width >= maxWidth) {
+    diff = width;
+    newWidth = width;
+    newHeight = height + 1;
+  } else if (width >= maxWidth) {
+    diff = height;
+    newWidth = width + 1;
+    newHeight = height;
+  } else if (width <= height) {
+    diff = height;
+    newWidth = width + 1;
+    newHeight = height;
+  } else {
+    diff = width;
+    newWidth = width;
+    newHeight = height + 1;
   }
-}
+
+  return {
+    width: newWidth,
+    height: newHeight,
+    // scale this better
+    cost: 50 * (currentCapacity + diff),
+  };
+};

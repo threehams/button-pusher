@@ -4,7 +4,9 @@ export const PurchasedContainer = Record({
   id: String,
   level: Number,
   width: Number,
+  maxWidth: Number,
   height: Number,
+  maxHeight: Number,
   slotIds: Array(String),
 });
 export type PurchasedContainer = Static<typeof PurchasedContainer>;

@@ -22,7 +22,6 @@ export const Index = () => {
     storeHeldItem,
     addSlot,
     availableItems,
-    availableUpgrades,
     buyContainerUpgrade,
     buyUpgrade,
     heldItem,
@@ -41,6 +40,7 @@ export const Index = () => {
     playerDestination,
     sellItem,
     travel,
+    highestMoneys,
   } = store;
   const progress = useGameLoop({
     adventure,
@@ -159,6 +159,7 @@ export const Index = () => {
             `}
           >
             <InventoryPanel
+              moneys={moneys}
               buyContainerUpgrade={buyContainerUpgrade}
               inventory={inventory}
               addSlot={addSlot}
@@ -180,6 +181,7 @@ export const Index = () => {
           </Box>
           <Box
             css={css`
+              padding-top: 20px;
               grid-area: upgrades;
             `}
           >
@@ -192,31 +194,19 @@ export const Index = () => {
               <div
                 css={css`
                   width: 50%;
+                  padding-right: 20px;
                   & > * {
                     margin-bottom: 10px;
                   }
                 `}
               >
-                <h1>Actions</h1>
-                <Progress
-                  button
-                  disabled={playerAction === "TRAVELLING"}
-                  percent={travelProgress}
+                <h1
                   css={css`
-                    display: block;
+                    margin-bottom: 20px;
                   `}
-                  onClick={() => {
-                    travel({
-                      destination:
-                        playerLocation === "TOWN" ? "KILLING_FIELDS" : "TOWN",
-                    });
-                  }}
                 >
-                  Travel to{" "}
-                  {playerLocation === "KILLING_FIELDS"
-                    ? "Town"
-                    : "the Killing Fields"}
-                </Progress>
+                  Actions
+                </h1>
                 <Progress
                   button
                   percent={killProgress}
@@ -234,7 +224,7 @@ export const Index = () => {
                     adventure();
                   }}
                 >
-                  Kill something
+                  Kill something {playerLocation === "TOWN" && "(not in town)"}
                 </Progress>
                 <Progress
                   button
@@ -253,7 +243,26 @@ export const Index = () => {
                     sell();
                   }}
                 >
-                  Sell Item
+                  Sell something {playerLocation !== "TOWN" && "(only in town)"}
+                </Progress>
+                <Progress
+                  button
+                  disabled={playerAction === "TRAVELLING"}
+                  percent={travelProgress}
+                  css={css`
+                    display: block;
+                  `}
+                  onClick={() => {
+                    travel({
+                      destination:
+                        playerLocation === "TOWN" ? "KILLING_FIELDS" : "TOWN",
+                    });
+                  }}
+                >
+                  Travel to{" "}
+                  {playerLocation === "KILLING_FIELDS"
+                    ? "Town"
+                    : "the Killing Fields"}
                 </Progress>
                 {!!purchasedUpgrades.PACK.level && (
                   <Progress
@@ -289,10 +298,11 @@ export const Index = () => {
                   width: 50%;
                 `}
               >
-                <h1>Upgrades</h1>
                 <UpgradePanel
+                  moneys={moneys}
+                  highestMoneys={highestMoneys}
                   buyUpgrade={buyUpgrade}
-                  upgrades={availableUpgrades}
+                  upgrades={purchasedUpgrades}
                 />
               </div>
             </div>

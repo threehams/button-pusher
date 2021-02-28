@@ -16,7 +16,11 @@ export const Button = ({
   return (
     <button
       disabled={disabled}
-      onClick={onClick}
+      onClick={(event) => {
+        if (!disabled) {
+          onClick?.(event);
+        }
+      }}
       css={css`
         outline: 1px solid #f8f8f8;
         position: relative;

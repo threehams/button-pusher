@@ -12,3 +12,4 @@ export * from "./PurchasedUpgradeMapState";
 export * from "./Slot";
 export * from "./SlotMap";
 export * from "./Upgrade";
+export * from "./UpgradeMap";
