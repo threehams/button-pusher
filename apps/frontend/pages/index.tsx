@@ -73,7 +73,7 @@ export const Index = () => {
           display: grid;
           grid-template-areas: "sidebar main";
           grid-template-columns: 75% 25%;
-          align-items: center;
+          align-items: flex-start;
           justify-content: center;
           min-height: 100vh;
         `}
@@ -82,6 +82,7 @@ export const Index = () => {
           <CustomDragLayer />
           <Box
             css={css`
+              width: 100%;
               grid-area: sidebar;
               justify-self: flex-end;
             `}
@@ -188,6 +189,7 @@ export const Index = () => {
           <Box
             css={css`
               grid-area: main;
+              width: 100%;
             `}
             paddingX={1}
             paddingY={1}

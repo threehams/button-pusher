@@ -298,6 +298,9 @@ export const useStore = () => {
   );
 
   const storeHeldItem: StoreHeldItem = useCallback(() => {
+    setState((draft) => {
+      draft.playerAction = "IDLE";
+    });
     if (!state.heldItemId) {
       return;
     }
@@ -319,6 +322,7 @@ export const useStore = () => {
   }, [
     addSlot,
     getInventory,
+    setState,
     state.heldItemId,
     state.itemMap,
     state.purchasedContainerMap,
