@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 
 // don't need 60fps updates yet
-const INTERVAL = 100;
+const INTERVAL = 16;
 
 export const useLoop = (callback: (delta: number) => void) => {
   const previous = useRef<number | undefined>();

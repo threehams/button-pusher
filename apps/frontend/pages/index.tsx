@@ -6,6 +6,7 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { HeldItemPanel, InventoryPanel, UpgradePanel } from "../components";
 import { CustomDragLayer } from "../components/DragLayer";
+import { Progress } from "../components/Progress";
 import { useGameLoop } from "../hooks/gameLoop";
 
 const fullQuotes = [
@@ -17,6 +18,7 @@ const fullQuotes = [
 
 export const Index = () => {
   const {
+    storeHeldItem,
     addSlot,
     availableItems,
     availableUpgrades,
@@ -29,18 +31,38 @@ export const Index = () => {
     pack,
     purchasedUpgradeMap,
     sell,
-    setHeldItem,
+    loot,
     sort,
+    adventure,
+    arrive,
+    playerAction,
+    playerLocation,
+    playerDestination,
+    sellItem,
+    travel,
   } = useStore();
-  useGameLoop({
-    full: inventory.full,
-    containerId: inventory.id,
+  const {
+    killProgress,
+    packProgress,
+    sellItemProgress,
+    sellProgress,
+    sortProgress,
+    travelProgress,
+  } = useGameLoop({
+    adventure,
+    storeHeldItem,
+    arrive,
+    playerAction,
+    playerLocation,
+    sellItem,
+    travel,
+    inventory,
     sort,
     availableItems,
     heldItem,
     pack,
     purchasedUpgradeMap,
-    setHeldItem,
+    loot,
     sell,
   });
 
@@ -66,23 +88,86 @@ export const Index = () => {
             paddingLeft={2}
             paddingTop={1}
           >
-            <p>Moneys: {moneys.toFixed(2)}</p>
+            <div>Moneys: ${Math.floor(moneys)}</div>
+            {playerAction !== "TRAVELLING" && (
+              <div>Location: {playerLocation}</div>
+            )}
+            {playerAction === "TRAVELLING" && (
+              <div>
+                Travelling to: {playerDestination}
+                <Progress percent={travelProgress} />
+              </div>
+            )}
             <InventoryPanel
               buyContainerUpgrade={buyContainerUpgrade}
               inventory={inventory}
               addSlot={addSlot}
               moveSlot={moveSlot}
             />
-            <button
-              css={css`
-                display: block;
-              `}
-              onClick={() => {
-                sell();
-              }}
-            >
-              Sell All
-            </button>
+            {playerLocation !== "TOWN" && playerAction !== "TRAVELLING" && (
+              <button
+                css={css`
+                  display: block;
+                `}
+                onClick={() => {
+                  travel({ destination: "TOWN" });
+                }}
+              >
+                Travel to Town
+              </button>
+            )}
+            {playerLocation === "TOWN" && playerAction !== "TRAVELLING" && (
+              <button
+                css={css`
+                  display: block;
+                `}
+                onClick={() => {
+                  travel({ destination: "KILLING_FIELDS" });
+                }}
+              >
+                Travel to the Killing Fields
+              </button>
+            )}
+            {playerLocation === "TOWN" &&
+              playerAction !== "TRAVELLING" &&
+              !!inventory.slots.length && (
+                <button
+                  css={css`
+                    display: block;
+                  `}
+                  onClick={() => {
+                    sellItem();
+                  }}
+                >
+                  Sell Item
+                </button>
+              )}
+            {playerLocation === "KILLING_FIELDS" &&
+              playerAction === "IDLE" &&
+              !heldItem && (
+                <button
+                  css={css`
+                    display: block;
+                  `}
+                  onClick={() => {
+                    adventure();
+                  }}
+                >
+                  Kill something
+                </button>
+              )}
+            {heldItem && playerAction === "IDLE" && !inventory.full && (
+              <button
+                css={css`
+                  display: block;
+                `}
+                onClick={() => {
+                  pack();
+                }}
+              >
+                Store item
+              </button>
+            )}
             <UpgradePanel
               buyUpgrade={buyUpgrade}
               upgrades={availableUpgrades}
@@ -107,12 +192,17 @@ export const Index = () => {
             paddingX={1}
             paddingY={1}
           >
+            {playerAction === "KILLING" && (
+              <>
+                <Progress percent={killProgress} />
+              </>
+            )}
             <HeldItemPanel
               addSlot={addSlot}
               moveSlot={moveSlot}
               item={heldItem}
             />
-            {heldItem && <p>{fullQuotes[1]}</p>}
+            {heldItem && <div>{fullQuotes[1]}</div>}
           </Box>
         </>
       </Box>

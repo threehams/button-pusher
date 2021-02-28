@@ -1,18 +1,20 @@
 import { PurchasedUpgrade } from "@botnet/messages";
-import { Sort } from "@botnet/store";
+import { Inventory, Sort } from "@botnet/store";
 
 const SORT_INTERVAL = 1000;
 
 type AutoSort = {
   upgrade: PurchasedUpgrade;
-  containerId: string;
-  lastSort: React.MutableRefObject<number>;
+  inventory: Inventory;
+  lastSort: number;
+  setLastSort: (value: number) => void;
   sort: Sort;
   delta: number;
 };
 export const autoSort = ({
-  containerId,
+  inventory,
   lastSort,
+  setLastSort,
   sort,
   delta,
   upgrade,
@@ -20,11 +22,11 @@ export const autoSort = ({
   if (!upgrade.level) {
     return;
   }
-  lastSort.current = lastSort.current + delta;
-  if (lastSort.current > SORT_INTERVAL) {
+  setLastSort(lastSort + delta);
+  if (lastSort > SORT_INTERVAL) {
     sort({
-      containerId,
+      containerId: inventory.id,
     });
-    lastSort.current = 0;
+    setLastSort(0);
   }
 };

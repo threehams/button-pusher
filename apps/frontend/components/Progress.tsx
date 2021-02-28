@@ -4,5 +4,5 @@ type ProgressProps = {
   percent: number;
 };
 export const Progress = ({ percent }: ProgressProps) => {
-  return <div>{percent}%</div>;
+  return <div>{Math.floor(percent)}%</div>;
 };

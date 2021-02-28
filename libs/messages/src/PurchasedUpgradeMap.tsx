@@ -7,6 +7,8 @@ export const PurchasedUpgradeMap = Record({
   AUTOMATE_PACK: PurchasedUpgrade,
   AUTOMATE_SELL: PurchasedUpgrade,
   AUTOMATE_SORT: PurchasedUpgrade,
+  AUTOMATE_TRAVEL: PurchasedUpgrade,
+  AUTOMATE_KILL: PurchasedUpgrade,
   SORT: PurchasedUpgrade,
   PACK: PurchasedUpgrade,
 });

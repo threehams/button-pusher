@@ -6,6 +6,7 @@ import {
 import { isNonNullable } from "@botnet/utils";
 import {
   Item,
+  PlayerLocation,
   PurchasedContainer,
   PurchasedUpgrade,
   UpgradeType,
@@ -34,7 +35,7 @@ const STARTING_CONTAINER: PurchasedContainer = {
   slotIds: [],
 };
 
-export type SetHeldItem = (itemId: string) => void;
+export type Loot = (options: { itemId: string }) => void;
 export type MoveSlot = (options: {
   slotId: string;
   x: number;
@@ -49,9 +50,14 @@ export type AddSlot = (options: {
 }) => void;
 export type BuyUpgrade = (options: { id: UpgradeType; level: number }) => void;
 export type BuyContainerUpgrade = (options: { id: string }) => void;
-export type Pack = (options: { itemId: string }) => void;
+export type Pack = () => void;
+export type StoreHeldItem = () => void;
 export type Sort = (options: { containerId: string }) => void;
 export type Sell = () => void;
+export type Travel = (options: { destination: PlayerLocation }) => void;
+export type Adventure = () => void;
+export type SellItem = () => void;
+export type Arrive = () => void;
 type SortMethod = "horizontal" | "vertical";
 
 /**
@@ -72,37 +78,54 @@ export const useStore = () => {
     itemMap: Object.fromEntries(itemsData.map((item) => [item.id, item])),
     slotMap: {},
     heldItemId: undefined,
-    moneys: 0,
+    moneys: 1000,
     upgradeMap: Object.fromEntries(
       upgradesData.map((upgrade) => [upgrade.id, upgrade]),
     ),
     purchasedUpgradeMap: {
       AUTOMATE_PACK: {
         level: 0,
+        enabled: true,
       },
       AUTOMATE_SELL: {
         level: 0,
+        enabled: true,
+      },
+      AUTOMATE_TRAVEL: {
+        level: 0,
+        enabled: true,
       },
       AUTOMATE_SORT: {
         level: 0,
+        enabled: true,
       },
       SORT: {
         level: 0,
+        enabled: true,
       },
       PACK: {
         level: 0,
+        enabled: true,
       },
       APPRAISE: {
         level: 0,
+        enabled: true,
+      },
+      AUTOMATE_KILL: {
+        level: 0,
+        enabled: true,
       },
       AUTOMATE_APPRAISE: {
         level: 0,
+        enabled: true,
       },
     },
     purchasedContainerMap: {
       [STARTING_CONTAINER.id]: STARTING_CONTAINER,
     },
-    selling: false,
+    playerAction: "IDLE",
+    playerLocation: "TOWN",
+    playerDestination: undefined,
   }));
 
   const clearHistory = useCallback(() => {
@@ -111,10 +134,11 @@ export const useStore = () => {
     });
   }, [setState]);
 
-  const setHeldItem: SetHeldItem = useCallback(
-    (itemId) => {
+  const loot: Loot = useCallback(
+    ({ itemId }) => {
       setState((draft) => {
         draft.heldItemId = itemId;
+        draft.playerAction = "IDLE";
       });
     },
     [setState],
@@ -182,19 +206,16 @@ export const useStore = () => {
     return getInventory(state.currentContainerId);
   }, [getInventory, state.currentContainerId]);
 
-  const allItems = useMemo(() => {
-    return Object.values(state.purchasedContainerMap).flatMap((container) => {
-      return container.slotIds.map((slotId) => {
-        return state.itemMap[state.slotMap[slotId].itemId];
-      });
-    });
-  }, [state.itemMap, state.purchasedContainerMap, state.slotMap]);
+  // const allItems = useMemo(() => {
+  //   return Object.values(state.purchasedContainerMap).flatMap((container) => {
+  //     return container.slotIds.map((slotId) => {
+  //       return state.itemMap[state.slotMap[slotId].itemId];
+  //     });
+  //   });
+  // }, [state.itemMap, state.purchasedContainerMap, state.slotMap]);
 
   const addSlot: AddSlot = useCallback(
     ({ itemId, x, y, containerId }) => {
-      if (state.selling) {
-        return;
-      }
       const slot = {
         id: uuid(),
         x,
@@ -210,14 +231,11 @@ export const useStore = () => {
         draft.heldItemId = undefined;
       });
     },
-    [setState, state.selling],
+    [setState],
   );
 
   const sort: Sort = useCallback(
     ({ containerId }) => {
-      if (state.selling) {
-        return;
-      }
       const upgrade = state.purchasedUpgradeMap.SORT;
       const method = upgrade.level > 1 ? "vertical" : "horizontal";
       const container = state.purchasedContainerMap[containerId];
@@ -275,45 +293,44 @@ export const useStore = () => {
       state.itemMap,
       state.purchasedContainerMap,
       state.purchasedUpgradeMap.SORT,
-      state.selling,
       state.slotMap,
     ],
   );
 
-  const pack: Pack = useCallback(
-    ({ itemId }) => {
-      if (state.selling) {
-        return;
+  const storeHeldItem: StoreHeldItem = useCallback(() => {
+    if (!state.heldItemId) {
+      return;
+    }
+    const heldItem = state.itemMap[state.heldItemId];
+    const { width, height } = heldItem;
+    for (const container of Object.values(state.purchasedContainerMap)) {
+      const containerInv = getInventory(container.id);
+      const target = findSlot({
+        containerInv,
+        height,
+        width,
+        method: "horizontal",
+      });
+      if (target) {
+        const { x, y } = target;
+        addSlot({ containerId: container.id, itemId: state.heldItemId, x, y });
       }
-      const { width, height } = state.itemMap[itemId];
-      for (const container of Object.values(state.purchasedContainerMap)) {
-        const containerInv = getInventory(container.id);
-        const target = findSlot({
-          containerInv,
-          height,
-          width,
-          method: "horizontal",
-        });
-        if (target) {
-          const { x, y } = target;
-          addSlot({ containerId: container.id, itemId, x, y });
-        }
-      }
-    },
-    [
-      addSlot,
-      getInventory,
-      state.itemMap,
-      state.purchasedContainerMap,
-      state.selling,
-    ],
-  );
+    }
+  }, [
+    addSlot,
+    getInventory,
+    state.heldItemId,
+    state.itemMap,
+    state.purchasedContainerMap,
+  ]);
+  const pack: Pack = useCallback(() => {
+    setState((draft) => {
+      draft.playerAction = "STORING";
+    });
+  }, [setState]);
 
   const moveSlot: MoveSlot = useCallback(
     ({ slotId, x, y, containerId }) => {
-      if (state.selling) {
-        return;
-      }
       setState((draft) => {
         const slot = draft.slotMap[slotId];
         const currentContainerId = slot.containerId;
@@ -329,21 +346,58 @@ export const useStore = () => {
         slot.y = y;
       });
     },
-    [setState, state.selling],
+    [setState],
   );
 
   const sell: Sell = useCallback(() => {
-    const multiplier = Math.max(1, Math.sqrt(allItems.length));
     setState((draft) => {
-      draft.moneys =
-        draft.moneys +
-        allItems.reduce((sum, item) => sum + item.value * multiplier, 0);
-      Object.values(draft.purchasedContainerMap).forEach((container) => {
-        container.slotIds = [];
-      });
-      draft.slotMap = {};
+      draft.playerLocation = "TOWN";
+      draft.playerAction = "SELLING";
     });
-  }, [allItems, setState]);
+  }, [setState]);
+
+  const travel: Travel = useCallback(
+    ({ destination }) => {
+      setState((draft) => {
+        draft.playerAction = "TRAVELLING";
+        draft.playerDestination = destination;
+      });
+    },
+    [setState],
+  );
+
+  const arrive: Arrive = useCallback(() => {
+    setState((draft) => {
+      if (draft.playerDestination) {
+        draft.playerLocation = draft.playerDestination;
+        draft.playerAction = "IDLE";
+      } else {
+        throw new Error("somehow ended up arriving without a destination");
+      }
+    });
+  }, [setState]);
+
+  const adventure: Adventure = useCallback(() => {
+    setState((draft) => {
+      draft.playerAction = "KILLING";
+    });
+  }, [setState]);
+
+  const sellItem: SellItem = useCallback(() => {
+    setState((draft) => {
+      const container = Object.values(draft.purchasedContainerMap).filter(
+        (cont) => cont.slotIds.length,
+      )[0];
+      if (!container) {
+        draft.playerAction = "IDLE";
+        return;
+      }
+      const slotId = container.slotIds[0];
+      draft.moneys += draft.itemMap[draft.slotMap[slotId].itemId].value;
+      container.slotIds = container.slotIds.filter((id) => id !== slotId);
+      draft.slotMap[slotId] = undefined!; // it's fine as long as I removed all references
+    });
+  }, [setState]);
 
   const buyUpgrade: BuyUpgrade = useCallback(
     ({ id, level: levelNumber }) => {
@@ -424,12 +478,19 @@ export const useStore = () => {
     moneys: state.moneys,
     moveSlot,
     pack,
+    playerAction: state.playerAction,
+    playerDestination: state.playerDestination,
+    playerLocation: state.playerLocation,
     purchasedUpgradeMap: state.purchasedUpgradeMap,
+    storeHeldItem,
     sell,
-    setHeldItem,
+    loot,
     setState,
     sort,
-    selling: state.selling,
+    travel,
+    arrive,
+    adventure,
+    sellItem,
   };
 };
 

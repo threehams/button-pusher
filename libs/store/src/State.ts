@@ -1,6 +1,8 @@
 import {
   ContainerMap,
   ItemMap,
+  PlayerLocation,
+  PlayerAction,
   PurchasedContainerMap,
   PurchasedUpgradeMap,
   SlotMap,
@@ -15,10 +17,10 @@ import {
   Undefined,
   Union,
   Dictionary,
-  Boolean,
 } from "runtypes";
 
 export const State = Record({
+  playerLocation: PlayerLocation,
   messages: Array(String),
   heldItemId: Union(String, Undefined),
   purchasedContainerMap: PurchasedContainerMap,
@@ -29,6 +31,7 @@ export const State = Record({
   moneys: Number,
   upgradeMap: Dictionary(Upgrade),
   purchasedUpgradeMap: PurchasedUpgradeMap,
-  selling: Boolean,
+  playerAction: PlayerAction,
+  playerDestination: Union(PlayerLocation, Undefined),
 });
 export type State = Static<typeof State>;

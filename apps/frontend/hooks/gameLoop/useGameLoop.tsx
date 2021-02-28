@@ -1,83 +1,141 @@
-import { Item, PurchasedUpgradeMap } from "@botnet/messages";
-import { Pack, Sell, SetHeldItem, Sort } from "@botnet/store";
+import {
+  Item,
+  PlayerAction,
+  PlayerLocation,
+  PurchasedUpgradeMap,
+} from "@botnet/messages";
+import {
+  Adventure,
+  Arrive,
+  Inventory,
+  Pack,
+  Sell,
+  SellItem,
+  Loot,
+  Sort,
+  Travel,
+  StoreHeldItem,
+} from "@botnet/store";
 import { useLoop } from "@botnet/worker";
-import { useCallback, useRef } from "react";
+import { useState } from "react";
 import { autoPack } from "./autoPack";
 import { autoSell } from "./autoSell";
 import { autoSort } from "./autoSort";
+import { autoTravel } from "./autoTravel";
 import { kill } from "./kill";
 
 type UseGameLoop = {
-  setHeldItem: SetHeldItem;
+  loot: Loot;
   heldItem: Item | undefined;
   availableItems: Item[];
   purchasedUpgradeMap: PurchasedUpgradeMap;
   pack: Pack;
-  containerId: string;
   sort: Sort;
   sell: Sell;
-  full: boolean;
+  playerLocation: PlayerLocation;
+  playerAction: PlayerAction;
+  travel: Travel;
+  adventure: Adventure;
+  arrive: Arrive;
+  sellItem: SellItem;
+  inventory: Inventory;
+  storeHeldItem: StoreHeldItem;
 };
 export const useGameLoop = ({
-  setHeldItem,
+  loot,
   heldItem,
   availableItems,
   purchasedUpgradeMap,
   pack,
   sort,
   sell,
-  containerId,
-  full,
+  inventory,
+  adventure,
+  arrive,
+  playerAction,
+  playerLocation,
+  sellItem,
+  storeHeldItem,
+  travel,
 }: UseGameLoop) => {
-  const lastKill = useRef(0);
-  const lastPack = useRef(0);
-  const lastSort = useRef(0);
-  const lastSell = useRef(0);
+  const [lastKill, setLastKill] = useState(0);
+  const [lastAutoKill, setLastAutoKill] = useState(0);
+  const [lastPack, setLastPack] = useState(0);
+  const [lastAutoPack, setLastAutoPack] = useState(0);
+  const [lastSort, setLastSort] = useState(0);
+  const [lastSell, setLastSell] = useState(0);
+  const [lastTravel, setLastTravel] = useState(0);
+  const [lastSellItem, setLastSellItem] = useState(0);
 
-  const loop = useCallback(
-    (delta: number) => {
-      kill({
-        heldItem,
-        setHeldItem,
-        lastKill,
-        delta,
-        availableItems,
-      });
-      autoPack({
-        upgrade: purchasedUpgradeMap.AUTOMATE_PACK,
-        pack,
-        heldItem,
-        delta,
-        lastPack,
-      });
-      autoSort({
-        upgrade: purchasedUpgradeMap.AUTOMATE_SORT,
-        sort,
-        delta,
-        lastSort,
-        containerId,
-      });
-      autoSell({
-        full,
-        upgrade: purchasedUpgradeMap.AUTOMATE_SELL,
-        sell,
-        delta,
-        lastSell,
-      });
-    },
-    [
-      availableItems,
-      containerId,
-      full,
+  const loop = (delta: number) => {
+    kill({
       heldItem,
+      loot,
+      lastKill,
+      setLastKill,
+      delta,
+      availableItems,
+      playerAction,
+      upgrade: purchasedUpgradeMap.AUTOMATE_KILL,
+      lastAutoKill,
+      setLastAutoKill,
+      adventure,
+      playerLocation,
+    });
+    autoPack({
+      upgrade: purchasedUpgradeMap.AUTOMATE_PACK,
       pack,
-      purchasedUpgradeMap.AUTOMATE_PACK,
-      purchasedUpgradeMap.AUTOMATE_SELL,
-      purchasedUpgradeMap.AUTOMATE_SORT,
-      sell,
-      setHeldItem,
+      heldItem,
+      delta,
+      lastPack,
+      setLastPack,
+      lastAutoPack,
+      setLastAutoPack,
+      playerAction,
+      storeHeldItem,
+    });
+    autoSort({
+      upgrade: purchasedUpgradeMap.AUTOMATE_SORT,
       sort,
-    ],
-  );
+      delta,
+      lastSort,
+      setLastSort,
+      inventory,
+    });
+    autoTravel({
+      inventory,
+      playerLocation,
+      travel,
+      arrive,
+      delta,
+      lastTravel,
+      playerAction,
+      setLastTravel,
+      upgrade: purchasedUpgradeMap.AUTOMATE_TRAVEL,
+    });
+    autoSell({
+      upgrade: purchasedUpgradeMap.AUTOMATE_SELL,
+      sell,
+      delta,
+      lastSell,
+      lastSellItem,
+      setLastSell,
+      inventory,
+      setLastSellItem,
+      adventure,
+      playerAction,
+      playerLocation,
+      sellItem,
+    });
+  };
   useLoop(loop);
+
+  return {
+    killProgress: lastKill,
+    packProgress: lastPack,
+    sortProgress: lastSort,
+    sellProgress: lastSell,
+    travelProgress: lastTravel,
+    sellItemProgress: lastSellItem,
+  };
 };

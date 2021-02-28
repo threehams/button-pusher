@@ -2,7 +2,43 @@ import { Upgrade } from "@botnet/messages";
 
 export const upgrades: Upgrade[] = [
   {
-    name: "Build an auto-packer",
+    name: "Kill things automatically",
+    id: "AUTOMATE_KILL",
+    levels: [
+      {
+        level: 1,
+        cost: 1,
+      },
+      {
+        level: 2,
+        cost: 1,
+      },
+      {
+        level: 3,
+        cost: 1,
+      },
+    ],
+  },
+  {
+    name: "Store stuff in inventory",
+    id: "PACK",
+    levels: [
+      {
+        level: 1,
+        cost: 1,
+      },
+      {
+        level: 2,
+        cost: 1,
+      },
+      {
+        level: 3,
+        cost: 1,
+      },
+    ],
+  },
+  {
+    name: "Autopack inventory",
     id: "AUTOMATE_PACK",
     levels: [
       {
@@ -11,11 +47,29 @@ export const upgrades: Upgrade[] = [
       },
       {
         level: 2,
-        cost: 5000,
+        cost: 1,
       },
       {
         level: 3,
-        cost: 10000,
+        cost: 1,
+      },
+    ],
+  },
+  {
+    name: "Auto travel",
+    id: "AUTOMATE_TRAVEL",
+    levels: [
+      {
+        level: 1,
+        cost: 1,
+      },
+      {
+        level: 2,
+        cost: 1,
+      },
+      {
+        level: 3,
+        cost: 1,
       },
     ],
   },
@@ -25,15 +79,15 @@ export const upgrades: Upgrade[] = [
     levels: [
       {
         level: 1,
-        cost: 5000,
+        cost: 1,
       },
       {
         level: 2,
-        cost: 15000,
+        cost: 1,
       },
       {
         level: 3,
-        cost: 30000,
+        cost: 1,
       },
     ],
   },
@@ -43,15 +97,15 @@ export const upgrades: Upgrade[] = [
     levels: [
       {
         level: 1,
-        cost: 5000,
+        cost: 1,
       },
       {
         level: 2,
-        cost: 15000,
+        cost: 1,
       },
       {
         level: 3,
-        cost: 30000,
+        cost: 1,
       },
     ],
   },
@@ -61,15 +115,15 @@ export const upgrades: Upgrade[] = [
     levels: [
       {
         level: 1,
-        cost: 5000,
+        cost: 1,
       },
       {
         level: 2,
-        cost: 15000,
+        cost: 1,
       },
       {
         level: 3,
-        cost: 30000,
+        cost: 1,
       },
     ],
   },

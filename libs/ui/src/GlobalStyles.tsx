@@ -73,7 +73,7 @@ export const GlobalStyles = () => {
 
           p {
             margin-top: 0;
-            margin-bottom: 27px;
+            margin-bottom: 0;
           }
 
           li {

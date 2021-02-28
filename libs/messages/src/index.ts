@@ -3,6 +3,8 @@ export * from "./ContainerMap";
 export * from "./Item";
 export * from "./ItemMap";
 export * from "./Message";
+export * from "./PlayerAction";
+export * from "./PlayerLocation";
 export * from "./PurchasedContainer";
 export * from "./PurchasedContainerMap";
 export * from "./PurchasedUpgrade";

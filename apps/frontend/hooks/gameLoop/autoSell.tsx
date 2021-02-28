@@ -1,28 +1,67 @@
-import { PurchasedUpgrade } from "@botnet/messages";
-import { Sell } from "@botnet/store";
+import {
+  PlayerAction,
+  PlayerLocation,
+  PurchasedUpgrade,
+} from "@botnet/messages";
+import { Adventure, Sell, SellItem, Inventory } from "@botnet/store";
 
-const SORT_INTERVAL = 1000;
+const SELL_INTERVAL = 2000;
+const SELL_ITEM_INTERVAL = 1000;
 
 type AutoSell = {
-  full: boolean;
   upgrade: PurchasedUpgrade;
-  lastSell: React.MutableRefObject<number>;
+  lastSell: number;
+  setLastSell: (value: number) => void;
+  lastSellItem: number;
+  setLastSellItem: (value: number) => void;
   sell: Sell;
+  adventure: Adventure;
+  sellItem: SellItem;
   delta: number;
+  playerAction: PlayerAction;
+  playerLocation: PlayerLocation;
+  inventory: Inventory;
 };
 export const autoSell = ({
-  full,
   lastSell,
+  lastSellItem,
+  setLastSell,
+  setLastSellItem,
   sell,
+  sellItem,
   delta,
   upgrade,
+  playerAction,
+  playerLocation,
+  inventory,
 }: AutoSell) => {
-  if (!upgrade.level || !full) {
+  if (!upgrade.level) {
     return;
   }
-  lastSell.current = lastSell.current + delta;
-  if (lastSell.current > SORT_INTERVAL) {
+  if (
+    playerLocation === "TOWN" &&
+    playerAction === "IDLE" &&
+    inventory.slots.length
+  ) {
+    setLastSell(lastSell + delta);
+    if (lastSell > SELL_INTERVAL) {
+      sell();
+      return;
+    }
+  }
+  if (playerAction === "SELLING") {
+    setLastSellItem(lastSellItem + delta);
+    if (lastSellItem > SELL_ITEM_INTERVAL) {
+      sellItem();
+      setLastSellItem(0);
+      return;
+    }
+  }
+  if (
+    playerAction === "IDLE" &&
+    playerLocation === "TOWN" &&
+    inventory.slots.length
+  ) {
     sell();
-    lastSell.current = 0;
   }
 };
