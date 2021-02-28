@@ -35,5 +35,6 @@ export const State = Record({
   playerAction: PlayerAction,
   playerDestination: Union(PlayerLocation, Undefined),
   highestMoneys: Number,
+  sellableItems: Number,
 });
 export type State = Static<typeof State>;

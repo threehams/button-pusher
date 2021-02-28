@@ -7,7 +7,7 @@ export const items: Item[] = [
     height: 1,
     width: 1,
     name: "Healing Potion",
-    image: "/assets/potion.svg",
+    image: "assets/potion.svg",
     value: 10,
   },
   {
@@ -15,7 +15,7 @@ export const items: Item[] = [
     height: 1,
     width: 1,
     name: "A Bomb",
-    image: "/assets/bomb.svg",
+    image: "assets/bomb.svg",
     value: 10,
   },
   {
@@ -23,7 +23,7 @@ export const items: Item[] = [
     height: 1,
     width: 1,
     name: "Gem",
-    image: "/assets/gem.svg",
+    image: "assets/gem.svg",
     value: 15,
   },
   {
@@ -31,7 +31,7 @@ export const items: Item[] = [
     height: 2,
     width: 1,
     name: "Dagger",
-    image: "/assets/dagger.svg",
+    image: "assets/dagger.svg",
     value: 30,
   },
   {
@@ -39,7 +39,7 @@ export const items: Item[] = [
     height: 2,
     width: 2,
     name: "Buckler",
-    image: "/assets/buckler.svg",
+    image: "assets/buckler.svg",
     value: 80,
   },
   {
@@ -47,7 +47,7 @@ export const items: Item[] = [
     height: 2,
     width: 2,
     name: "Helm",
-    image: "/assets/helm.svg",
+    image: "assets/helm.svg",
     value: 80,
   },
   {
@@ -55,7 +55,7 @@ export const items: Item[] = [
     height: 3,
     width: 1,
     name: "Longsword",
-    image: "/assets/longsword.svg",
+    image: "assets/longsword.svg",
     value: 100,
   },
   {
@@ -63,7 +63,7 @@ export const items: Item[] = [
     height: 4,
     width: 1,
     name: "Two Handed Sword",
-    image: "/assets/2hsword.svg",
+    image: "assets/2hsword.svg",
     value: 100,
   },
   {
@@ -71,7 +71,7 @@ export const items: Item[] = [
     height: 4,
     width: 1,
     name: "Spear",
-    image: "/assets/spear.svg",
+    image: "assets/spear.svg",
     value: 100,
   },
   {
@@ -79,7 +79,7 @@ export const items: Item[] = [
     height: 3,
     width: 2,
     name: "Pants",
-    image: "/assets/pants.svg",
+    image: "assets/pants.svg",
     value: 100,
   },
   {
@@ -87,7 +87,7 @@ export const items: Item[] = [
     height: 3,
     width: 2,
     name: "Mail",
-    image: "/assets/mail.svg",
+    image: "assets/mail.svg",
     value: 100,
   },
   {
@@ -95,7 +95,7 @@ export const items: Item[] = [
     height: 4,
     width: 2,
     name: "Scythe",
-    image: "/assets/scythe.svg",
+    image: "assets/scythe.svg",
     value: 400,
   },
   {
@@ -103,7 +103,7 @@ export const items: Item[] = [
     height: 4,
     width: 2,
     name: "Bow",
-    image: "/assets/bow.svg",
+    image: "assets/bow.svg",
     value: 400,
   },
 ];

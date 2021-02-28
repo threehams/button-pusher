@@ -226,6 +226,34 @@ export const Index = () => {
                 >
                   Kill something {playerLocation === "TOWN" && "(not in town)"}
                 </Progress>
+                {!!purchasedUpgrades.PACK.level && (
+                  <Progress
+                    button
+                    disabled={
+                      !(heldItem && playerAction === "IDLE" && !inventory.full)
+                    }
+                    percent={packProgress}
+                    css={css`
+                      display: block;
+                    `}
+                    onClick={() => {
+                      pack();
+                    }}
+                  >
+                    Store item
+                  </Progress>
+                )}
+                {!!purchasedUpgrades.SORT.level && (
+                  <Progress
+                    button
+                    percent={0}
+                    onClick={() => {
+                      sort({ containerId: inventory.id });
+                    }}
+                  >
+                    Sort
+                  </Progress>
+                )}
                 <Progress
                   button
                   percent={sellProgress}
@@ -264,34 +292,6 @@ export const Index = () => {
                     ? "Town"
                     : "the Killing Fields"}
                 </Progress>
-                {!!purchasedUpgrades.PACK.level && (
-                  <Progress
-                    button
-                    disabled={
-                      !(heldItem && playerAction === "IDLE" && !inventory.full)
-                    }
-                    percent={packProgress}
-                    css={css`
-                      display: block;
-                    `}
-                    onClick={() => {
-                      pack();
-                    }}
-                  >
-                    Store item
-                  </Progress>
-                )}
-                {!!purchasedUpgrades.SORT.level && (
-                  <Progress
-                    button
-                    percent={0}
-                    onClick={() => {
-                      sort({ containerId: inventory.id });
-                    }}
-                  >
-                    Sort
-                  </Progress>
-                )}
               </div>
               <div
                 css={css`

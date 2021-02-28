@@ -26,6 +26,7 @@ export type UpgradeType = Static<typeof UpgradeType>;
 
 export const Upgrade = Record({
   name: String,
+  upgradeName: String,
   baseCost: Number,
   // costScaling: Number,
   // softCap: Number,

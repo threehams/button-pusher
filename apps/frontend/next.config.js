@@ -7,6 +7,7 @@ const withNx = require("@nrwl/next/plugins/with-nx");
 
 module.exports = withNx(
   withBundleAnalyzer({
+    assetPrefix: "",
     exportPathMap: async function (
       defaultPathMap,
       { dev, dir, outDir, distDir, buildId },

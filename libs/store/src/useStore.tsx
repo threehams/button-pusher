@@ -7,7 +7,6 @@ import {
   Item,
   PlayerLocation,
   PurchasedContainer,
-  PurchasedUpgradeState,
   UpgradeType,
 } from "@botnet/messages";
 import { useCallback, useEffect, useMemo } from "react";
@@ -77,7 +76,17 @@ export const useStore = () => {
       containersData.map((item) => [item.id, item]),
     ),
     currentContainerId: STARTING_CONTAINER.id,
-    itemMap: Object.fromEntries(itemsData.map((item) => [item.id, item])),
+    itemMap: Object.fromEntries(
+      itemsData.map((item) => {
+        return [
+          item.id,
+          {
+            ...item,
+            cost: item.height * item.width * 10,
+          },
+        ];
+      }),
+    ),
     slotMap: {},
     heldItemId: undefined,
     moneys: 0,
@@ -140,6 +149,7 @@ export const useStore = () => {
     playerLocation: "TOWN",
     playerDestination: undefined,
     highestMoneys: 0,
+    sellableItems: 0,
   }));
 
   const purchasedUpgrades: PurchasedUpgradeMap = useMemo(() => {
@@ -151,6 +161,7 @@ export const useStore = () => {
           ...purchasedUpgrade,
           id: upgradeType,
           name: upgrade.name,
+          upgradeName: upgrade.upgradeName,
           time: 2000 * (1 / (purchasedUpgrade.level + 1)),
           cost: upgrade.baseCost * (purchasedUpgrade.level + 1) ** 2,
         };
@@ -215,7 +226,7 @@ export const useStore = () => {
           },
           height: item.height,
           width: item.width,
-          method: sortMethod(state.purchasedUpgradeMap.SORT),
+          method: "vertical",
         });
         if (!slot) {
           full = true;
@@ -235,7 +246,6 @@ export const useStore = () => {
       state.heldItemId,
       state.itemMap,
       state.purchasedContainerMap,
-      state.purchasedUpgradeMap.SORT,
       state.slotMap,
     ],
   );
@@ -274,8 +284,6 @@ export const useStore = () => {
 
   const sort: Sort = useCallback(
     ({ containerId }) => {
-      const upgrade = state.purchasedUpgradeMap.SORT;
-      const method = upgrade.level > 1 ? "vertical" : "horizontal";
       const container = state.purchasedContainerMap[containerId];
       const currentSlots = container.slotIds.map((slotId) => {
         const slot = state.slotMap[slotId];
@@ -303,7 +311,7 @@ export const useStore = () => {
           },
           height: slot.item.height,
           width: slot.item.width,
-          method,
+          method: "vertical",
         });
         if (!target) {
           return;
@@ -326,13 +334,7 @@ export const useStore = () => {
         });
       });
     },
-    [
-      setState,
-      state.itemMap,
-      state.purchasedContainerMap,
-      state.purchasedUpgradeMap.SORT,
-      state.slotMap,
-    ],
+    [setState, state.itemMap, state.purchasedContainerMap, state.slotMap],
   );
 
   const storeHeldItem: StoreHeldItem = useCallback(() => {
@@ -406,6 +408,7 @@ export const useStore = () => {
       setState((draft) => {
         draft.playerAction = "TRAVELLING";
         draft.playerDestination = destination;
+        draft.sellableItems = 0;
       });
     },
     [setState],
@@ -417,11 +420,12 @@ export const useStore = () => {
         draft.playerLocation = draft.playerDestination;
         draft.playerDestination = undefined;
         draft.playerAction = "IDLE";
+        draft.sellableItems = inventory.slots.length;
       } else {
         throw new Error("somehow ended up arriving without a destination");
       }
     });
-  }, [setState]);
+  }, [inventory.slots.length, setState]);
 
   const adventure: Adventure = useCallback(() => {
     setState((draft) => {
@@ -439,7 +443,10 @@ export const useStore = () => {
         return;
       }
       const slotId = container.slotIds[0];
-      draft.moneys += draft.itemMap[draft.slotMap[slotId].itemId].value;
+      draft.moneys += Math.floor(
+        draft.itemMap[draft.slotMap[slotId].itemId].value *
+          getSellMultiplier(draft.sellableItems),
+      );
       container.slotIds = container.slotIds.filter((id) => id !== slotId);
       draft.slotMap[slotId] = undefined!; // it's fine as long as I removed all references
     });
@@ -463,9 +470,8 @@ export const useStore = () => {
       setState((draft) => {
         const current = draft.purchasedContainerMap[id];
         const next = getNextLevel(current, currentCapacity);
-        const cost = 100;
-        if (cost && draft.moneys >= cost) {
-          draft.moneys = draft.moneys - cost;
+        if (next.cost && draft.moneys >= next.cost) {
+          draft.moneys = draft.moneys - next.cost;
           draft.purchasedContainerMap[id].level += 1;
           draft.purchasedContainerMap[id].width = next.width;
           draft.purchasedContainerMap[id].height = next.height;
@@ -600,12 +606,7 @@ function recalculateGrid({
   });
 }
 
-const sortMethod = (upgrade: PurchasedUpgradeState): SortMethod => {
-  if (upgrade.level > 1) {
-    return "vertical";
-  }
-  return "horizontal";
-};
+const TILE_COST = 25;
 
 const getNextLevel = (
   container: PurchasedContainer,
@@ -641,6 +642,12 @@ const getNextLevel = (
     width: newWidth,
     height: newHeight,
     // scale this better
-    cost: 50 * (currentCapacity + diff),
+    cost: Math.floor(
+      TILE_COST * (currentCapacity * Math.log(currentCapacity - 13) + diff),
+    ),
   };
+};
+
+const getSellMultiplier = (count: number) => {
+  return Math.sqrt(count) + count / 10;
 };
