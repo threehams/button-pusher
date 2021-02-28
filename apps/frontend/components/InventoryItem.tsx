@@ -44,11 +44,10 @@ export const InventoryItem = React.memo(
     });
 
     return (
-      <img
+      <div
         ref={drag}
-        src={item.image}
-        alt={item.name}
         css={css`
+          background: url(${item.image}) center no-repeat;
           position: relative;
           z-index: 3;
           cursor: pointer;
