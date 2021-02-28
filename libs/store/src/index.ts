@@ -1,3 +1,4 @@
+export * from "./AllInventory";
 export * from "./Inventory";
 export * from "./State";
 export * from "./getTargetCoords";

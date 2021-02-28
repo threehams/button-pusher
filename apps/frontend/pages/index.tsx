@@ -45,6 +45,7 @@ export const Index = () => {
     prevInventory,
     goInventory,
     buyContainer,
+    allInventory,
   } = store;
   const progress = useGameLoop({
     adventure,
@@ -62,6 +63,7 @@ export const Index = () => {
     purchasedUpgrades,
     loot,
     sell,
+    allInventory,
   });
   const {
     killProgress,

@@ -28,31 +28,31 @@ export const upgrades: UpgradeMap = {
   SORT: {
     name: "Sort inventory",
     upgradeName: "Sort inventory",
-    baseCost: 5000,
+    baseCost: 3500,
     maxLevel: 1,
   },
   TRAVEL: {
     name: "Travel faster",
     upgradeName: "Travel faster",
-    baseCost: 5000,
+    baseCost: 4000,
     maxLevel: undefined,
   },
   AUTOMATE_PACK: {
     name: "Auto store in inventory",
     upgradeName: "Auto store faster",
-    baseCost: 10000,
+    baseCost: 6000,
     maxLevel: undefined,
   },
   AUTOMATE_TRAVEL: {
     name: "Auto travel to/from town",
     upgradeName: "Auto travel with less delay",
-    baseCost: 50000,
+    baseCost: 30000,
     maxLevel: undefined,
   },
   AUTOMATE_SORT: {
     name: "Auto sort inventory",
     upgradeName: "Auto sort faster",
-    baseCost: 35000,
+    baseCost: 10000,
     maxLevel: undefined,
   },
   AUTOMATE_SELL: {

@@ -94,7 +94,7 @@ export const useStore = () => {
     ),
     slotMap: {},
     heldItemId: undefined,
-    moneys: 10000000,
+    moneys: 0,
     upgradeMap: upgradesData,
     purchasedUpgradeMap: {
       AUTOMATE_PACK: {
@@ -273,6 +273,22 @@ export const useStore = () => {
   const inventory = useMemo(() => {
     return getInventory(state.currentContainerId);
   }, [getInventory, state.currentContainerId]);
+
+  const allInventory = useMemo(() => {
+    let slots = 0;
+    let full = true;
+    for (const containerId of state.purchasedContainerIds) {
+      const inv = getInventory(containerId);
+      if (!inv.full) {
+        full = false;
+      }
+      slots += inv.slots.length;
+    }
+    return {
+      slots,
+      full,
+    };
+  }, [getInventory, state.purchasedContainerIds]);
 
   // const allItems = useMemo(() => {
   //   return Object.values(state.purchasedContainerMap).flatMap((container) => {
@@ -598,6 +614,7 @@ export const useStore = () => {
     nextInventory: nextInventory(),
     prevInventory: prevInventory(),
     goInventory,
+    allInventory,
   };
 };
 

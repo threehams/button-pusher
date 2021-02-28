@@ -11,6 +11,7 @@ import {
   Travel,
   StoreHeldItem,
   PurchasedUpgradeMap,
+  AllInventory,
 } from "@botnet/store";
 import { useLoop } from "@botnet/worker";
 import { useState } from "react";
@@ -36,6 +37,7 @@ type UseGameLoop = {
   sellItem: SellItem;
   inventory: Inventory;
   storeHeldItem: StoreHeldItem;
+  allInventory: AllInventory;
 };
 export const useGameLoop = ({
   loot,
@@ -53,6 +55,7 @@ export const useGameLoop = ({
   sellItem,
   storeHeldItem,
   travel,
+  allInventory,
 }: UseGameLoop) => {
   const [lastKill, setLastKill] = useState(0);
   const [lastAutoKill, setLastAutoKill] = useState(0);
@@ -92,7 +95,7 @@ export const useGameLoop = ({
       setLastAutoPack,
       playerAction,
       storeHeldItem,
-      inventory,
+      allInventory,
     });
     autoSort({
       upgrade: purchasedUpgrades.SORT,
@@ -106,7 +109,7 @@ export const useGameLoop = ({
     autoTravel({
       lastAutoTravel,
       setLastAutoTravel,
-      inventory,
+      allInventory,
       playerLocation,
       travel,
       arrive,
@@ -125,7 +128,7 @@ export const useGameLoop = ({
       lastAutoSell,
       lastSell,
       setLastAutoSell,
-      inventory,
+      allInventory,
       setLastSell,
       adventure,
       playerAction,
