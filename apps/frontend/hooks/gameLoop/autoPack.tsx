@@ -1,8 +1,10 @@
 import { Item, PlayerAction } from "@botnet/messages";
-import { Pack, PurchasedUpgrade, StoreHeldItem } from "@botnet/store";
-
-// const PACK_INTERVAL = 500;
-// const AUTOPACK_INTERVAL = 1000;
+import {
+  Inventory,
+  Pack,
+  PurchasedUpgrade,
+  StoreHeldItem,
+} from "@botnet/store";
 
 type AutoPack = {
   upgrade: PurchasedUpgrade;
@@ -16,6 +18,7 @@ type AutoPack = {
   storeHeldItem: StoreHeldItem;
   delta: number;
   playerAction: PlayerAction;
+  inventory: Inventory;
 };
 export const autoPack = ({
   autoUpgrade,
@@ -29,6 +32,7 @@ export const autoPack = ({
   playerAction,
   lastAutoPack,
   setLastAutoPack,
+  inventory,
 }: AutoPack) => {
   if (playerAction === "STORING" && heldItem) {
     setLastPack(lastPack + delta);
@@ -38,11 +42,16 @@ export const autoPack = ({
     }
   }
 
-  if (autoUpgrade.level && heldItem && playerAction === "IDLE") {
+  if (
+    !inventory.full &&
+    autoUpgrade.level &&
+    heldItem &&
+    playerAction === "IDLE"
+  ) {
     setLastAutoPack(lastAutoPack + delta);
     if (lastAutoPack > autoUpgrade.time) {
       pack();
-      setLastPack(0);
+      setLastAutoPack(0);
     }
   }
 };

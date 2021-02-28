@@ -56,6 +56,24 @@ export const upgrades: Upgrade[] = [
     ],
   },
   {
+    name: "Travel faster",
+    id: "TRAVEL",
+    levels: [
+      {
+        level: 1,
+        cost: 1,
+      },
+      {
+        level: 2,
+        cost: 1,
+      },
+      {
+        level: 3,
+        cost: 1,
+      },
+    ],
+  },
+  {
     name: "Auto travel",
     id: "AUTOMATE_TRAVEL",
     levels: [
@@ -94,6 +112,24 @@ export const upgrades: Upgrade[] = [
   {
     name: "Autosort inventory",
     id: "AUTOMATE_SORT",
+    levels: [
+      {
+        level: 1,
+        cost: 1,
+      },
+      {
+        level: 2,
+        cost: 1,
+      },
+      {
+        level: 3,
+        cost: 1,
+      },
+    ],
+  },
+  {
+    name: "Sell stuff faster",
+    id: "SELL",
     levels: [
       {
         level: 1,

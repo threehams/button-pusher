@@ -92,8 +92,10 @@ export const useGameLoop = ({
       setLastAutoPack,
       playerAction,
       storeHeldItem,
+      inventory,
     });
     autoSort({
+      upgrade: purchasedUpgrades.SORT,
       autoUpgrade: purchasedUpgrades.AUTOMATE_SORT,
       sort,
       delta,
@@ -150,11 +152,15 @@ export const useGameLoop = ({
       last: lastAutoPack,
       total: purchasedUpgrades.AUTOMATE_PACK.time,
     }),
-    sortProgress: progress({
+    autoSortProgress: progress({
       last: lastSort,
       total: purchasedUpgrades.SORT.time,
     }),
     sellProgress: progress({
+      last: lastSell,
+      total: purchasedUpgrades.SELL.time,
+    }),
+    autoSellProgress: progress({
       last: lastAutoSell,
       total: purchasedUpgrades.AUTOMATE_SELL.time,
     }),

@@ -42,6 +42,11 @@ export const GlobalStyles = () => {
             font-family: "IBM Plex Mono", monospace;
           }
 
+          button:disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+          }
+
           body,
           button,
           input {

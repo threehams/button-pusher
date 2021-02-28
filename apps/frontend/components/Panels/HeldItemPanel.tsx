@@ -1,5 +1,6 @@
 import { Item } from "@botnet/messages";
 import { AddSlot, MoveSlot } from "@botnet/store";
+import { css, useTheme } from "@emotion/react";
 import React from "react";
 import { InventoryItem } from "../InventoryItem";
 
@@ -13,8 +14,21 @@ export const HeldItemPanel = ({
   moveSlot,
   item,
 }: HeldItemPanelProps) => {
-  if (!item) {
-    return <div></div>;
-  }
-  return <InventoryItem moveSlot={moveSlot} addSlot={addSlot} item={item} />;
+  const theme = useTheme();
+  return (
+    <div
+      css={css`
+        height: ${4 * theme.tileSize}px;
+        width: ${2 * theme.tileSize}px;
+        outline: 1px solid #ccc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      `}
+    >
+      {item && (
+        <InventoryItem moveSlot={moveSlot} addSlot={addSlot} item={item} />
+      )}
+    </div>
+  );
 };

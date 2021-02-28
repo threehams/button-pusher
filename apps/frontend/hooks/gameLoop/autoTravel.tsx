@@ -47,16 +47,18 @@ export const autoTravel = ({
     playerAction === "IDLE" &&
     inventory.slots.length === 0
   ) {
-    setLastTravel(lastAutoTravel + delta);
+    setLastAutoTravel(lastAutoTravel + delta);
     if (lastAutoTravel > autoUpgrade.time) {
       travel({ destination: "KILLING_FIELDS" });
       setLastAutoTravel(0);
       return;
     }
-  }
-
-  if (playerLocation !== "TOWN" && playerAction === "IDLE" && inventory.full) {
-    setLastTravel(lastAutoTravel + delta);
+  } else if (
+    playerLocation !== "TOWN" &&
+    playerAction === "IDLE" &&
+    inventory.full
+  ) {
+    setLastAutoTravel(lastAutoTravel + delta);
     if (lastAutoTravel > autoUpgrade.time) {
       travel({ destination: "TOWN" });
       setLastAutoTravel(0);

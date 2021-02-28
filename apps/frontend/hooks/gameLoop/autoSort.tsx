@@ -2,6 +2,7 @@ import { Inventory, PurchasedUpgrade, Sort } from "@botnet/store";
 
 type AutoSort = {
   autoUpgrade: PurchasedUpgrade;
+  upgrade: PurchasedUpgrade;
   inventory: Inventory;
   lastSort: number;
   setLastSort: (value: number) => void;

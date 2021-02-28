@@ -100,7 +100,7 @@ export const useStore = () => {
         enabled: true,
       },
       SORT: {
-        level: 0,
+        level: 1,
         enabled: true,
       },
       PACK: {
@@ -120,15 +120,15 @@ export const useStore = () => {
         enabled: true,
       },
       KILL: {
-        level: 0,
+        level: 1,
         enabled: true,
       },
       SELL: {
-        level: 0,
+        level: 1,
         enabled: true,
       },
       TRAVEL: {
-        level: 0,
+        level: 1,
         enabled: true,
       },
     },
@@ -142,12 +142,12 @@ export const useStore = () => {
 
   const purchasedUpgrades = useMemo(() => {
     return Object.fromEntries(
-      Object.entries(state.purchasedUpgradeMap).map(([id, value]) => {
+      Object.entries(state.purchasedUpgradeMap).map(([id, upgrade]) => {
         return [
           id,
           {
-            ...value,
-            time: 1000,
+            ...upgrade,
+            time: 2000 * (1 / upgrade.level),
           },
         ];
       }),
@@ -400,6 +400,7 @@ export const useStore = () => {
     setState((draft) => {
       if (draft.playerDestination) {
         draft.playerLocation = draft.playerDestination;
+        draft.playerDestination = undefined;
         draft.playerAction = "IDLE";
       } else {
         throw new Error("somehow ended up arriving without a destination");
@@ -415,11 +416,11 @@ export const useStore = () => {
 
   const sellItem: SellItem = useCallback(() => {
     setState((draft) => {
+      draft.playerAction = "IDLE";
       const container = Object.values(draft.purchasedContainerMap).filter(
         (cont) => cont.slotIds.length,
       )[0];
       if (!container) {
-        draft.playerAction = "IDLE";
         return;
       }
       const slotId = container.slotIds[0];

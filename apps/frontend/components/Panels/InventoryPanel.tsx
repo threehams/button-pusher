@@ -12,6 +12,7 @@ import { InventorySlot } from "../InventorySlot";
 import { InventoryItem } from "../InventoryItem";
 import deepEqual from "deep-equal";
 import { getTargetCoords } from "@botnet/store";
+import { Button } from "../Button";
 
 type InventoryPanelProps = {
   inventory: Inventory;
@@ -53,6 +54,15 @@ export const InventoryPanel = ({
 
   return (
     <div>
+      <Button
+        disabled={!nextUpgrade}
+        onClick={() => {
+          buyContainerUpgrade({ id: inventory.id });
+        }}
+      >
+        Upgrade Bag: {nextUpgrade ? `$${nextUpgrade.cost}` : "MAX"}
+      </Button>
+
       <div
         css={css`
           position: relative;
@@ -111,15 +121,6 @@ export const InventoryPanel = ({
           })}
         </div>
       </div>
-      {nextUpgrade && (
-        <button
-          onClick={() => {
-            buyContainerUpgrade({ id: inventory.id });
-          }}
-        >
-          Upgrade ${nextUpgrade.cost}
-        </button>
-      )}
     </div>
   );
 };

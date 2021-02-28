@@ -46,22 +46,15 @@ export const autoSell = ({
   }
   if (
     autoUpgrade.level &&
-    playerLocation === "TOWN" &&
     playerAction === "IDLE" &&
+    playerLocation === "TOWN" &&
     inventory.slots.length
   ) {
     setLastAutoSell(lastAutoSell + delta);
     if (lastAutoSell > autoUpgrade.time) {
       sell();
+      setLastAutoSell(0);
       return;
     }
-  }
-  if (
-    autoUpgrade.level &&
-    playerAction === "IDLE" &&
-    playerLocation === "TOWN" &&
-    inventory.slots.length
-  ) {
-    sell();
   }
 };
