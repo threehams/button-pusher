@@ -1,5 +1,5 @@
 import { PlayerAction, PlayerLocation } from "@botnet/messages";
-import { Arrive, Inventory, PurchasedUpgrade, Travel } from "@botnet/store";
+import { Arrive, AllInventory, PurchasedUpgrade, Travel } from "@botnet/store";
 
 type AutoTravel = {
   lastTravel: number;
@@ -11,7 +11,7 @@ type AutoTravel = {
   playerAction: PlayerAction;
   autoUpgrade: PurchasedUpgrade;
   upgrade: PurchasedUpgrade;
-  inventory: Inventory;
+  allInventory: AllInventory;
   travel: Travel;
   playerLocation: PlayerLocation;
 };
@@ -22,7 +22,7 @@ export const autoTravel = ({
   setLastTravel,
   arrive,
   upgrade,
-  inventory,
+  allInventory,
   travel,
   playerLocation,
   lastAutoTravel,
@@ -45,7 +45,7 @@ export const autoTravel = ({
   if (
     playerLocation === "TOWN" &&
     playerAction === "IDLE" &&
-    inventory.slots.length === 0
+    allInventory.slots === 0
   ) {
     setLastAutoTravel(lastAutoTravel + delta);
     if (lastAutoTravel > autoUpgrade.time) {
@@ -56,7 +56,7 @@ export const autoTravel = ({
   } else if (
     playerLocation !== "TOWN" &&
     playerAction === "IDLE" &&
-    inventory.full
+    allInventory.full
   ) {
     setLastAutoTravel(lastAutoTravel + delta);
     if (lastAutoTravel > autoUpgrade.time) {

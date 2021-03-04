@@ -1,6 +1,6 @@
 import { Item, PlayerAction } from "@botnet/messages";
 import {
-  Inventory,
+  AllInventory,
   Pack,
   PurchasedUpgrade,
   StoreHeldItem,
@@ -18,7 +18,7 @@ type AutoPack = {
   storeHeldItem: StoreHeldItem;
   delta: number;
   playerAction: PlayerAction;
-  inventory: Inventory;
+  allInventory: AllInventory;
 };
 export const autoPack = ({
   autoUpgrade,
@@ -32,7 +32,7 @@ export const autoPack = ({
   playerAction,
   lastAutoPack,
   setLastAutoPack,
-  inventory,
+  allInventory,
 }: AutoPack) => {
   if (playerAction === "STORING" && heldItem) {
     setLastPack(lastPack + delta);
@@ -43,7 +43,7 @@ export const autoPack = ({
   }
 
   if (
-    !inventory.full &&
+    !allInventory.full &&
     autoUpgrade.level &&
     heldItem &&
     playerAction === "IDLE"

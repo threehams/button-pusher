@@ -1,4 +1,4 @@
-import { Array, String, Record, Number, Static } from "runtypes";
+import { Array, Boolean, String, Record, Number, Static } from "runtypes";
 
 export const PurchasedContainer = Record({
   id: String,
@@ -8,5 +8,6 @@ export const PurchasedContainer = Record({
   height: Number,
   maxHeight: Number,
   slotIds: Array(String),
+  sorted: Boolean,
 });
 export type PurchasedContainer = Static<typeof PurchasedContainer>;

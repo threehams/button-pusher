@@ -8,6 +8,6 @@ export const containers: Container[] = [
     baseHeight: 4,
     baseWidth: 4,
     maxHeight: 7,
-    maxWidth: 8,
+    maxWidth: 11,
   },
 ];

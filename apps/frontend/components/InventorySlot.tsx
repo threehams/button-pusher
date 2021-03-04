@@ -54,15 +54,42 @@ export const InventorySlot = React.memo(
         css={css`
           border-right: 1px solid #888;
           border-bottom: 1px solid #888;
-          width: ${theme.tileSize};
-          height: ${theme.tileSize};
-          background-color: ${required && state === "VALID"
-            ? "green"
-            : required && state === "INVALID"
-            ? "RED"
-            : "transparent"};
+          width: ${theme.tileSize}px;
+          height: ${theme.tileSize}px;
+          position: relative;
+          z-index: 2;
         `}
       >
+        <div
+          css={css`
+            pointer-events: none;
+            position: absolute;
+            background-color: red;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            opacity: ${required && state === "INVALID" ? 1 : 0};
+            z-index: 1;
+          `}
+        />
+        <div
+          css={css`
+            pointer-events: none;
+            position: absolute;
+            background-color: green;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            opacity: ${required && state === "VALID" ? 1 : 0};
+            z-index: 1;
+          `}
+        />
         {children}
       </button>
     );

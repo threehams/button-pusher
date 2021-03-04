@@ -17,6 +17,7 @@ import { Inventory } from "./Inventory";
 import { range } from "lodash";
 import { getTargetCoords } from "./getTargetCoords";
 import { PurchasedUpgradeMap } from "./PurchasedUpgradeMap";
+import { StoreContextType } from "./StoreContext";
 
 type FullSlot = {
   id: string;
@@ -34,6 +35,7 @@ const STARTING_CONTAINER: PurchasedContainer = {
   maxWidth: containersData[0].maxWidth,
   maxHeight: containersData[0].maxHeight,
   slotIds: [],
+  sorted: false,
 };
 
 export type Loot = (options: { itemId: string }) => void;
@@ -59,7 +61,14 @@ export type Travel = (options: { destination: PlayerLocation }) => void;
 export type Adventure = () => void;
 export type SellItem = () => void;
 export type Arrive = () => void;
+export type BuyContainer = () => void;
+export type NextInventory = string | undefined;
+export type PrevInventory = string | undefined;
+export type GoInventory = (options: { containerId: string }) => void;
+
 type SortMethod = "horizontal" | "vertical";
+
+const SAVE_KEY = "youAreOverburdenedSave";
 
 /**
  * Set up local state to hold onto messages received from the server.
@@ -69,88 +78,99 @@ type SortMethod = "horizontal" | "vertical";
  * - Provide functions to other hooks to modify state.
  *
  */
-export const useStore = () => {
-  const [state, setState] = useImmer<State>(() => ({
-    messages: [],
-    containerMap: Object.fromEntries(
-      containersData.map((item) => [item.id, item]),
-    ),
-    currentContainerId: STARTING_CONTAINER.id,
-    itemMap: Object.fromEntries(
-      itemsData.map((item) => {
-        return [
-          item.id,
-          {
-            ...item,
-            cost: item.height * item.width * 10,
-          },
-        ];
-      }),
-    ),
-    slotMap: {},
-    heldItemId: undefined,
-    moneys: 0,
-    upgradeMap: upgradesData,
-    purchasedUpgradeMap: {
-      AUTOMATE_PACK: {
-        level: 0,
-        enabled: true,
+export const useStore = (): StoreContextType => {
+  const [state, setState] = useImmer<State>(() => {
+    if (typeof localStorage !== "undefined") {
+      try {
+        const saved = JSON.parse(localStorage.getItem(SAVE_KEY)!);
+        if (saved) {
+          return saved;
+        }
+      } catch (err) {
+        // use default state
+      }
+    }
+    return {
+      containerMap: Object.fromEntries(
+        containersData.map((item) => [item.id, item]),
+      ),
+      currentContainerId: STARTING_CONTAINER.id,
+      itemMap: Object.fromEntries(
+        itemsData.map((item) => {
+          return [
+            item.id,
+            {
+              ...item,
+              cost: item.height * item.width * 10,
+            },
+          ];
+        }),
+      ),
+      slotMap: {},
+      heldItemId: undefined,
+      moneys: 0,
+      upgradeMap: upgradesData,
+      purchasedUpgradeMap: {
+        AUTOMATE_PACK: {
+          level: 0,
+          enabled: true,
+        },
+        AUTOMATE_SELL: {
+          level: 0,
+          enabled: true,
+        },
+        AUTOMATE_TRAVEL: {
+          level: 0,
+          enabled: true,
+        },
+        AUTOMATE_SORT: {
+          level: 0,
+          enabled: true,
+        },
+        SORT: {
+          level: 0,
+          enabled: true,
+        },
+        PACK: {
+          level: 0,
+          enabled: true,
+        },
+        APPRAISE: {
+          level: 0,
+          enabled: true,
+        },
+        AUTOMATE_KILL: {
+          level: 0,
+          enabled: true,
+        },
+        AUTOMATE_APPRAISE: {
+          level: 0,
+          enabled: true,
+        },
+        KILL: {
+          level: 0,
+          enabled: true,
+        },
+        SELL: {
+          level: 0,
+          enabled: true,
+        },
+        TRAVEL: {
+          level: 0,
+          enabled: true,
+        },
       },
-      AUTOMATE_SELL: {
-        level: 0,
-        enabled: true,
+      purchasedContainerIds: [STARTING_CONTAINER.id],
+      purchasedContainerMap: {
+        [STARTING_CONTAINER.id]: STARTING_CONTAINER,
       },
-      AUTOMATE_TRAVEL: {
-        level: 0,
-        enabled: true,
-      },
-      AUTOMATE_SORT: {
-        level: 0,
-        enabled: true,
-      },
-      SORT: {
-        level: 0,
-        enabled: true,
-      },
-      PACK: {
-        level: 0,
-        enabled: true,
-      },
-      APPRAISE: {
-        level: 0,
-        enabled: true,
-      },
-      AUTOMATE_KILL: {
-        level: 0,
-        enabled: true,
-      },
-      AUTOMATE_APPRAISE: {
-        level: 0,
-        enabled: true,
-      },
-      KILL: {
-        level: 0,
-        enabled: true,
-      },
-      SELL: {
-        level: 0,
-        enabled: true,
-      },
-      TRAVEL: {
-        level: 0,
-        enabled: true,
-      },
-    },
-    purchasedContainerIds: [STARTING_CONTAINER.id],
-    purchasedContainerMap: {
-      [STARTING_CONTAINER.id]: STARTING_CONTAINER,
-    },
-    playerAction: "IDLE",
-    playerLocation: "TOWN",
-    playerDestination: undefined,
-    highestMoneys: 0,
-    sellableItems: 0,
-  }));
+      playerAction: "IDLE",
+      playerLocation: "TOWN",
+      playerDestination: undefined,
+      highestMoneys: 0,
+      sellableItems: 0,
+    };
+  });
 
   const purchasedUpgrades: PurchasedUpgradeMap = useMemo(() => {
     return Object.entries(state.purchasedUpgradeMap).reduce(
@@ -170,12 +190,6 @@ export const useStore = () => {
       {} as PurchasedUpgradeMap,
     );
   }, [state.purchasedUpgradeMap, state.upgradeMap]);
-
-  const clearHistory = useCallback(() => {
-    setState((draft) => {
-      draft.messages = [];
-    });
-  }, [setState]);
 
   const loot: Loot = useCallback(
     ({ itemId }) => {
@@ -214,6 +228,19 @@ export const useStore = () => {
       });
 
       const { cost } = getNextLevel(container, currentCapacity);
+      const cont = containersData[0];
+      const nextContainer = getNextLevel(
+        {
+          height: cont.baseHeight,
+          width: cont.baseWidth,
+          maxHeight: cont.maxHeight,
+          maxWidth: cont.maxWidth,
+        },
+        currentCapacity,
+      );
+      const isLast =
+        state.purchasedContainerIds.indexOf(containerId) ===
+        state.purchasedContainerIds.length - 1;
 
       let full = false;
       if (state.heldItemId) {
@@ -238,6 +265,7 @@ export const useStore = () => {
         slots,
         grid,
         cost,
+        nextAvailable: cost !== 0 || !isLast ? 0 : nextContainer.cost,
         full,
       };
     },
@@ -245,6 +273,7 @@ export const useStore = () => {
       currentCapacity,
       state.heldItemId,
       state.itemMap,
+      state.purchasedContainerIds,
       state.purchasedContainerMap,
       state.slotMap,
     ],
@@ -254,13 +283,21 @@ export const useStore = () => {
     return getInventory(state.currentContainerId);
   }, [getInventory, state.currentContainerId]);
 
-  // const allItems = useMemo(() => {
-  //   return Object.values(state.purchasedContainerMap).flatMap((container) => {
-  //     return container.slotIds.map((slotId) => {
-  //       return state.itemMap[state.slotMap[slotId].itemId];
-  //     });
-  //   });
-  // }, [state.itemMap, state.purchasedContainerMap, state.slotMap]);
+  const allInventory = useMemo(() => {
+    let slots = 0;
+    let full = true;
+    for (const containerId of state.purchasedContainerIds) {
+      const inv = getInventory(containerId);
+      if (!inv.full) {
+        full = false;
+      }
+      slots += inv.slots.length;
+    }
+    return {
+      slots,
+      full,
+    };
+  }, [getInventory, state.purchasedContainerIds]);
 
   const addSlot: AddSlot = useCallback(
     ({ itemId, x, y, containerId }) => {
@@ -276,6 +313,7 @@ export const useStore = () => {
       setState((draft) => {
         draft.slotMap[slot.id] = slot;
         draft.purchasedContainerMap[containerId].slotIds.push(slot.id);
+        draft.purchasedContainerMap[containerId].sorted = false;
         draft.heldItemId = undefined;
       });
     },
@@ -331,6 +369,7 @@ export const useStore = () => {
         targetSlots.forEach((slot) => {
           draft.slotMap[slot.id].x = slot.x;
           draft.slotMap[slot.id].y = slot.y;
+          draft.purchasedContainerMap[containerId].sorted = true;
         });
       });
     },
@@ -358,6 +397,7 @@ export const useStore = () => {
       if (target) {
         const { x, y } = target;
         addSlot({ containerId: container.id, itemId: state.heldItemId, x, y });
+        return;
       }
     }
   }, [
@@ -465,6 +505,56 @@ export const useStore = () => {
     [purchasedUpgrades, setState],
   );
 
+  const buyContainer: BuyContainer = useCallback(() => {
+    setState((draft) => {
+      const cont = containersData[0];
+      const next = getNextLevel(
+        {
+          height: cont.baseHeight,
+          width: cont.baseWidth,
+          maxHeight: cont.maxHeight,
+          maxWidth: cont.maxWidth,
+        },
+        currentCapacity,
+      );
+      if (next.cost <= state.moneys) {
+        const id = uuid();
+        draft.containerMap[id] = {
+          ...cont,
+        };
+        draft.purchasedContainerIds.push(id);
+        draft.purchasedContainerMap[id] = {
+          id,
+          height: cont.baseHeight,
+          width: cont.baseWidth,
+          level: 0,
+          maxHeight: cont.maxHeight,
+          maxWidth: cont.maxWidth,
+          slotIds: [],
+          sorted: false,
+        };
+      }
+    });
+  }, [currentCapacity, setState, state.moneys]);
+
+  const nextInventory = () => {
+    const current = state.purchasedContainerIds.indexOf(
+      state.currentContainerId,
+    );
+    return state.purchasedContainerIds[current + 1];
+  };
+  const prevInventory = () => {
+    const current = state.purchasedContainerIds.indexOf(
+      state.currentContainerId,
+    );
+    return state.purchasedContainerIds[current - 1];
+  };
+  const goInventory: GoInventory = ({ containerId }) => {
+    setState((draft) => {
+      draft.currentContainerId = containerId;
+    });
+  };
+
   const buyContainerUpgrade: BuyContainerUpgrade = useCallback(
     ({ id }) => {
       setState((draft) => {
@@ -498,13 +588,15 @@ export const useStore = () => {
     });
   }, [setState, state.moneys]);
 
+  useEffect(() => {
+    localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+  });
+
   return {
     addSlot,
     availableItems,
     buyContainerUpgrade,
     buyUpgrade,
-    clearHistory,
-    getInventory,
     heldItem,
     inventory,
     moneys: state.moneys,
@@ -516,7 +608,6 @@ export const useStore = () => {
     storeHeldItem,
     sell,
     loot,
-    setState,
     sort,
     travel,
     arrive,
@@ -524,6 +615,11 @@ export const useStore = () => {
     sellItem,
     purchasedUpgrades,
     highestMoneys: state.highestMoneys,
+    buyContainer,
+    nextInventory: nextInventory(),
+    prevInventory: prevInventory(),
+    goInventory,
+    allInventory,
   };
 };
 
@@ -609,7 +705,12 @@ function recalculateGrid({
 const TILE_COST = 25;
 
 const getNextLevel = (
-  container: PurchasedContainer,
+  container: {
+    width: number;
+    height: number;
+    maxHeight: number;
+    maxWidth: number;
+  },
   currentCapacity: number,
 ) => {
   const { width, height, maxWidth, maxHeight } = container;
@@ -617,9 +718,11 @@ const getNextLevel = (
   let newWidth;
   let newHeight;
   if (width >= maxWidth && height >= maxHeight) {
-    diff = 0;
-    newWidth = width;
-    newHeight = height;
+    return {
+      cost: 0,
+      width,
+      height,
+    };
   } else if (width >= maxWidth) {
     diff = width;
     newWidth = width;

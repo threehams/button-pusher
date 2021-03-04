@@ -3,7 +3,7 @@ import {
   Adventure,
   Sell,
   SellItem,
-  Inventory,
+  AllInventory,
   PurchasedUpgrade,
 } from "@botnet/store";
 
@@ -20,7 +20,7 @@ type AutoSell = {
   delta: number;
   playerAction: PlayerAction;
   playerLocation: PlayerLocation;
-  inventory: Inventory;
+  allInventory: AllInventory;
 };
 export const autoSell = ({
   lastAutoSell: lastAutoSell,
@@ -34,7 +34,7 @@ export const autoSell = ({
   autoUpgrade,
   playerAction,
   playerLocation,
-  inventory,
+  allInventory,
 }: AutoSell) => {
   if (playerAction === "SELLING") {
     setLastSell(lastSell + delta);
@@ -48,7 +48,7 @@ export const autoSell = ({
     autoUpgrade.level &&
     playerAction === "IDLE" &&
     playerLocation === "TOWN" &&
-    inventory.slots.length
+    allInventory.slots
   ) {
     setLastAutoSell(lastAutoSell + delta);
     if (lastAutoSell > autoUpgrade.time) {

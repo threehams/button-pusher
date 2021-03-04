@@ -21,7 +21,6 @@ import {
 
 export const State = Record({
   playerLocation: PlayerLocation,
-  messages: Array(String),
   heldItemId: Union(String, Undefined),
   purchasedContainerIds: Array(String),
   purchasedContainerMap: PurchasedContainerMap,
