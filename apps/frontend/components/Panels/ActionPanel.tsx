@@ -1,20 +1,10 @@
 import { useStoreValue } from "@botnet/store";
 import { css } from "@emotion/react";
+import { useProgress } from "../../hooks/ProgressContext";
 import React from "react";
 import { Progress } from "../Progress";
 
-type Props = {
-  killProgress: number;
-  packProgress: number;
-  sellProgress: number;
-  travelProgress: number;
-};
-export const ActionPanel = ({
-  killProgress,
-  packProgress,
-  sellProgress,
-  travelProgress,
-}: Props) => {
+export const ActionPanel = () => {
   const {
     heldItem,
     playerAction,
@@ -27,6 +17,13 @@ export const ActionPanel = ({
     sell,
     travel,
   } = useStoreValue();
+  const {
+    killProgress,
+    packProgress,
+    sellProgress,
+    travelProgress,
+  } = useProgress();
+
   return (
     <>
       <h1

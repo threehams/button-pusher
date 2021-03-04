@@ -14,4 +14,5 @@ export type Inventory = {
   full: boolean;
   cost: number;
   nextAvailable: number;
+  sorted: boolean;
 };

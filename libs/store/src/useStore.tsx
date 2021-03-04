@@ -35,6 +35,7 @@ const STARTING_CONTAINER: PurchasedContainer = {
   maxWidth: containersData[0].maxWidth,
   maxHeight: containersData[0].maxHeight,
   slotIds: [],
+  sorted: false,
 };
 
 export type Loot = (options: { itemId: string }) => void;
@@ -67,6 +68,8 @@ export type GoInventory = (options: { containerId: string }) => void;
 
 type SortMethod = "horizontal" | "vertical";
 
+const SAVE_KEY = "youAreOverburdenedSave";
+
 /**
  * Set up local state to hold onto messages received from the server.
  *
@@ -76,86 +79,98 @@ type SortMethod = "horizontal" | "vertical";
  *
  */
 export const useStore = (): StoreContextType => {
-  const [state, setState] = useImmer<State>(() => ({
-    containerMap: Object.fromEntries(
-      containersData.map((item) => [item.id, item]),
-    ),
-    currentContainerId: STARTING_CONTAINER.id,
-    itemMap: Object.fromEntries(
-      itemsData.map((item) => {
-        return [
-          item.id,
-          {
-            ...item,
-            cost: item.height * item.width * 10,
-          },
-        ];
-      }),
-    ),
-    slotMap: {},
-    heldItemId: undefined,
-    moneys: 0,
-    upgradeMap: upgradesData,
-    purchasedUpgradeMap: {
-      AUTOMATE_PACK: {
-        level: 0,
-        enabled: true,
+  const [state, setState] = useImmer<State>(() => {
+    if (typeof localStorage !== "undefined") {
+      try {
+        const saved = JSON.parse(localStorage.getItem(SAVE_KEY)!);
+        if (saved) {
+          return saved;
+        }
+      } catch (err) {
+        // use default state
+      }
+    }
+    return {
+      containerMap: Object.fromEntries(
+        containersData.map((item) => [item.id, item]),
+      ),
+      currentContainerId: STARTING_CONTAINER.id,
+      itemMap: Object.fromEntries(
+        itemsData.map((item) => {
+          return [
+            item.id,
+            {
+              ...item,
+              cost: item.height * item.width * 10,
+            },
+          ];
+        }),
+      ),
+      slotMap: {},
+      heldItemId: undefined,
+      moneys: 0,
+      upgradeMap: upgradesData,
+      purchasedUpgradeMap: {
+        AUTOMATE_PACK: {
+          level: 0,
+          enabled: true,
+        },
+        AUTOMATE_SELL: {
+          level: 0,
+          enabled: true,
+        },
+        AUTOMATE_TRAVEL: {
+          level: 0,
+          enabled: true,
+        },
+        AUTOMATE_SORT: {
+          level: 0,
+          enabled: true,
+        },
+        SORT: {
+          level: 0,
+          enabled: true,
+        },
+        PACK: {
+          level: 0,
+          enabled: true,
+        },
+        APPRAISE: {
+          level: 0,
+          enabled: true,
+        },
+        AUTOMATE_KILL: {
+          level: 0,
+          enabled: true,
+        },
+        AUTOMATE_APPRAISE: {
+          level: 0,
+          enabled: true,
+        },
+        KILL: {
+          level: 0,
+          enabled: true,
+        },
+        SELL: {
+          level: 0,
+          enabled: true,
+        },
+        TRAVEL: {
+          level: 0,
+          enabled: true,
+        },
       },
-      AUTOMATE_SELL: {
-        level: 0,
-        enabled: true,
+      purchasedContainerIds: [STARTING_CONTAINER.id],
+      purchasedContainerMap: {
+        [STARTING_CONTAINER.id]: STARTING_CONTAINER,
       },
-      AUTOMATE_TRAVEL: {
-        level: 0,
-        enabled: true,
-      },
-      AUTOMATE_SORT: {
-        level: 0,
-        enabled: true,
-      },
-      SORT: {
-        level: 0,
-        enabled: true,
-      },
-      PACK: {
-        level: 0,
-        enabled: true,
-      },
-      APPRAISE: {
-        level: 0,
-        enabled: true,
-      },
-      AUTOMATE_KILL: {
-        level: 0,
-        enabled: true,
-      },
-      AUTOMATE_APPRAISE: {
-        level: 0,
-        enabled: true,
-      },
-      KILL: {
-        level: 0,
-        enabled: true,
-      },
-      SELL: {
-        level: 0,
-        enabled: true,
-      },
-      TRAVEL: {
-        level: 0,
-        enabled: true,
-      },
-    },
-    purchasedContainerIds: [STARTING_CONTAINER.id],
-    purchasedContainerMap: {
-      [STARTING_CONTAINER.id]: STARTING_CONTAINER,
-    },
-    playerAction: "IDLE",
-    playerLocation: "TOWN",
-    playerDestination: undefined,
-    highestMoneys: 0,
-    sellableItems: 0,
-  }));
+      playerAction: "IDLE",
+      playerLocation: "TOWN",
+      playerDestination: undefined,
+      highestMoneys: 0,
+      sellableItems: 0,
+    };
+  });
 
   const purchasedUpgrades: PurchasedUpgradeMap = useMemo(() => {
     return Object.entries(state.purchasedUpgradeMap).reduce(
@@ -284,14 +299,6 @@ export const useStore = (): StoreContextType => {
     };
   }, [getInventory, state.purchasedContainerIds]);
 
-  // const allItems = useMemo(() => {
-  //   return Object.values(state.purchasedContainerMap).flatMap((container) => {
-  //     return container.slotIds.map((slotId) => {
-  //       return state.itemMap[state.slotMap[slotId].itemId];
-  //     });
-  //   });
-  // }, [state.itemMap, state.purchasedContainerMap, state.slotMap]);
-
   const addSlot: AddSlot = useCallback(
     ({ itemId, x, y, containerId }) => {
       const slot = {
@@ -306,6 +313,7 @@ export const useStore = (): StoreContextType => {
       setState((draft) => {
         draft.slotMap[slot.id] = slot;
         draft.purchasedContainerMap[containerId].slotIds.push(slot.id);
+        draft.purchasedContainerMap[containerId].sorted = false;
         draft.heldItemId = undefined;
       });
     },
@@ -361,6 +369,7 @@ export const useStore = (): StoreContextType => {
         targetSlots.forEach((slot) => {
           draft.slotMap[slot.id].x = slot.x;
           draft.slotMap[slot.id].y = slot.y;
+          draft.purchasedContainerMap[containerId].sorted = true;
         });
       });
     },
@@ -522,6 +531,7 @@ export const useStore = (): StoreContextType => {
           maxHeight: cont.maxHeight,
           maxWidth: cont.maxWidth,
           slotIds: [],
+          sorted: false,
         };
       }
     });
@@ -577,6 +587,10 @@ export const useStore = (): StoreContextType => {
       draft.highestMoneys = Math.max(draft.highestMoneys, draft.moneys);
     });
   }, [setState, state.moneys]);
+
+  useEffect(() => {
+    localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+  });
 
   return {
     addSlot,

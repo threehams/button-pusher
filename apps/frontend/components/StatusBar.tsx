@@ -1,24 +1,18 @@
 import { useStoreValue } from "@botnet/store";
 import React from "react";
+import { useProgress } from "../hooks/ProgressContext";
 import { Progress } from "./Progress";
 
-type Props = {
-  autoTravelProgress: number;
-  travelProgress: number;
-  autoSellProgress: number;
-  autoKillProgress: number;
-  autoPackProgress: number;
-  packProgress: number;
-};
-export const StatusBar = ({
-  autoTravelProgress,
-  travelProgress,
-  autoSellProgress,
-  autoKillProgress,
-  autoPackProgress,
-  packProgress,
-}: Props) => {
+export const StatusBar = () => {
   const { heldItem, playerDestination } = useStoreValue();
+  const {
+    autoKillProgress,
+    autoPackProgress,
+    autoSellProgress,
+    autoTravelProgress,
+    packProgress,
+    travelProgress,
+  } = useProgress();
   if (autoTravelProgress) {
     return (
       <Progress percent={autoTravelProgress}>Deciding where to travel</Progress>
