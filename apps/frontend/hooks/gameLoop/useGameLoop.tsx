@@ -1,18 +1,4 @@
-import { Item, PlayerAction, PlayerLocation } from "@botnet/messages";
-import {
-  Adventure,
-  Arrive,
-  Inventory,
-  Pack,
-  Sell,
-  SellItem,
-  Loot,
-  Sort,
-  Travel,
-  StoreHeldItem,
-  PurchasedUpgradeMap,
-  AllInventory,
-} from "@botnet/store";
+import { StoreContextType } from "@botnet/store";
 import { useLoop } from "@botnet/worker";
 import { useState } from "react";
 import { autoPack } from "./autoPack";
@@ -21,24 +7,6 @@ import { autoSort } from "./autoSort";
 import { autoTravel } from "./autoTravel";
 import { kill } from "./kill";
 
-type UseGameLoop = {
-  loot: Loot;
-  heldItem: Item | undefined;
-  availableItems: Item[];
-  purchasedUpgrades: PurchasedUpgradeMap;
-  pack: Pack;
-  sort: Sort;
-  sell: Sell;
-  playerLocation: PlayerLocation;
-  playerAction: PlayerAction;
-  travel: Travel;
-  adventure: Adventure;
-  arrive: Arrive;
-  sellItem: SellItem;
-  inventory: Inventory;
-  storeHeldItem: StoreHeldItem;
-  allInventory: AllInventory;
-};
 export const useGameLoop = ({
   loot,
   heldItem,
@@ -56,7 +24,7 @@ export const useGameLoop = ({
   storeHeldItem,
   travel,
   allInventory,
-}: UseGameLoop) => {
+}: StoreContextType) => {
   const [lastKill, setLastKill] = useState(0);
   const [lastAutoKill, setLastAutoKill] = useState(0);
   const [lastPack, setLastPack] = useState(0);

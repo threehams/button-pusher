@@ -1,33 +1,24 @@
-import {
-  BuyUpgrade,
-  PurchasedUpgrade,
-  PurchasedUpgradeMap,
-} from "@botnet/store";
+import { BuyUpgrade, PurchasedUpgrade, useStoreValue } from "@botnet/store";
 import { css } from "@emotion/react";
 import React from "react";
 import { Button } from "../Button";
 
-type UpgradePanelProps = {
-  upgrades: PurchasedUpgradeMap;
-  buyUpgrade: BuyUpgrade;
-  highestMoneys: number;
-  moneys: number;
-};
-export const UpgradePanel = ({
-  upgrades,
-  buyUpgrade,
-  highestMoneys,
-  moneys,
-}: UpgradePanelProps) => {
-  if (!upgrades) {
+export const UpgradePanel = () => {
+  const {
+    purchasedUpgrades,
+    buyUpgrade,
+    highestMoneys,
+    moneys,
+  } = useStoreValue();
+  if (!purchasedUpgrades) {
     return <div>Nothing here</div>;
   }
   const automationUpgrades = [
-    upgrades.AUTOMATE_KILL,
-    upgrades.AUTOMATE_PACK,
-    upgrades.AUTOMATE_SELL,
-    upgrades.AUTOMATE_SORT,
-    upgrades.AUTOMATE_TRAVEL,
+    purchasedUpgrades.AUTOMATE_KILL,
+    purchasedUpgrades.AUTOMATE_PACK,
+    purchasedUpgrades.AUTOMATE_SELL,
+    purchasedUpgrades.AUTOMATE_SORT,
+    purchasedUpgrades.AUTOMATE_TRAVEL,
   ].filter((upgrade) => {
     return (
       upgrade.level > 0 ||
@@ -36,11 +27,11 @@ export const UpgradePanel = ({
   });
 
   const standardUpgrades = [
-    upgrades.KILL,
-    upgrades.PACK,
-    upgrades.SELL,
-    upgrades.SORT,
-    upgrades.TRAVEL,
+    purchasedUpgrades.KILL,
+    purchasedUpgrades.PACK,
+    purchasedUpgrades.SELL,
+    purchasedUpgrades.SORT,
+    purchasedUpgrades.TRAVEL,
   ].filter((upgrade) => {
     return (
       upgrade.level > 0 ||

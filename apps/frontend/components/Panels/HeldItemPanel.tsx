@@ -1,19 +1,10 @@
-import { Item } from "@botnet/messages";
-import { AddSlot, MoveSlot } from "@botnet/store";
+import { useStoreValue } from "@botnet/store";
 import { css, useTheme } from "@emotion/react";
 import React from "react";
 import { InventoryItem } from "../InventoryItem";
 
-type HeldItemPanelProps = {
-  item: Item | undefined;
-  addSlot: AddSlot;
-  moveSlot: MoveSlot;
-};
-export const HeldItemPanel = ({
-  addSlot,
-  moveSlot,
-  item,
-}: HeldItemPanelProps) => {
+export const HeldItemPanel = () => {
+  const { addSlot, moveSlot, heldItem } = useStoreValue();
   const theme = useTheme();
   return (
     <div
@@ -26,8 +17,8 @@ export const HeldItemPanel = ({
         justify-content: center;
       `}
     >
-      {item && (
-        <InventoryItem moveSlot={moveSlot} addSlot={addSlot} item={item} />
+      {heldItem && (
+        <InventoryItem moveSlot={moveSlot} addSlot={addSlot} item={heldItem} />
       )}
     </div>
   );

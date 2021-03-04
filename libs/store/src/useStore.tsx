@@ -17,6 +17,7 @@ import { Inventory } from "./Inventory";
 import { range } from "lodash";
 import { getTargetCoords } from "./getTargetCoords";
 import { PurchasedUpgradeMap } from "./PurchasedUpgradeMap";
+import { StoreContextType } from "./StoreContext";
 
 type FullSlot = {
   id: string;
@@ -74,9 +75,8 @@ type SortMethod = "horizontal" | "vertical";
  * - Provide functions to other hooks to modify state.
  *
  */
-export const useStore = () => {
+export const useStore = (): StoreContextType => {
   const [state, setState] = useImmer<State>(() => ({
-    messages: [],
     containerMap: Object.fromEntries(
       containersData.map((item) => [item.id, item]),
     ),
@@ -175,12 +175,6 @@ export const useStore = () => {
       {} as PurchasedUpgradeMap,
     );
   }, [state.purchasedUpgradeMap, state.upgradeMap]);
-
-  const clearHistory = useCallback(() => {
-    setState((draft) => {
-      draft.messages = [];
-    });
-  }, [setState]);
 
   const loot: Loot = useCallback(
     ({ itemId }) => {
@@ -589,8 +583,6 @@ export const useStore = () => {
     availableItems,
     buyContainerUpgrade,
     buyUpgrade,
-    clearHistory,
-    getInventory,
     heldItem,
     inventory,
     moneys: state.moneys,
@@ -602,7 +594,6 @@ export const useStore = () => {
     storeHeldItem,
     sell,
     loot,
-    setState,
     sort,
     travel,
     arrive,

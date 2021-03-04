@@ -63,7 +63,7 @@ module.exports = {
     "react/jsx-boolean-value": ["error", "never"],
     "react/no-unknown-property": "error",
     "react/prop-types": "off",
-    "react/react-in-jsx-scope": "error",
+    "react/react-in-jsx-scope": "off",
     "@nrwl/nx/enforce-module-boundaries": [
       "error",
       {

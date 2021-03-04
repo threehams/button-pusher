@@ -1,14 +1,4 @@
-import {
-  AddSlot,
-  BuyContainer,
-  BuyContainerUpgrade,
-  GoInventory,
-  Inventory,
-  MoveSlot,
-  NextInventory,
-  PrevInventory,
-  SlotInfo,
-} from "@botnet/store";
+import { SlotInfo, useStoreValue } from "@botnet/store";
 import React, { useCallback, useState } from "react";
 import { range } from "lodash";
 import { css, useTheme } from "@emotion/react";
@@ -18,28 +8,18 @@ import deepEqual from "deep-equal";
 import { getTargetCoords } from "@botnet/store";
 import { Button } from "../Button";
 
-type InventoryPanelProps = {
-  inventory: Inventory;
-  addSlot: AddSlot;
-  moveSlot: MoveSlot;
-  buyContainerUpgrade: BuyContainerUpgrade;
-  moneys: number;
-  nextInventory: NextInventory;
-  prevInventory: PrevInventory;
-  goInventory: GoInventory;
-  buyContainer: BuyContainer;
-};
-export const InventoryPanel = ({
-  inventory,
-  buyContainerUpgrade,
-  addSlot,
-  moveSlot,
-  moneys,
-  nextInventory,
-  prevInventory,
-  goInventory,
-  buyContainer,
-}: InventoryPanelProps) => {
+export const InventoryPanel = () => {
+  const {
+    inventory,
+    buyContainerUpgrade,
+    addSlot,
+    moveSlot,
+    moneys,
+    nextInventory,
+    prevInventory,
+    goInventory,
+    buyContainer,
+  } = useStoreValue();
   const { nextAvailable, height, width, slots, cost } = inventory;
   const [target, setTargetState] = useState<SlotInfo | undefined>();
 
