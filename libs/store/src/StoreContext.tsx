@@ -23,6 +23,8 @@ import {
   Travel,
   Disable,
   Enable,
+  Cheat,
+  Reset,
 } from "./useStore";
 
 export type StoreContextType = {
@@ -55,6 +57,8 @@ export type StoreContextType = {
   allInventory: AllInventory;
   disable: Disable;
   enable: Enable;
+  reset: Reset;
+  cheat: Cheat;
 };
 
 const StoreContext = React.createContext<StoreContextType>(undefined as any);

@@ -4,6 +4,7 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useGameLoop } from "../hooks/gameLoop";
 import { ProgressProvider } from "../hooks/ProgressContext";
+import { Debug } from "./Debug";
 import { Layout } from "./Layout";
 
 export const Game = () => {
@@ -15,6 +16,7 @@ export const Game = () => {
       <ProgressProvider value={progress}>
         <DndProvider backend={HTML5Backend}>
           <Layout />
+          <Debug />
         </DndProvider>
       </ProgressProvider>
     </StoreProvider>

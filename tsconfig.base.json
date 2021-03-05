@@ -11,6 +11,7 @@
     "module": "esnext",
     "moduleResolution": "node",
     "outDir": "./dist/out-tsc",
+    "resolveJsonModule": true,
     "paths": {
       "@botnet/messages": ["libs/messages/src/index.ts"],
       "@botnet/ui": ["libs/ui/src/index.ts"],

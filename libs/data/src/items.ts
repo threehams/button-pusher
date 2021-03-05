@@ -1,9 +1,8 @@
 import { Item } from "@botnet/messages";
-import { v4 as uuid } from "uuid";
 
 export const items: Item[] = [
   {
-    id: uuid(),
+    id: "HEALING_POTION",
     height: 1,
     width: 1,
     name: "Healing Potion",
@@ -11,7 +10,7 @@ export const items: Item[] = [
     value: 10,
   },
   {
-    id: uuid(),
+    id: "BOMB",
     height: 1,
     width: 1,
     name: "A Bomb",
@@ -19,15 +18,15 @@ export const items: Item[] = [
     value: 10,
   },
   {
-    id: uuid(),
+    id: "GEM",
     height: 1,
     width: 1,
     name: "Gem",
     image: "assets/gem.svg",
-    value: 15,
+    value: 50,
   },
   {
-    id: uuid(),
+    id: "DAGGER",
     height: 2,
     width: 1,
     name: "Dagger",
@@ -35,7 +34,7 @@ export const items: Item[] = [
     value: 30,
   },
   {
-    id: uuid(),
+    id: "BUCKLER",
     height: 2,
     width: 2,
     name: "Buckler",
@@ -43,7 +42,7 @@ export const items: Item[] = [
     value: 80,
   },
   {
-    id: uuid(),
+    id: "HELM",
     height: 2,
     width: 2,
     name: "Helm",
@@ -51,7 +50,7 @@ export const items: Item[] = [
     value: 80,
   },
   {
-    id: uuid(),
+    id: "LONGSWORD",
     height: 3,
     width: 1,
     name: "Longsword",
@@ -59,7 +58,7 @@ export const items: Item[] = [
     value: 100,
   },
   {
-    id: uuid(),
+    id: "2HAND_SWORD",
     height: 4,
     width: 1,
     name: "Two Handed Sword",
@@ -67,7 +66,7 @@ export const items: Item[] = [
     value: 100,
   },
   {
-    id: uuid(),
+    id: "SPEAR",
     height: 4,
     width: 1,
     name: "Spear",
@@ -75,7 +74,7 @@ export const items: Item[] = [
     value: 100,
   },
   {
-    id: uuid(),
+    id: "PANTS",
     height: 3,
     width: 2,
     name: "Pants",
@@ -83,7 +82,7 @@ export const items: Item[] = [
     value: 100,
   },
   {
-    id: uuid(),
+    id: "MAIL",
     height: 3,
     width: 2,
     name: "Mail",
@@ -91,7 +90,7 @@ export const items: Item[] = [
     value: 100,
   },
   {
-    id: uuid(),
+    id: "SCYTHE",
     height: 4,
     width: 2,
     name: "Scythe",
@@ -99,7 +98,7 @@ export const items: Item[] = [
     value: 400,
   },
   {
-    id: uuid(),
+    id: "BOW",
     height: 4,
     width: 2,
     name: "Bow",

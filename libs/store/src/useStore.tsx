@@ -18,6 +18,7 @@ import { range } from "lodash";
 import { getTargetCoords } from "./getTargetCoords";
 import { PurchasedUpgradeMap } from "./PurchasedUpgradeMap";
 import { StoreContextType } from "./StoreContext";
+import midgameState from "./saves/midgame.json";
 
 type FullSlot = {
   id: string;
@@ -73,10 +74,94 @@ export type AutomatedUpgrade =
   | "AUTOMATE_TRAVEL";
 export type Disable = (action: AutomatedUpgrade) => void;
 export type Enable = (action: AutomatedUpgrade) => void;
+export type CheatType = "AUTOMATION" | "MIDGAME";
+export type Cheat = (type: CheatType) => void;
+export type Reset = () => void;
 
 type SortMethod = "horizontal" | "vertical";
 
 const SAVE_KEY = "youAreOverburdenedSave";
+
+const INITIAL_STATE = {
+  containerMap: Object.fromEntries(
+    containersData.map((item) => [item.id, item]),
+  ),
+  currentContainerId: STARTING_CONTAINER.id,
+  itemMap: Object.fromEntries(
+    itemsData.map((item) => {
+      return [
+        item.id,
+        {
+          ...item,
+          cost: item.height * item.width * 10,
+        },
+      ];
+    }),
+  ),
+  slotMap: {},
+  heldItemId: undefined,
+  moneys: 0,
+  upgradeMap: upgradesData,
+  purchasedUpgradeMap: {
+    AUTOMATE_PACK: {
+      level: 0,
+      enabled: true,
+    },
+    AUTOMATE_SELL: {
+      level: 0,
+      enabled: true,
+    },
+    AUTOMATE_TRAVEL: {
+      level: 0,
+      enabled: true,
+    },
+    AUTOMATE_SORT: {
+      level: 0,
+      enabled: true,
+    },
+    SORT: {
+      level: 0,
+      enabled: true,
+    },
+    PACK: {
+      level: 0,
+      enabled: true,
+    },
+    APPRAISE: {
+      level: 0,
+      enabled: true,
+    },
+    AUTOMATE_KILL: {
+      level: 0,
+      enabled: true,
+    },
+    AUTOMATE_APPRAISE: {
+      level: 0,
+      enabled: true,
+    },
+    KILL: {
+      level: 0,
+      enabled: true,
+    },
+    SELL: {
+      level: 0,
+      enabled: true,
+    },
+    TRAVEL: {
+      level: 0,
+      enabled: true,
+    },
+  },
+  purchasedContainerIds: [STARTING_CONTAINER.id],
+  purchasedContainerMap: {
+    [STARTING_CONTAINER.id]: STARTING_CONTAINER,
+  },
+  playerAction: "IDLE" as const,
+  playerLocation: "TOWN" as const,
+  playerDestination: undefined,
+  highestMoneys: 0,
+  sellableItems: 0,
+};
 
 /**
  * Set up local state to hold onto messages received from the server.
@@ -98,86 +183,7 @@ export const useStore = (): StoreContextType => {
         // use default state
       }
     }
-    return {
-      containerMap: Object.fromEntries(
-        containersData.map((item) => [item.id, item]),
-      ),
-      currentContainerId: STARTING_CONTAINER.id,
-      itemMap: Object.fromEntries(
-        itemsData.map((item) => {
-          return [
-            item.id,
-            {
-              ...item,
-              cost: item.height * item.width * 10,
-            },
-          ];
-        }),
-      ),
-      slotMap: {},
-      heldItemId: undefined,
-      moneys: 0,
-      upgradeMap: upgradesData,
-      purchasedUpgradeMap: {
-        AUTOMATE_PACK: {
-          level: 0,
-          enabled: true,
-        },
-        AUTOMATE_SELL: {
-          level: 0,
-          enabled: true,
-        },
-        AUTOMATE_TRAVEL: {
-          level: 0,
-          enabled: true,
-        },
-        AUTOMATE_SORT: {
-          level: 0,
-          enabled: true,
-        },
-        SORT: {
-          level: 0,
-          enabled: true,
-        },
-        PACK: {
-          level: 0,
-          enabled: true,
-        },
-        APPRAISE: {
-          level: 0,
-          enabled: true,
-        },
-        AUTOMATE_KILL: {
-          level: 0,
-          enabled: true,
-        },
-        AUTOMATE_APPRAISE: {
-          level: 0,
-          enabled: true,
-        },
-        KILL: {
-          level: 0,
-          enabled: true,
-        },
-        SELL: {
-          level: 0,
-          enabled: true,
-        },
-        TRAVEL: {
-          level: 0,
-          enabled: true,
-        },
-      },
-      purchasedContainerIds: [STARTING_CONTAINER.id],
-      purchasedContainerMap: {
-        [STARTING_CONTAINER.id]: STARTING_CONTAINER,
-      },
-      playerAction: "IDLE",
-      playerLocation: "TOWN",
-      playerDestination: undefined,
-      highestMoneys: 0,
-      sellableItems: 0,
-    };
+    return INITIAL_STATE;
   });
 
   const purchasedUpgrades: PurchasedUpgradeMap = useMemo(() => {
@@ -608,6 +614,30 @@ export const useStore = (): StoreContextType => {
     [setState],
   );
 
+  const reset: Reset = useCallback(() => {
+    setState(() => {
+      return INITIAL_STATE;
+    });
+  }, [setState]);
+
+  const cheat: Cheat = useCallback(
+    (type) => {
+      if (type === "AUTOMATION") {
+        setState((draft) => {
+          Object.values(draft.purchasedUpgradeMap).forEach((upgrade) => {
+            upgrade.level += 1;
+          });
+        });
+        return;
+      } else {
+        setState(() => {
+          return midgameState;
+        });
+      }
+    },
+    [setState],
+  );
+
   useEffect(() => {
     setState((draft) => {
       draft.highestMoneys = Math.max(draft.highestMoneys, draft.moneys);
@@ -648,6 +678,8 @@ export const useStore = (): StoreContextType => {
     allInventory,
     disable,
     enable,
+    cheat,
+    reset,
   };
 };
 
