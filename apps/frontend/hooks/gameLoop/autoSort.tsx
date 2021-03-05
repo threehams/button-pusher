@@ -17,7 +17,12 @@ export const autoSort = ({
   delta,
   autoUpgrade,
 }: AutoSort) => {
-  if (!autoUpgrade.level || !inventory.full || inventory.sorted) {
+  if (
+    !autoUpgrade.level ||
+    !autoUpgrade.enabled ||
+    !inventory.full ||
+    inventory.sorted
+  ) {
     return;
   }
   setLastSort(lastSort + delta);

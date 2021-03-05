@@ -65,6 +65,14 @@ export type BuyContainer = () => void;
 export type NextInventory = string | undefined;
 export type PrevInventory = string | undefined;
 export type GoInventory = (options: { containerId: string }) => void;
+export type AutomatedUpgrade =
+  | "AUTOMATE_KILL"
+  | "AUTOMATE_PACK"
+  | "AUTOMATE_SELL"
+  | "AUTOMATE_SORT"
+  | "AUTOMATE_TRAVEL";
+export type Disable = (action: AutomatedUpgrade) => void;
+export type Enable = (action: AutomatedUpgrade) => void;
 
 type SortMethod = "horizontal" | "vertical";
 
@@ -582,6 +590,24 @@ export const useStore = (): StoreContextType => {
     return Object.values(state.itemMap);
   }, [state.itemMap]);
 
+  const disable: Disable = useCallback(
+    (action) => {
+      setState((draft) => {
+        draft.purchasedUpgradeMap[action].enabled = false;
+      });
+    },
+    [setState],
+  );
+
+  const enable: Enable = useCallback(
+    (action) => {
+      setState((draft) => {
+        draft.purchasedUpgradeMap[action].enabled = true;
+      });
+    },
+    [setState],
+  );
+
   useEffect(() => {
     setState((draft) => {
       draft.highestMoneys = Math.max(draft.highestMoneys, draft.moneys);
@@ -620,6 +646,8 @@ export const useStore = (): StoreContextType => {
     prevInventory: prevInventory(),
     goInventory,
     allInventory,
+    disable,
+    enable,
   };
 };
 

@@ -45,6 +45,7 @@ export const autoPack = ({
   if (
     !allInventory.full &&
     autoUpgrade.level &&
+    autoUpgrade.enabled &&
     heldItem &&
     playerAction === "IDLE"
   ) {

@@ -25,6 +25,7 @@ export const Button = ({
         outline: 1px solid #f8f8f8;
         position: relative;
         cursor: pointer;
+        padding: 0 20px;
       `}
       className={className}
     >

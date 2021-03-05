@@ -46,6 +46,7 @@ export const kill = ({
 
   if (
     autoUpgrade.level &&
+    autoUpgrade.enabled &&
     playerAction === "IDLE" &&
     playerLocation !== "TOWN"
   ) {
