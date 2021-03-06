@@ -8,6 +8,7 @@ import {
   ItemDefinition,
   PlayerLocation,
   PurchasedContainer,
+  Rarity,
   UpgradeType,
 } from "@botnet/messages";
 import { useCallback, useEffect, useMemo } from "react";
@@ -841,5 +842,15 @@ const randomLoot = (available: ItemDefinition[]): Item => {
     ...itemDefinition,
     id: uuid(),
     rarity,
+    value: itemDefinition.value * rarityValues[rarity],
   };
+};
+
+const rarityValues: { [Key in Rarity]: number } = {
+  JUNK: 0.5,
+  COMMON: 1,
+  UNCOMMON: 1.5,
+  RARE: 2,
+  EPIC: 3,
+  LEGENDARY: 5,
 };
