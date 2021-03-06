@@ -30,7 +30,6 @@ import {
 export type StoreContextType = {
   storeHeldItem: StoreHeldItem;
   addSlot: AddSlot;
-  availableItems: Item[];
   buyContainerUpgrade: BuyContainerUpgrade;
   buyUpgrade: BuyUpgrade;
   heldSlot: (Slot & { item: Item }) | undefined;

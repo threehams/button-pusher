@@ -49,7 +49,6 @@ export const GlobalStyles = () => {
           body,
           button,
           input {
-            word-break: break-all;
             color: #f8f8f8;
             font-size: 20px;
           }

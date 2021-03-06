@@ -8,7 +8,6 @@ export const items: ItemDefinition[] = [
     name: "Healing Potion",
     image: "assets/potion.svg",
     value: 10,
-    rarities: ["COMMON"],
     category: "POTION",
   },
   {
@@ -18,7 +17,6 @@ export const items: ItemDefinition[] = [
     name: "A Bomb",
     image: "assets/bomb.svg",
     value: 10,
-    rarities: ["COMMON"],
     category: "THROWABLE",
   },
   {
@@ -28,7 +26,6 @@ export const items: ItemDefinition[] = [
     name: "Gem",
     image: "assets/gem.svg",
     value: 50,
-    rarities: ["COMMON"],
     category: "CRAFTING",
   },
   {
@@ -38,7 +35,6 @@ export const items: ItemDefinition[] = [
     name: "Dagger",
     image: "assets/dagger.svg",
     value: 30,
-    rarities: ["JUNK", "COMMON", "UNCOMMON", "RARE", "EPIC", "LEGENDARY"],
     category: "MELEE",
   },
   {
@@ -48,7 +44,6 @@ export const items: ItemDefinition[] = [
     name: "Buckler",
     image: "assets/buckler.svg",
     value: 80,
-    rarities: ["JUNK", "COMMON", "UNCOMMON", "RARE", "EPIC", "LEGENDARY"],
     category: "SHIELD",
   },
   {
@@ -58,7 +53,6 @@ export const items: ItemDefinition[] = [
     name: "Helm",
     image: "assets/helm.svg",
     value: 80,
-    rarities: ["JUNK", "COMMON", "UNCOMMON", "RARE", "EPIC", "LEGENDARY"],
     category: "ARMOR",
   },
   {
@@ -68,7 +62,6 @@ export const items: ItemDefinition[] = [
     name: "Longsword",
     image: "assets/longsword.svg",
     value: 100,
-    rarities: ["JUNK", "COMMON", "UNCOMMON", "RARE", "EPIC", "LEGENDARY"],
     category: "MELEE",
   },
   {
@@ -78,7 +71,6 @@ export const items: ItemDefinition[] = [
     name: "Two Handed Sword",
     image: "assets/2hsword.svg",
     value: 100,
-    rarities: ["JUNK", "COMMON", "UNCOMMON", "RARE", "EPIC", "LEGENDARY"],
     category: "MELEE",
   },
   {
@@ -88,7 +80,6 @@ export const items: ItemDefinition[] = [
     name: "Spear",
     image: "assets/spear.svg",
     value: 100,
-    rarities: ["JUNK", "COMMON", "UNCOMMON", "RARE", "EPIC", "LEGENDARY"],
     category: "MELEE",
   },
   {
@@ -98,7 +89,6 @@ export const items: ItemDefinition[] = [
     name: "Pants",
     image: "assets/pants.svg",
     value: 100,
-    rarities: ["JUNK", "COMMON", "UNCOMMON", "RARE", "EPIC", "LEGENDARY"],
     category: "ARMOR",
   },
   {
@@ -108,7 +98,6 @@ export const items: ItemDefinition[] = [
     name: "Mail",
     image: "assets/mail.svg",
     value: 100,
-    rarities: ["JUNK", "COMMON", "UNCOMMON", "RARE", "EPIC", "LEGENDARY"],
     category: "ARMOR",
   },
   {
@@ -118,7 +107,6 @@ export const items: ItemDefinition[] = [
     name: "Scythe",
     image: "assets/scythe.svg",
     value: 400,
-    rarities: ["JUNK", "COMMON", "UNCOMMON", "RARE", "EPIC", "LEGENDARY"],
     category: "MELEE",
   },
   {
@@ -128,7 +116,6 @@ export const items: ItemDefinition[] = [
     name: "Bow",
     image: "assets/bow.svg",
     value: 400,
-    rarities: ["JUNK", "COMMON", "UNCOMMON", "RARE", "EPIC", "LEGENDARY"],
     category: "BOW",
   },
 ];

@@ -1,8 +1,9 @@
 import { Modifier } from "@botnet/messages";
 
-export const prefixes: Modifier[] = [
+export const modifiers: Modifier[] = [
   {
     name: "Broken",
+    type: "PREFIX",
     stat: "DAMAGE",
     multiplier: 0.2,
     rarities: ["JUNK"],
@@ -10,6 +11,7 @@ export const prefixes: Modifier[] = [
   },
   {
     name: "Mild",
+    type: "PREFIX",
     stat: "HEALTH",
     multiplier: 0.2,
     rarities: ["JUNK"],
@@ -17,6 +19,7 @@ export const prefixes: Modifier[] = [
   },
   {
     name: "Smelly",
+    type: "PREFIX",
     stat: "HEALTH",
     multiplier: 0.2,
     rarities: ["JUNK"],
@@ -24,6 +27,7 @@ export const prefixes: Modifier[] = [
   },
   {
     name: "Expired",
+    type: "PREFIX",
     stat: "HEALTH",
     multiplier: 0.2,
     rarities: ["JUNK"],
@@ -31,6 +35,7 @@ export const prefixes: Modifier[] = [
   },
   {
     name: "Trashed",
+    type: "PREFIX",
     stat: "DAMAGE",
     multiplier: 0.3,
     rarities: ["JUNK"],
@@ -38,6 +43,7 @@ export const prefixes: Modifier[] = [
   },
   {
     name: "Wobbly",
+    type: "PREFIX",
     stat: "DAMAGE",
     multiplier: 0.4,
     rarities: ["JUNK"],
@@ -45,6 +51,7 @@ export const prefixes: Modifier[] = [
   },
   {
     name: "Irradiated",
+    type: "PREFIX",
     stat: "DAMAGE",
     multiplier: 0.6,
     rarities: ["JUNK"],
@@ -52,6 +59,7 @@ export const prefixes: Modifier[] = [
   },
   {
     name: "Janky",
+    type: "PREFIX",
     stat: "DAMAGE",
     multiplier: 0.8,
     rarities: ["JUNK"],
@@ -59,6 +67,7 @@ export const prefixes: Modifier[] = [
   },
   {
     name: "Big",
+    type: "PREFIX",
     stat: "DAMAGE",
     multiplier: 1.5,
     rarities: ["UNCOMMON", "RARE", "EPIC", "LEGENDARY"],
@@ -66,6 +75,7 @@ export const prefixes: Modifier[] = [
   },
   {
     name: "Huge",
+    type: "PREFIX",
     stat: "DAMAGE",
     multiplier: 2,
     rarities: ["UNCOMMON", "RARE", "EPIC", "LEGENDARY"],
@@ -73,6 +83,7 @@ export const prefixes: Modifier[] = [
   },
   {
     name: "Massive",
+    type: "PREFIX",
     stat: "DAMAGE",
     multiplier: 3,
     rarities: ["UNCOMMON", "RARE", "EPIC", "LEGENDARY"],
@@ -80,6 +91,7 @@ export const prefixes: Modifier[] = [
   },
   {
     name: "Gigantic",
+    type: "PREFIX",
     stat: "DAMAGE",
     multiplier: 4,
     rarities: ["UNCOMMON", "RARE", "EPIC", "LEGENDARY"],
@@ -87,6 +99,47 @@ export const prefixes: Modifier[] = [
   },
   {
     name: "Enormous",
+    type: "PREFIX",
+    stat: "DAMAGE",
+    multiplier: 5,
+    rarities: ["UNCOMMON", "RARE", "EPIC", "LEGENDARY"],
+    categories: ["MELEE"],
+  },
+  {
+    name: "of Fire",
+    type: "SUFFIX",
+    stat: "FIRE_DAMAGE",
+    multiplier: 1.5,
+    rarities: ["UNCOMMON", "RARE", "EPIC", "LEGENDARY"],
+    categories: ["MELEE", "BOW"],
+  },
+  {
+    name: "of Chilling",
+    type: "SUFFIX",
+    stat: "ICE_DAMAGE",
+    multiplier: 2,
+    rarities: ["UNCOMMON", "RARE", "EPIC", "LEGENDARY"],
+    categories: ["MELEE", "BOW"],
+  },
+  {
+    name: "of Large Size",
+    type: "SUFFIX",
+    stat: "DAMAGE",
+    multiplier: 3,
+    rarities: ["UNCOMMON", "RARE", "EPIC", "LEGENDARY"],
+    categories: ["MELEE"],
+  },
+  {
+    name: "of Being Huge",
+    type: "SUFFIX",
+    stat: "DAMAGE",
+    multiplier: 4,
+    rarities: ["UNCOMMON", "RARE", "EPIC", "LEGENDARY"],
+    categories: ["MELEE"],
+  },
+  {
+    name: "of Enormity",
+    type: "SUFFIX",
     stat: "DAMAGE",
     multiplier: 5,
     rarities: ["UNCOMMON", "RARE", "EPIC", "LEGENDARY"],

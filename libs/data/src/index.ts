@@ -1,5 +1,4 @@
 export * from "./containers";
-export * from "./prefixes";
-export * from "./suffixes";
+export * from "./modifiers";
 export * from "./items";
 export * from "./upgrades";

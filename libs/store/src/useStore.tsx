@@ -1,11 +1,14 @@
 import {
-  items as itemsData,
-  upgrades as upgradesData,
-  containers as containersData,
+  items as availableItems,
+  upgrades as availableUpgrades,
+  availableContainers as availableContainers,
+  modifiers as availableModifiers,
 } from "@botnet/data";
+import { isNonNullable } from "@botnet/utils";
 import {
   Item,
   ItemDefinition,
+  ModifierType,
   PlayerLocation,
   PurchasedContainer,
   Rarity,
@@ -74,36 +77,36 @@ type SortMethod = "horizontal" | "vertical";
 const SAVE_KEY = "youAreOverburdenedSave";
 
 const STARTING_CONTAINER: PurchasedContainer = {
-  id: containersData[1].id,
+  id: availableContainers[1].id,
   level: 0,
-  width: containersData[1].baseWidth,
-  height: containersData[1].baseHeight,
-  maxWidth: containersData[1].maxWidth,
-  maxHeight: containersData[1].maxHeight,
-  type: containersData[1].type,
+  width: availableContainers[1].baseWidth,
+  height: availableContainers[1].baseHeight,
+  maxWidth: availableContainers[1].maxWidth,
+  maxHeight: availableContainers[1].maxHeight,
+  type: availableContainers[1].type,
   slotIds: [],
   sorted: false,
 };
 
 const HAND_CONTAINER: PurchasedContainer = {
-  id: containersData[0].id,
+  id: availableContainers[0].id,
   level: 0,
-  width: containersData[0].baseWidth,
-  height: containersData[0].baseHeight,
-  maxWidth: containersData[0].maxWidth,
-  maxHeight: containersData[0].maxHeight,
-  type: containersData[0].type,
+  width: availableContainers[0].baseWidth,
+  height: availableContainers[0].baseHeight,
+  maxWidth: availableContainers[0].maxWidth,
+  maxHeight: availableContainers[0].maxHeight,
+  type: availableContainers[0].type,
   slotIds: [],
   sorted: false,
 };
 const FLOOR_CONTAINER: PurchasedContainer = {
-  id: containersData[2].id,
+  id: availableContainers[2].id,
   level: 0,
-  width: containersData[2].baseWidth,
-  height: containersData[2].baseHeight,
-  maxWidth: containersData[2].maxWidth,
-  maxHeight: containersData[2].maxHeight,
-  type: containersData[2].type,
+  width: availableContainers[2].baseWidth,
+  height: availableContainers[2].baseHeight,
+  maxWidth: availableContainers[2].maxWidth,
+  maxHeight: availableContainers[2].maxHeight,
+  type: availableContainers[2].type,
   slotIds: [],
   sorted: false,
 };
@@ -112,14 +115,12 @@ const INITIAL_STATE: State = {
   handContainerId: HAND_CONTAINER.id,
   floorContainerId: FLOOR_CONTAINER.id,
   containerMap: Object.fromEntries(
-    containersData.map((item) => [item.id, item]),
+    availableContainers.map((item) => [item.id, item]),
   ),
   currentContainerId: STARTING_CONTAINER.id,
   itemMap: {},
-  availableItems: Object.values(itemsData),
   slotMap: {},
   moneys: 0,
-  upgradeMap: upgradesData,
   purchasedUpgradeMap: {
     AUTOMATE_PACK: {
       level: 0,
@@ -232,7 +233,7 @@ export const useStore = (): StoreContextType => {
     return Object.entries(state.purchasedUpgradeMap).reduce(
       (result, [id, purchasedUpgrade]) => {
         const upgradeType = id as UpgradeType;
-        const upgrade = state.upgradeMap[id];
+        const upgrade = availableUpgrades[upgradeType];
         result[upgradeType] = {
           ...purchasedUpgrade,
           id: upgradeType,
@@ -245,7 +246,7 @@ export const useStore = (): StoreContextType => {
       },
       {} as PurchasedUpgradeMap,
     );
-  }, [state.purchasedUpgradeMap, state.upgradeMap]);
+  }, [state.purchasedUpgradeMap]);
 
   const bags = state.purchasedContainerIds.filter((id) => {
     return state.purchasedContainerMap[id].type === "BAG";
@@ -280,7 +281,7 @@ export const useStore = (): StoreContextType => {
       }
 
       const { cost } = getNextLevel(container, currentCapacity);
-      const cont = containersData[0];
+      const cont = availableContainers[1];
       const nextContainer = getNextLevel(
         {
           height: cont.baseHeight,
@@ -375,7 +376,7 @@ export const useStore = (): StoreContextType => {
 
   const loot: Loot = useCallback(() => {
     setState((draft) => {
-      const item = randomLoot(state.availableItems);
+      const item = randomLoot(availableItems);
       draft.itemMap[item.id] = item;
       addSlot({
         containerId: draft.handContainerId,
@@ -385,7 +386,7 @@ export const useStore = (): StoreContextType => {
       });
       draft.playerAction = "IDLE";
     });
-  }, [addSlot, setState, state.availableItems]);
+  }, [addSlot, setState]);
 
   const sort: Sort = useCallback(
     ({ containerId }) => {
@@ -580,7 +581,7 @@ export const useStore = (): StoreContextType => {
 
   const buyContainer: BuyContainer = useCallback(() => {
     setState((draft) => {
-      const cont = containersData[0];
+      const cont = availableContainers[1];
       const next = getNextLevel(
         {
           height: cont.baseHeight,
@@ -641,10 +642,6 @@ export const useStore = (): StoreContextType => {
     [currentCapacity, setState],
   );
 
-  const availableItems = useMemo(() => {
-    return Object.values(state.itemMap);
-  }, [state.itemMap]);
-
   const disable: Disable = useCallback(
     (action) => {
       setState((draft) => {
@@ -695,7 +692,6 @@ export const useStore = (): StoreContextType => {
 
   return {
     addSlot,
-    availableItems,
     buyContainerUpgrade,
     buyUpgrade,
     heldSlot,
@@ -862,13 +858,46 @@ const getSellMultiplier = (count: number) => {
 
 const randomLoot = (available: ItemDefinition[]): Item => {
   const itemDefinition = choice(available);
-  const rarity = choice(itemDefinition.rarities);
+  const rarity = choice(getAvailableRarities(itemDefinition)) ?? "COMMON";
+  let prefix, suffix;
+  if (rarity !== "COMMON") {
+    prefix = choice(getAvailableModifiers(itemDefinition, rarity, "PREFIX"));
+    suffix = choice(getAvailableModifiers(itemDefinition, rarity, "SUFFIX"));
+  }
   return {
     ...itemDefinition,
     id: uuid(),
     rarity,
+    modifiers: [prefix, suffix].filter(isNonNullable),
     value: itemDefinition.value * rarityValues[rarity],
   };
+};
+
+const getAvailableRarities = (item: ItemDefinition) => {
+  return Array.from(
+    availableModifiers.reduce((available, modifier) => {
+      if (modifier.categories.includes(item.category)) {
+        for (const rarity of modifier.rarities) {
+          available.add(rarity);
+        }
+      }
+      return available;
+    }, new Set<Rarity>()),
+  );
+};
+
+const getAvailableModifiers = (
+  item: ItemDefinition,
+  rarity: Rarity,
+  type: ModifierType,
+) => {
+  return availableModifiers.filter((modifier) => {
+    return (
+      modifier.rarities.includes(rarity) &&
+      modifier.categories.includes(item.category) &&
+      modifier.type === type
+    );
+  });
 };
 
 const rarityValues: { [Key in Rarity]: number } = {

@@ -1,5 +1,6 @@
 import { Item, Rarity } from "@botnet/messages";
 import { AddSlot, MoveSlot } from "@botnet/store";
+import { isNonNullable } from "@botnet/utils";
 import { css, useTheme } from "@emotion/react";
 import React, { useState } from "react";
 import { useDrag } from "react-dnd";
@@ -94,11 +95,7 @@ export const InventoryItem = React.memo(
           className={className}
         />
         {tooltipOpen && !isDragging && (
-          <Tooltip position={tooltipPosition}>
-            <div>{item.name}</div>
-            <p>{item.rarity}</p>
-            <p>${item.value}</p>
-          </Tooltip>
+          <Tooltip item={item} position={tooltipPosition}></Tooltip>
         )}
       </>
     );
@@ -106,13 +103,18 @@ export const InventoryItem = React.memo(
 );
 
 type TooltipProps = {
-  children: React.ReactNode;
+  item: Item;
   position: { x: number; y: number } | undefined;
 };
-const Tooltip = ({ children, position }: TooltipProps) => {
+const Tooltip = ({ item, position }: TooltipProps) => {
   if (!position) {
     return null;
   }
+  const prefix = item.modifiers.find((modifier) => modifier.type === "PREFIX");
+  const suffix = item.modifiers.find((modifier) => modifier.type === "SUFFIX");
+  const itemName = [prefix?.name, item.name, suffix?.name]
+    .filter(isNonNullable)
+    .join(" ");
   return ReactDOM.createPortal(
     <div
       css={css`
@@ -128,7 +130,16 @@ const Tooltip = ({ children, position }: TooltipProps) => {
         z-index: 100;
       `}
     >
-      {children}
+      <div>{itemName}</div>
+      <p>{item.rarity}</p>
+      <p>${item.value}</p>
+      {!!item.modifiers.length && (
+        <ul>
+          {item.modifiers.map((modifier) => {
+            return <li key={modifier.name}>+{modifier.stat}</li>;
+          })}
+        </ul>
+      )}
     </div>,
     document.querySelector("#tooltip")!,
   );

@@ -1,6 +1,6 @@
 import { Container } from "@botnet/messages";
 
-export const containers: Container[] = [
+export const availableContainers: Container[] = [
   {
     id: "HAND",
     type: "EQUIP",
