@@ -866,7 +866,7 @@ const randomLoot = (available: ItemDefinition[]): Item => {
   }
   const modifiers = [prefix, suffix].filter(isNonNullable);
   const modifierMultiplier = modifiers.reduce((total, modifier) => {
-    return modifier.multiplier * total;
+    return modifier.power * total;
   }, 1);
 
   return {

@@ -7,7 +7,7 @@ import { Stat } from "./Stat";
 export const Modifier = Record({
   name: String,
   stat: Stat,
-  multiplier: Number,
+  power: Number,
   type: ModifierType,
   rarities: Array(Rarity),
   categories: Array(Category),
