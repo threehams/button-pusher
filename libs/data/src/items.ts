@@ -1,6 +1,6 @@
-import { Item } from "@botnet/messages";
+import { ItemDefinition } from "@botnet/messages";
 
-export const items: Item[] = [
+export const items: ItemDefinition[] = [
   {
     id: "HEALING_POTION",
     height: 1,
@@ -8,6 +8,7 @@ export const items: Item[] = [
     name: "Healing Potion",
     image: "assets/potion.svg",
     value: 10,
+    rarities: ["COMMON"],
   },
   {
     id: "BOMB",
@@ -16,6 +17,7 @@ export const items: Item[] = [
     name: "A Bomb",
     image: "assets/bomb.svg",
     value: 10,
+    rarities: ["COMMON"],
   },
   {
     id: "GEM",
@@ -24,6 +26,7 @@ export const items: Item[] = [
     name: "Gem",
     image: "assets/gem.svg",
     value: 50,
+    rarities: ["COMMON"],
   },
   {
     id: "DAGGER",
@@ -32,6 +35,7 @@ export const items: Item[] = [
     name: "Dagger",
     image: "assets/dagger.svg",
     value: 30,
+    rarities: ["JUNK", "COMMON", "UNCOMMON", "RARE", "EPIC", "LEGENDARY"],
   },
   {
     id: "BUCKLER",
@@ -40,6 +44,7 @@ export const items: Item[] = [
     name: "Buckler",
     image: "assets/buckler.svg",
     value: 80,
+    rarities: ["JUNK", "COMMON", "UNCOMMON", "RARE", "EPIC", "LEGENDARY"],
   },
   {
     id: "HELM",
@@ -48,6 +53,7 @@ export const items: Item[] = [
     name: "Helm",
     image: "assets/helm.svg",
     value: 80,
+    rarities: ["JUNK", "COMMON", "UNCOMMON", "RARE", "EPIC", "LEGENDARY"],
   },
   {
     id: "LONGSWORD",
@@ -56,6 +62,7 @@ export const items: Item[] = [
     name: "Longsword",
     image: "assets/longsword.svg",
     value: 100,
+    rarities: ["JUNK", "COMMON", "UNCOMMON", "RARE", "EPIC", "LEGENDARY"],
   },
   {
     id: "2HAND_SWORD",
@@ -64,6 +71,7 @@ export const items: Item[] = [
     name: "Two Handed Sword",
     image: "assets/2hsword.svg",
     value: 100,
+    rarities: ["JUNK", "COMMON", "UNCOMMON", "RARE", "EPIC", "LEGENDARY"],
   },
   {
     id: "SPEAR",
@@ -72,6 +80,7 @@ export const items: Item[] = [
     name: "Spear",
     image: "assets/spear.svg",
     value: 100,
+    rarities: ["JUNK", "COMMON", "UNCOMMON", "RARE", "EPIC", "LEGENDARY"],
   },
   {
     id: "PANTS",
@@ -80,6 +89,7 @@ export const items: Item[] = [
     name: "Pants",
     image: "assets/pants.svg",
     value: 100,
+    rarities: ["JUNK", "COMMON", "UNCOMMON", "RARE", "EPIC", "LEGENDARY"],
   },
   {
     id: "MAIL",
@@ -88,6 +98,7 @@ export const items: Item[] = [
     name: "Mail",
     image: "assets/mail.svg",
     value: 100,
+    rarities: ["JUNK", "COMMON", "UNCOMMON", "RARE", "EPIC", "LEGENDARY"],
   },
   {
     id: "SCYTHE",
@@ -96,6 +107,7 @@ export const items: Item[] = [
     name: "Scythe",
     image: "assets/scythe.svg",
     value: 400,
+    rarities: ["JUNK", "COMMON", "UNCOMMON", "RARE", "EPIC", "LEGENDARY"],
   },
   {
     id: "BOW",
@@ -104,5 +116,6 @@ export const items: Item[] = [
     name: "Bow",
     image: "assets/bow.svg",
     value: 400,
+    rarities: ["JUNK", "COMMON", "UNCOMMON", "RARE", "EPIC", "LEGENDARY"],
   },
 ];

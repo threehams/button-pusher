@@ -15,7 +15,7 @@ const fullQuotes = [
 ];
 
 export const Layout = () => {
-  const { moneys, playerLocation, heldItem } = useStoreValue();
+  const { moneys, playerLocation, heldSlot } = useStoreValue();
 
   return (
     <Box
@@ -82,7 +82,7 @@ export const Layout = () => {
           `}
         >
           <HeldItemPanel />
-          {heldItem && <div>{fullQuotes[1]}</div>}
+          {heldSlot && <div>{fullQuotes[1]}</div>}
         </Box>
         <Box
           css={css`

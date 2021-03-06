@@ -1,15 +1,13 @@
-import { Item, PlayerAction, PlayerLocation } from "@botnet/messages";
+import { Item, PlayerAction, PlayerLocation, Slot } from "@botnet/messages";
 import { Adventure, Loot, PurchasedUpgrade } from "@botnet/store";
-import { choice } from "./choice";
 
 type Kill = {
-  heldItem: Item | undefined;
+  heldSlot: (Slot & { item: Item }) | undefined;
   loot: Loot;
   lastKill: number;
   setLastKill: (value: number) => void;
   lastAutoKill: number;
   setLastAutoKill: (value: number) => void;
-  availableItems: Item[];
   delta: number;
   playerAction: PlayerAction;
   upgrade: PurchasedUpgrade;
@@ -18,9 +16,8 @@ type Kill = {
   adventure: Adventure;
 };
 export const kill = ({
-  availableItems,
   delta,
-  heldItem,
+  heldSlot,
   loot,
   lastKill,
   playerAction,
@@ -32,14 +29,14 @@ export const kill = ({
   playerLocation,
   autoUpgrade,
 }: Kill) => {
-  if (heldItem) {
+  if (heldSlot) {
     return;
   }
 
   if (playerAction === "KILLING") {
     setLastKill(lastKill + delta);
     if (lastKill > upgrade.time) {
-      loot({ itemId: choice(availableItems).id });
+      loot();
       setLastKill(0);
     }
   }

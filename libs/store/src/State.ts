@@ -7,6 +7,7 @@ import {
   PurchasedUpgradeMapState,
   SlotMap,
   Upgrade,
+  ItemDefinition,
 } from "@botnet/messages";
 import {
   Array,
@@ -20,8 +21,9 @@ import {
 } from "runtypes";
 
 export const State = Record({
+  availableItems: Array(ItemDefinition),
   playerLocation: PlayerLocation,
-  heldItemId: Union(String, Undefined),
+  handContainerId: String,
   purchasedContainerIds: Array(String),
   purchasedContainerMap: PurchasedContainerMap,
   containerMap: ContainerMap,

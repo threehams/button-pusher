@@ -2,9 +2,10 @@ import { useStoreValue } from "@botnet/store";
 import { css, useTheme } from "@emotion/react";
 import React from "react";
 import { InventoryItem } from "../InventoryItem";
+import { InventorySlot } from "../InventorySlot";
 
 export const HeldItemPanel = () => {
-  const { addSlot, moveSlot, heldItem } = useStoreValue();
+  const { addSlot, moveSlot, heldSlot } = useStoreValue();
   const theme = useTheme();
   return (
     <div
@@ -17,8 +18,25 @@ export const HeldItemPanel = () => {
         justify-content: center;
       `}
     >
-      {heldItem && (
-        <InventoryItem moveSlot={moveSlot} addSlot={addSlot} item={heldItem} />
+      {heldSlot && (
+        <InventorySlot
+          containerId={heldSlot.containerId}
+          setTarget={() => {}}
+          canDrop={() => !heldSlot}
+          x={0}
+          y={0}
+          width={2}
+          height={4}
+          required={false}
+          state={heldSlot ? "VALID" : "INVALID"}
+        >
+          <InventoryItem
+            moveSlot={moveSlot}
+            addSlot={addSlot}
+            item={heldSlot.item}
+            slotId={heldSlot.id}
+          />
+        </InventorySlot>
       )}
     </div>
   );

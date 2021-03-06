@@ -4,7 +4,7 @@ import { useProgress } from "../hooks/ProgressContext";
 import { Progress } from "./Progress";
 
 export const StatusBar = () => {
-  const { heldItem, playerDestination } = useStoreValue();
+  const { heldSlot, playerDestination } = useStoreValue();
   const {
     autoKillProgress,
     autoPackProgress,
@@ -37,7 +37,9 @@ export const StatusBar = () => {
       <Progress percent={autoPackProgress}>Searching for storage...</Progress>
     );
   } else if (packProgress) {
-    return <Progress percent={packProgress}>Storing {heldItem?.name}</Progress>;
+    return (
+      <Progress percent={packProgress}>Storing {heldSlot?.item.name}</Progress>
+    );
   }
   return null;
 };

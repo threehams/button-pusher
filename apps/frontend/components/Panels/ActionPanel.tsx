@@ -11,7 +11,7 @@ import { Button } from "../Button";
 
 export const ActionPanel = () => {
   const {
-    heldItem,
+    heldSlot,
     playerAction,
     inventory,
     purchasedUpgrades,
@@ -44,7 +44,7 @@ export const ActionPanel = () => {
           !(
             playerLocation === "KILLING_FIELDS" &&
             playerAction === "IDLE" &&
-            !heldItem
+            !heldSlot
           )
         }
         upgrade={purchasedUpgrades.AUTOMATE_KILL}
@@ -57,7 +57,7 @@ export const ActionPanel = () => {
       </AutoAction>
       {!!purchasedUpgrades.PACK.level && (
         <AutoAction
-          disabled={!(heldItem && playerAction === "IDLE" && !inventory.full)}
+          disabled={!(heldSlot && playerAction === "IDLE" && !inventory.full)}
           percent={packProgress}
           upgrade={purchasedUpgrades.AUTOMATE_PACK}
           upgradeName="AUTOMATE_PACK"
