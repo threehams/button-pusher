@@ -1,4 +1,4 @@
-import { Item } from "@botnet/messages";
+import { ContainerType, Item } from "@botnet/messages";
 
 export type Inventory = {
   id: string;
@@ -15,4 +15,5 @@ export type Inventory = {
   cost: number;
   nextAvailable: number;
   sorted: boolean;
+  type: ContainerType;
 };

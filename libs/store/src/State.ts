@@ -6,7 +6,6 @@ import {
   PurchasedContainerMap,
   PurchasedUpgradeMapState,
   SlotMap,
-  Upgrade,
 } from "@botnet/messages";
 import {
   Array,
@@ -16,12 +15,12 @@ import {
   Number,
   Undefined,
   Union,
-  Dictionary,
 } from "runtypes";
 
 export const State = Record({
   playerLocation: PlayerLocation,
-  heldItemId: Union(String, Undefined),
+  handContainerId: String,
+  floorContainerId: String,
   purchasedContainerIds: Array(String),
   purchasedContainerMap: PurchasedContainerMap,
   containerMap: ContainerMap,
@@ -29,7 +28,6 @@ export const State = Record({
   itemMap: ItemMap,
   slotMap: SlotMap,
   moneys: Number,
-  upgradeMap: Dictionary(Upgrade),
   purchasedUpgradeMap: PurchasedUpgradeMapState,
   playerAction: PlayerAction,
   playerDestination: Union(PlayerLocation, Undefined),

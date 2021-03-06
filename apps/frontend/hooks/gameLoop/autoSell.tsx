@@ -46,6 +46,7 @@ export const autoSell = ({
   }
   if (
     autoUpgrade.level &&
+    autoUpgrade.enabled &&
     playerAction === "IDLE" &&
     playerLocation === "TOWN" &&
     allInventory.slots

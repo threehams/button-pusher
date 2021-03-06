@@ -38,7 +38,7 @@ export const autoTravel = ({
     }
   }
 
-  if (!autoUpgrade.level) {
+  if (!autoUpgrade.level || !autoUpgrade.enabled) {
     return;
   }
 

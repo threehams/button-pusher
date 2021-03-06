@@ -1,0 +1,339 @@
+{
+  "containerMap": {
+    "bcb7ba21-dade-49bd-b4ba-9d7ac854f5f3": {
+      "id": "bcb7ba21-dade-49bd-b4ba-9d7ac854f5f3",
+      "name": "Backpack",
+      "baseHeight": 4,
+      "baseWidth": 4,
+      "maxHeight": 7,
+      "maxWidth": 11
+    },
+    "b431b50d-bd2a-4b50-8d2a-58f8e14def88": {
+      "id": "49edb1e8-1231-42e9-9bdb-b1a6d173128d",
+      "name": "Backpack",
+      "baseHeight": 4,
+      "baseWidth": 4,
+      "maxHeight": 7,
+      "maxWidth": 11
+    }
+  },
+  "currentContainerId": "bcb7ba21-dade-49bd-b4ba-9d7ac854f5f3",
+  "itemMap": {
+    "0563536c-af2b-4925-8a61-f5ac00acf557": {
+      "id": "0563536c-af2b-4925-8a61-f5ac00acf557",
+      "height": 1,
+      "width": 1,
+      "name": "Healing Potion",
+      "image": "assets/potion.svg",
+      "value": 10,
+      "cost": 10
+    },
+    "5f18f6c1-75e9-4227-acce-680435e8ff86": {
+      "id": "5f18f6c1-75e9-4227-acce-680435e8ff86",
+      "height": 1,
+      "width": 1,
+      "name": "A Bomb",
+      "image": "assets/bomb.svg",
+      "value": 10,
+      "cost": 10
+    },
+    "6576a48d-7bce-4d86-ac2a-29f2623d762f": {
+      "id": "6576a48d-7bce-4d86-ac2a-29f2623d762f",
+      "height": 1,
+      "width": 1,
+      "name": "Gem",
+      "image": "assets/gem.svg",
+      "value": 15,
+      "cost": 10
+    },
+    "d4a8f660-0226-4524-b35c-074e052fa1bb": {
+      "id": "d4a8f660-0226-4524-b35c-074e052fa1bb",
+      "height": 2,
+      "width": 1,
+      "name": "Dagger",
+      "image": "assets/dagger.svg",
+      "value": 30,
+      "cost": 20
+    },
+    "44c453d4-07e2-4cce-b3dc-507c3413d2db": {
+      "id": "44c453d4-07e2-4cce-b3dc-507c3413d2db",
+      "height": 2,
+      "width": 2,
+      "name": "Buckler",
+      "image": "assets/buckler.svg",
+      "value": 80,
+      "cost": 40
+    },
+    "e40ae403-1db3-413e-be37-59801bc55818": {
+      "id": "e40ae403-1db3-413e-be37-59801bc55818",
+      "height": 2,
+      "width": 2,
+      "name": "Helm",
+      "image": "assets/helm.svg",
+      "value": 80,
+      "cost": 40
+    },
+    "e749b992-85a7-4fe7-8d5d-594c0b9cc8a2": {
+      "id": "e749b992-85a7-4fe7-8d5d-594c0b9cc8a2",
+      "height": 3,
+      "width": 1,
+      "name": "Longsword",
+      "image": "assets/longsword.svg",
+      "value": 100,
+      "cost": 30
+    },
+    "6f302728-9f4f-44ed-a3ef-830e15b1ff9b": {
+      "id": "6f302728-9f4f-44ed-a3ef-830e15b1ff9b",
+      "height": 4,
+      "width": 1,
+      "name": "Two Handed Sword",
+      "image": "assets/2hsword.svg",
+      "value": 100,
+      "cost": 40
+    },
+    "2938db61-7ec7-4ea9-9fbf-4cf0a5965efc": {
+      "id": "2938db61-7ec7-4ea9-9fbf-4cf0a5965efc",
+      "height": 4,
+      "width": 1,
+      "name": "Spear",
+      "image": "assets/spear.svg",
+      "value": 100,
+      "cost": 40
+    },
+    "885cbfb6-091e-4f7b-910c-7aa0836a50db": {
+      "id": "885cbfb6-091e-4f7b-910c-7aa0836a50db",
+      "height": 3,
+      "width": 2,
+      "name": "Pants",
+      "image": "assets/pants.svg",
+      "value": 100,
+      "cost": 60
+    },
+    "60c922cf-8c7a-4376-9fd7-e3f23c7b8640": {
+      "id": "60c922cf-8c7a-4376-9fd7-e3f23c7b8640",
+      "height": 3,
+      "width": 2,
+      "name": "Mail",
+      "image": "assets/mail.svg",
+      "value": 100,
+      "cost": 60
+    },
+    "9bee0c1a-fc9f-49d0-8b9e-9b7b68262c13": {
+      "id": "9bee0c1a-fc9f-49d0-8b9e-9b7b68262c13",
+      "height": 4,
+      "width": 2,
+      "name": "Scythe",
+      "image": "assets/scythe.svg",
+      "value": 400,
+      "cost": 80
+    },
+    "115b3e9b-5d97-41c1-b428-53addd18158b": {
+      "id": "115b3e9b-5d97-41c1-b428-53addd18158b",
+      "height": 4,
+      "width": 2,
+      "name": "Bow",
+      "image": "assets/bow.svg",
+      "value": 400,
+      "cost": 80
+    }
+  },
+  "slotMap": {
+    "014d7514-54a8-491a-bdcc-67a3c290f5be": {
+      "id": "014d7514-54a8-491a-bdcc-67a3c290f5be",
+      "x": 0,
+      "y": 0,
+      "itemId": "e40ae403-1db3-413e-be37-59801bc55818",
+      "containerId": "bcb7ba21-dade-49bd-b4ba-9d7ac854f5f3"
+    },
+    "a132b160-1d23-44bf-a19a-3775c735614d": {
+      "id": "a132b160-1d23-44bf-a19a-3775c735614d",
+      "x": 2,
+      "y": 0,
+      "itemId": "885cbfb6-091e-4f7b-910c-7aa0836a50db",
+      "containerId": "bcb7ba21-dade-49bd-b4ba-9d7ac854f5f3"
+    },
+    "668cfa86-5a51-40f1-b4c7-a1bfc67c572a": {
+      "id": "668cfa86-5a51-40f1-b4c7-a1bfc67c572a",
+      "x": 4,
+      "y": 0,
+      "itemId": "0563536c-af2b-4925-8a61-f5ac00acf557",
+      "containerId": "bcb7ba21-dade-49bd-b4ba-9d7ac854f5f3"
+    },
+    "0d9737cd-72a2-4e6c-838b-d9beaf82c8a4": {
+      "id": "0d9737cd-72a2-4e6c-838b-d9beaf82c8a4",
+      "x": 5,
+      "y": 0,
+      "itemId": "d4a8f660-0226-4524-b35c-074e052fa1bb",
+      "containerId": "bcb7ba21-dade-49bd-b4ba-9d7ac854f5f3"
+    },
+    "52e9f187-748e-4298-afdb-c6624cf92c29": {
+      "id": "52e9f187-748e-4298-afdb-c6624cf92c29",
+      "x": 6,
+      "y": 0,
+      "itemId": "6576a48d-7bce-4d86-ac2a-29f2623d762f",
+      "containerId": "bcb7ba21-dade-49bd-b4ba-9d7ac854f5f3"
+    },
+    "b5863fe0-b4eb-48d0-8361-c34c4fc16d4f": {
+      "id": "b5863fe0-b4eb-48d0-8361-c34c4fc16d4f",
+      "x": 7,
+      "y": 0,
+      "itemId": "44c453d4-07e2-4cce-b3dc-507c3413d2db",
+      "containerId": "bcb7ba21-dade-49bd-b4ba-9d7ac854f5f3"
+    },
+    "0f26dd5e-c6c4-4eb1-9181-a68e1174c9b6": {
+      "id": "0f26dd5e-c6c4-4eb1-9181-a68e1174c9b6",
+      "x": 9,
+      "y": 0,
+      "itemId": "e749b992-85a7-4fe7-8d5d-594c0b9cc8a2",
+      "containerId": "bcb7ba21-dade-49bd-b4ba-9d7ac854f5f3"
+    },
+    "e6b212ea-2ced-4cbc-b61c-e38f48874878": {
+      "id": "e6b212ea-2ced-4cbc-b61c-e38f48874878",
+      "x": 0,
+      "y": 2,
+      "itemId": "e40ae403-1db3-413e-be37-59801bc55818",
+      "containerId": "bcb7ba21-dade-49bd-b4ba-9d7ac854f5f3"
+    },
+    "3ae7b954-e554-44bc-8b37-c3596fd9be74": {
+      "id": "3ae7b954-e554-44bc-8b37-c3596fd9be74",
+      "x": 4,
+      "y": 2,
+      "itemId": "9bee0c1a-fc9f-49d0-8b9e-9b7b68262c13",
+      "containerId": "bcb7ba21-dade-49bd-b4ba-9d7ac854f5f3"
+    },
+    "388a2e80-2d58-4e70-9cdd-b7d6e92a2e56": {
+      "id": "388a2e80-2d58-4e70-9cdd-b7d6e92a2e56",
+      "x": 10,
+      "y": 0,
+      "itemId": "6576a48d-7bce-4d86-ac2a-29f2623d762f",
+      "containerId": "bcb7ba21-dade-49bd-b4ba-9d7ac854f5f3"
+    },
+    "74fe87c5-74af-4d60-9a3b-6951a07cb7d3": {
+      "id": "74fe87c5-74af-4d60-9a3b-6951a07cb7d3",
+      "x": 6,
+      "y": 1,
+      "itemId": "e749b992-85a7-4fe7-8d5d-594c0b9cc8a2",
+      "containerId": "bcb7ba21-dade-49bd-b4ba-9d7ac854f5f3"
+    }
+  },
+  "moneys": 9940,
+  "upgradeMap": {
+    "KILL": {
+      "name": "Kill things faster",
+      "upgradeName": "Kill things faster",
+      "baseCost": 100
+    },
+    "SELL": {
+      "name": "Sell stuff faster",
+      "upgradeName": "Sell stuff faster",
+      "baseCost": 500
+    },
+    "AUTOMATE_KILL": {
+      "name": "Kill things automatically",
+      "upgradeName": "Auto kill faster",
+      "baseCost": 1200
+    },
+    "PACK": {
+      "name": "Store stuff in inventory",
+      "upgradeName": "Store things faster",
+      "baseCost": 1000
+    },
+    "SORT": {
+      "name": "Sort inventory",
+      "upgradeName": "Sort inventory",
+      "baseCost": 3500,
+      "maxLevel": 1
+    },
+    "TRAVEL": {
+      "name": "Travel faster",
+      "upgradeName": "Travel faster",
+      "baseCost": 4000
+    },
+    "AUTOMATE_PACK": {
+      "name": "Auto store in inventory",
+      "upgradeName": "Auto store faster",
+      "baseCost": 6000
+    },
+    "AUTOMATE_TRAVEL": {
+      "name": "Auto travel to/from town",
+      "upgradeName": "Auto travel with less delay",
+      "baseCost": 30000
+    },
+    "AUTOMATE_SORT": {
+      "name": "Auto sort inventory",
+      "upgradeName": "Auto sort faster",
+      "baseCost": 10000
+    },
+    "AUTOMATE_SELL": {
+      "name": "Auto sell while in town",
+      "upgradeName": "Auto sell faster",
+      "baseCost": 20000
+    },
+    "APPRAISE": {
+      "name": "Appraise inventory value",
+      "upgradeName": "",
+      "baseCost": 100
+    },
+    "AUTOMATE_APPRAISE": {
+      "name": "Automatically appraise inventory value",
+      "upgradeName": "",
+      "baseCost": 100
+    }
+  },
+  "purchasedUpgradeMap": {
+    "AUTOMATE_PACK": { "level": 3, "enabled": false },
+    "AUTOMATE_SELL": { "level": 1, "enabled": false },
+    "AUTOMATE_TRAVEL": { "level": 1, "enabled": false },
+    "AUTOMATE_SORT": { "level": 1, "enabled": false },
+    "SORT": { "level": 1, "enabled": true },
+    "PACK": { "level": 4, "enabled": true },
+    "APPRAISE": { "level": 0, "enabled": true },
+    "AUTOMATE_KILL": { "level": 3, "enabled": false },
+    "AUTOMATE_APPRAISE": { "level": 0, "enabled": true },
+    "KILL": { "level": 5, "enabled": true },
+    "SELL": { "level": 3, "enabled": true },
+    "TRAVEL": { "level": 1, "enabled": true }
+  },
+  "purchasedContainerIds": [
+    "bcb7ba21-dade-49bd-b4ba-9d7ac854f5f3",
+    "b431b50d-bd2a-4b50-8d2a-58f8e14def88"
+  ],
+  "purchasedContainerMap": {
+    "bcb7ba21-dade-49bd-b4ba-9d7ac854f5f3": {
+      "id": "bcb7ba21-dade-49bd-b4ba-9d7ac854f5f3",
+      "level": 13,
+      "width": 11,
+      "height": 10,
+      "maxWidth": 11,
+      "maxHeight": 7,
+      "slotIds": [
+        "014d7514-54a8-491a-bdcc-67a3c290f5be",
+        "a132b160-1d23-44bf-a19a-3775c735614d",
+        "668cfa86-5a51-40f1-b4c7-a1bfc67c572a",
+        "0d9737cd-72a2-4e6c-838b-d9beaf82c8a4",
+        "52e9f187-748e-4298-afdb-c6624cf92c29",
+        "b5863fe0-b4eb-48d0-8361-c34c4fc16d4f",
+        "0f26dd5e-c6c4-4eb1-9181-a68e1174c9b6",
+        "e6b212ea-2ced-4cbc-b61c-e38f48874878",
+        "3ae7b954-e554-44bc-8b37-c3596fd9be74",
+        "388a2e80-2d58-4e70-9cdd-b7d6e92a2e56",
+        "74fe87c5-74af-4d60-9a3b-6951a07cb7d3"
+      ],
+      "sorted": false
+    },
+    "b431b50d-bd2a-4b50-8d2a-58f8e14def88": {
+      "id": "b431b50d-bd2a-4b50-8d2a-58f8e14def88",
+      "height": 4,
+      "width": 4,
+      "level": 0,
+      "maxHeight": 7,
+      "maxWidth": 11,
+      "slotIds": [],
+      "sorted": true
+    }
+  },
+  "playerAction": "IDLE",
+  "playerLocation": "KILLING_FIELDS",
+  "highestMoneys": 90740,
+  "sellableItems": 0
+}

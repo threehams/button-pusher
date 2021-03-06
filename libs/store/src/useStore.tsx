@@ -1,12 +1,17 @@
 import {
-  items as itemsData,
-  upgrades as upgradesData,
-  containers as containersData,
+  items as availableItems,
+  upgrades as availableUpgrades,
+  availableContainers as availableContainers,
+  modifiers as availableModifiers,
 } from "@botnet/data";
+import { isNonNullable } from "@botnet/utils";
 import {
   Item,
+  ItemDefinition,
+  ModifierType,
   PlayerLocation,
   PurchasedContainer,
+  Rarity,
   UpgradeType,
 } from "@botnet/messages";
 import { useCallback, useEffect, useMemo } from "react";
@@ -18,6 +23,7 @@ import { range } from "lodash";
 import { getTargetCoords } from "./getTargetCoords";
 import { PurchasedUpgradeMap } from "./PurchasedUpgradeMap";
 import { StoreContextType } from "./StoreContext";
+import { choice } from "./choice";
 
 type FullSlot = {
   id: string;
@@ -27,18 +33,7 @@ type FullSlot = {
   containerId: string;
 };
 
-const STARTING_CONTAINER: PurchasedContainer = {
-  id: containersData[0].id,
-  level: 0,
-  width: containersData[0].baseWidth,
-  height: containersData[0].baseHeight,
-  maxWidth: containersData[0].maxWidth,
-  maxHeight: containersData[0].maxHeight,
-  slotIds: [],
-  sorted: false,
-};
-
-export type Loot = (options: { itemId: string }) => void;
+export type Loot = () => void;
 export type MoveSlot = (options: {
   slotId: string;
   x: number;
@@ -65,10 +60,133 @@ export type BuyContainer = () => void;
 export type NextInventory = string | undefined;
 export type PrevInventory = string | undefined;
 export type GoInventory = (options: { containerId: string }) => void;
+export type AutomatedUpgrade =
+  | "AUTOMATE_KILL"
+  | "AUTOMATE_PACK"
+  | "AUTOMATE_SELL"
+  | "AUTOMATE_SORT"
+  | "AUTOMATE_TRAVEL";
+export type Disable = (action: AutomatedUpgrade) => void;
+export type Enable = (action: AutomatedUpgrade) => void;
+export type CheatType = "AUTOMATION" | "MIDGAME";
+export type Cheat = (type: CheatType) => void;
+export type Reset = () => void;
 
 type SortMethod = "horizontal" | "vertical";
 
 const SAVE_KEY = "youAreOverburdenedSave";
+
+const STARTING_CONTAINER: PurchasedContainer = {
+  id: availableContainers[1].id,
+  level: 0,
+  width: availableContainers[1].baseWidth,
+  height: availableContainers[1].baseHeight,
+  maxWidth: availableContainers[1].maxWidth,
+  maxHeight: availableContainers[1].maxHeight,
+  type: availableContainers[1].type,
+  slotIds: [],
+  sorted: false,
+};
+
+const HAND_CONTAINER: PurchasedContainer = {
+  id: availableContainers[0].id,
+  level: 0,
+  width: availableContainers[0].baseWidth,
+  height: availableContainers[0].baseHeight,
+  maxWidth: availableContainers[0].maxWidth,
+  maxHeight: availableContainers[0].maxHeight,
+  type: availableContainers[0].type,
+  slotIds: [],
+  sorted: false,
+};
+const FLOOR_CONTAINER: PurchasedContainer = {
+  id: availableContainers[2].id,
+  level: 0,
+  width: availableContainers[2].baseWidth,
+  height: availableContainers[2].baseHeight,
+  maxWidth: availableContainers[2].maxWidth,
+  maxHeight: availableContainers[2].maxHeight,
+  type: availableContainers[2].type,
+  slotIds: [],
+  sorted: false,
+};
+
+const INITIAL_STATE: State = {
+  handContainerId: HAND_CONTAINER.id,
+  floorContainerId: FLOOR_CONTAINER.id,
+  containerMap: Object.fromEntries(
+    availableContainers.map((item) => [item.id, item]),
+  ),
+  currentContainerId: STARTING_CONTAINER.id,
+  itemMap: {},
+  slotMap: {},
+  moneys: 0,
+  purchasedUpgradeMap: {
+    AUTOMATE_PACK: {
+      level: 0,
+      enabled: true,
+    },
+    AUTOMATE_SELL: {
+      level: 0,
+      enabled: true,
+    },
+    AUTOMATE_TRAVEL: {
+      level: 0,
+      enabled: true,
+    },
+    AUTOMATE_SORT: {
+      level: 0,
+      enabled: true,
+    },
+    SORT: {
+      level: 0,
+      enabled: true,
+    },
+    PACK: {
+      level: 0,
+      enabled: true,
+    },
+    APPRAISE: {
+      level: 0,
+      enabled: true,
+    },
+    AUTOMATE_KILL: {
+      level: 0,
+      enabled: true,
+    },
+    AUTOMATE_APPRAISE: {
+      level: 0,
+      enabled: true,
+    },
+    KILL: {
+      level: 0,
+      enabled: true,
+    },
+    SELL: {
+      level: 0,
+      enabled: true,
+    },
+    TRAVEL: {
+      level: 0,
+      enabled: true,
+    },
+  },
+  purchasedContainerIds: [
+    STARTING_CONTAINER.id,
+    HAND_CONTAINER.id,
+    FLOOR_CONTAINER.id,
+  ],
+  purchasedContainerMap: {
+    [STARTING_CONTAINER.id]: STARTING_CONTAINER,
+    [HAND_CONTAINER.id]: HAND_CONTAINER,
+    [FLOOR_CONTAINER.id]: FLOOR_CONTAINER,
+  },
+  playerAction: "IDLE" as const,
+  playerLocation: "TOWN" as const,
+  playerDestination: undefined,
+  highestMoneys: 0,
+  sellableItems: 0,
+};
 
 /**
  * Set up local state to hold onto messages received from the server.
@@ -90,93 +208,32 @@ export const useStore = (): StoreContextType => {
         // use default state
       }
     }
-    return {
-      containerMap: Object.fromEntries(
-        containersData.map((item) => [item.id, item]),
-      ),
-      currentContainerId: STARTING_CONTAINER.id,
-      itemMap: Object.fromEntries(
-        itemsData.map((item) => {
-          return [
-            item.id,
-            {
-              ...item,
-              cost: item.height * item.width * 10,
-            },
-          ];
-        }),
-      ),
-      slotMap: {},
-      heldItemId: undefined,
-      moneys: 0,
-      upgradeMap: upgradesData,
-      purchasedUpgradeMap: {
-        AUTOMATE_PACK: {
-          level: 0,
-          enabled: true,
-        },
-        AUTOMATE_SELL: {
-          level: 0,
-          enabled: true,
-        },
-        AUTOMATE_TRAVEL: {
-          level: 0,
-          enabled: true,
-        },
-        AUTOMATE_SORT: {
-          level: 0,
-          enabled: true,
-        },
-        SORT: {
-          level: 0,
-          enabled: true,
-        },
-        PACK: {
-          level: 0,
-          enabled: true,
-        },
-        APPRAISE: {
-          level: 0,
-          enabled: true,
-        },
-        AUTOMATE_KILL: {
-          level: 0,
-          enabled: true,
-        },
-        AUTOMATE_APPRAISE: {
-          level: 0,
-          enabled: true,
-        },
-        KILL: {
-          level: 0,
-          enabled: true,
-        },
-        SELL: {
-          level: 0,
-          enabled: true,
-        },
-        TRAVEL: {
-          level: 0,
-          enabled: true,
-        },
-      },
-      purchasedContainerIds: [STARTING_CONTAINER.id],
-      purchasedContainerMap: {
-        [STARTING_CONTAINER.id]: STARTING_CONTAINER,
-      },
-      playerAction: "IDLE",
-      playerLocation: "TOWN",
-      playerDestination: undefined,
-      highestMoneys: 0,
-      sellableItems: 0,
-    };
+    return INITIAL_STATE;
   });
+
+  const heldSlot = useMemo(() => {
+    const handContainer = state.purchasedContainerMap[state.handContainerId];
+    const slotId = handContainer.slotIds[0];
+    if (!slotId) {
+      return undefined;
+    }
+    const slot = state.slotMap[slotId];
+    return {
+      ...slot,
+      item: state.itemMap[slot.itemId],
+    };
+  }, [
+    state.handContainerId,
+    state.itemMap,
+    state.purchasedContainerMap,
+    state.slotMap,
+  ]);
 
   const purchasedUpgrades: PurchasedUpgradeMap = useMemo(() => {
     return Object.entries(state.purchasedUpgradeMap).reduce(
       (result, [id, purchasedUpgrade]) => {
         const upgradeType = id as UpgradeType;
-        const upgrade = state.upgradeMap[id];
+        const upgrade = availableUpgrades[upgradeType];
         result[upgradeType] = {
           ...purchasedUpgrade,
           id: upgradeType,
@@ -189,24 +246,18 @@ export const useStore = (): StoreContextType => {
       },
       {} as PurchasedUpgradeMap,
     );
-  }, [state.purchasedUpgradeMap, state.upgradeMap]);
+  }, [state.purchasedUpgradeMap]);
 
-  const loot: Loot = useCallback(
-    ({ itemId }) => {
-      setState((draft) => {
-        draft.heldItemId = itemId;
-        draft.playerAction = "IDLE";
-      });
-    },
-    [setState],
-  );
+  const bags = state.purchasedContainerIds.filter((id) => {
+    return state.purchasedContainerMap[id].type === "BAG";
+  });
 
   const currentCapacity = useMemo(() => {
-    return state.purchasedContainerIds.reduce((sum, id) => {
+    return bags.reduce((sum, id) => {
       const { width, height } = state.purchasedContainerMap[id];
       return sum + width * height;
     }, 0);
-  }, [state.purchasedContainerIds, state.purchasedContainerMap]);
+  }, [bags, state.purchasedContainerMap]);
 
   const getInventory = useCallback(
     (containerId: string): Inventory => {
@@ -222,13 +273,15 @@ export const useStore = (): StoreContextType => {
           item: state.itemMap[slot.itemId],
         };
       });
-      recalculateGrid({
-        slots,
-        grid,
-      });
+      if (container.maxHeight > 1 && container.maxWidth > 1) {
+        recalculateGrid({
+          slots,
+          grid,
+        });
+      }
 
       const { cost } = getNextLevel(container, currentCapacity);
-      const cont = containersData[0];
+      const cont = availableContainers[1];
       const nextContainer = getNextLevel(
         {
           height: cont.baseHeight,
@@ -243,16 +296,15 @@ export const useStore = (): StoreContextType => {
         state.purchasedContainerIds.length - 1;
 
       let full = false;
-      if (state.heldItemId) {
-        const item = state.itemMap[state.heldItemId];
+      if (heldSlot) {
         const slot = findSlot({
           containerInv: {
             grid,
             width: container.width,
             height: container.height,
           },
-          height: item.height,
-          width: item.width,
+          height: heldSlot.item.height,
+          width: heldSlot.item.width,
           method: "vertical",
         });
         if (!slot) {
@@ -271,7 +323,7 @@ export const useStore = (): StoreContextType => {
     },
     [
       currentCapacity,
-      state.heldItemId,
+      heldSlot,
       state.itemMap,
       state.purchasedContainerIds,
       state.purchasedContainerMap,
@@ -288,6 +340,9 @@ export const useStore = (): StoreContextType => {
     let full = true;
     for (const containerId of state.purchasedContainerIds) {
       const inv = getInventory(containerId);
+      if (inv.type === "FLOOR") {
+        continue;
+      }
       if (!inv.full) {
         full = false;
       }
@@ -314,11 +369,24 @@ export const useStore = (): StoreContextType => {
         draft.slotMap[slot.id] = slot;
         draft.purchasedContainerMap[containerId].slotIds.push(slot.id);
         draft.purchasedContainerMap[containerId].sorted = false;
-        draft.heldItemId = undefined;
       });
     },
     [setState],
   );
+
+  const loot: Loot = useCallback(() => {
+    setState((draft) => {
+      const item = randomLoot(availableItems);
+      draft.itemMap[item.id] = item;
+      addSlot({
+        containerId: draft.handContainerId,
+        x: 0,
+        y: 0,
+        itemId: item.id,
+      });
+      draft.playerAction = "IDLE";
+    });
+  }, [addSlot, setState]);
 
   const sort: Sort = useCallback(
     ({ containerId }) => {
@@ -376,46 +444,6 @@ export const useStore = (): StoreContextType => {
     [setState, state.itemMap, state.purchasedContainerMap, state.slotMap],
   );
 
-  const storeHeldItem: StoreHeldItem = useCallback(() => {
-    setState((draft) => {
-      draft.playerAction = "IDLE";
-    });
-    if (!state.heldItemId) {
-      return;
-    }
-    const heldItem = state.itemMap[state.heldItemId];
-    const { width, height } = heldItem;
-    for (const containerId of state.purchasedContainerIds) {
-      const container = state.purchasedContainerMap[containerId];
-      const containerInv = getInventory(container.id);
-      const target = findSlot({
-        containerInv,
-        height,
-        width,
-        method: "horizontal",
-      });
-      if (target) {
-        const { x, y } = target;
-        addSlot({ containerId: container.id, itemId: state.heldItemId, x, y });
-        return;
-      }
-    }
-  }, [
-    addSlot,
-    getInventory,
-    setState,
-    state.heldItemId,
-    state.itemMap,
-    state.purchasedContainerIds,
-    state.purchasedContainerMap,
-  ]);
-
-  const pack: Pack = useCallback(() => {
-    setState((draft) => {
-      draft.playerAction = "STORING";
-    });
-  }, [setState]);
-
   const moveSlot: MoveSlot = useCallback(
     ({ slotId, x, y, containerId }) => {
       setState((draft) => {
@@ -428,13 +456,58 @@ export const useStore = (): StoreContextType => {
             (currentSlotId) => currentSlotId === slotId,
           );
           draft.purchasedContainerMap[containerId].slotIds.push(slot.id);
+          draft.purchasedContainerMap[containerId].sorted = false;
         }
         slot.x = x;
         slot.y = y;
+        slot.containerId = containerId;
       });
     },
     [setState],
   );
+
+  const storeHeldItem: StoreHeldItem = useCallback(() => {
+    setState((draft) => {
+      draft.playerAction = "IDLE";
+    });
+    if (!heldSlot) {
+      return;
+    }
+    const { width, height } = heldSlot.item;
+    for (const containerId of bags) {
+      const container = state.purchasedContainerMap[containerId];
+      const containerInv = getInventory(container.id);
+      const target = findSlot({
+        containerInv,
+        height,
+        width,
+        method: "horizontal",
+      });
+      if (target) {
+        const { x, y } = target;
+        moveSlot({
+          containerId: container.id,
+          slotId: heldSlot.id,
+          x,
+          y,
+        });
+        return;
+      }
+    }
+  }, [
+    bags,
+    getInventory,
+    heldSlot,
+    moveSlot,
+    setState,
+    state.purchasedContainerMap,
+  ]);
+
+  const pack: Pack = useCallback(() => {
+    setState((draft) => {
+      draft.playerAction = "STORING";
+    });
+  }, [setState]);
 
   const sell: Sell = useCallback(() => {
     setState((draft) => {
@@ -477,7 +550,8 @@ export const useStore = (): StoreContextType => {
     setState((draft) => {
       draft.playerAction = "IDLE";
       const container = Object.values(draft.purchasedContainerMap).filter(
-        (cont) => cont.slotIds.length,
+        (cont) =>
+          cont.slotIds.length && (cont.type === "BAG" || cont.type === "EQUIP"),
       )[0];
       if (!container) {
         return;
@@ -507,7 +581,7 @@ export const useStore = (): StoreContextType => {
 
   const buyContainer: BuyContainer = useCallback(() => {
     setState((draft) => {
-      const cont = containersData[0];
+      const cont = availableContainers[1];
       const next = getNextLevel(
         {
           height: cont.baseHeight,
@@ -527,6 +601,7 @@ export const useStore = (): StoreContextType => {
           id,
           height: cont.baseHeight,
           width: cont.baseWidth,
+          type: cont.type,
           level: 0,
           maxHeight: cont.maxHeight,
           maxWidth: cont.maxWidth,
@@ -538,16 +613,12 @@ export const useStore = (): StoreContextType => {
   }, [currentCapacity, setState, state.moneys]);
 
   const nextInventory = () => {
-    const current = state.purchasedContainerIds.indexOf(
-      state.currentContainerId,
-    );
-    return state.purchasedContainerIds[current + 1];
+    const current = bags.indexOf(state.currentContainerId);
+    return bags[current + 1];
   };
   const prevInventory = () => {
-    const current = state.purchasedContainerIds.indexOf(
-      state.currentContainerId,
-    );
-    return state.purchasedContainerIds[current - 1];
+    const current = bags.indexOf(state.currentContainerId);
+    return bags[current - 1];
   };
   const goInventory: GoInventory = ({ containerId }) => {
     setState((draft) => {
@@ -571,16 +642,43 @@ export const useStore = (): StoreContextType => {
     [currentCapacity, setState],
   );
 
-  const heldItem = useMemo(() => {
-    if (!state.heldItemId) {
-      return undefined;
-    }
-    return state.itemMap[state.heldItemId];
-  }, [state.heldItemId, state.itemMap]);
+  const disable: Disable = useCallback(
+    (action) => {
+      setState((draft) => {
+        draft.purchasedUpgradeMap[action].enabled = false;
+      });
+    },
+    [setState],
+  );
 
-  const availableItems = useMemo(() => {
-    return Object.values(state.itemMap);
-  }, [state.itemMap]);
+  const enable: Enable = useCallback(
+    (action) => {
+      setState((draft) => {
+        draft.purchasedUpgradeMap[action].enabled = true;
+      });
+    },
+    [setState],
+  );
+
+  const reset: Reset = useCallback(() => {
+    setState(() => {
+      return INITIAL_STATE;
+    });
+  }, [setState]);
+
+  const cheat: Cheat = useCallback(
+    (type) => {
+      if (type === "AUTOMATION") {
+        setState((draft) => {
+          Object.values(draft.purchasedUpgradeMap).forEach((upgrade) => {
+            upgrade.level += 1;
+          });
+        });
+        return;
+      }
+    },
+    [setState],
+  );
 
   useEffect(() => {
     setState((draft) => {
@@ -594,10 +692,9 @@ export const useStore = (): StoreContextType => {
 
   return {
     addSlot,
-    availableItems,
     buyContainerUpgrade,
     buyUpgrade,
-    heldItem,
+    heldSlot,
     inventory,
     moneys: state.moneys,
     moveSlot,
@@ -620,6 +717,10 @@ export const useStore = (): StoreContextType => {
     prevInventory: prevInventory(),
     goInventory,
     allInventory,
+    disable,
+    enable,
+    cheat,
+    reset,
   };
 };
 
@@ -753,4 +854,53 @@ const getNextLevel = (
 
 const getSellMultiplier = (count: number) => {
   return Math.sqrt(count) + count / 10;
+};
+
+const randomLoot = (available: ItemDefinition[]): Item => {
+  const itemDefinition = choice(available);
+  const rarity = choice(getAvailableRarities(itemDefinition)) ?? "COMMON";
+  let prefix, suffix;
+  if (rarity !== "COMMON") {
+    prefix = choice(getAvailableModifiers(itemDefinition, rarity, "PREFIX"));
+    suffix = choice(getAvailableModifiers(itemDefinition, rarity, "SUFFIX"));
+  }
+  const modifiers = [prefix, suffix].filter(isNonNullable);
+  const modifierMultiplier = modifiers.reduce((total, modifier) => {
+    return modifier.power * total;
+  }, 1);
+
+  return {
+    ...itemDefinition,
+    id: uuid(),
+    rarity,
+    modifiers,
+    value: itemDefinition.value * modifierMultiplier,
+  };
+};
+
+const getAvailableRarities = (item: ItemDefinition) => {
+  return Array.from(
+    availableModifiers.reduce((available, modifier) => {
+      if (modifier.categories.includes(item.category)) {
+        for (const rarity of modifier.rarities) {
+          available.add(rarity);
+        }
+      }
+      return available;
+    }, new Set<Rarity>()),
+  );
+};
+
+const getAvailableModifiers = (
+  item: ItemDefinition,
+  rarity: Rarity,
+  type: ModifierType,
+) => {
+  return availableModifiers.filter((modifier) => {
+    return (
+      modifier.rarities.includes(rarity) &&
+      modifier.categories.includes(item.category) &&
+      modifier.type === type
+    );
+  });
 };

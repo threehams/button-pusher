@@ -12,6 +12,8 @@ type InventorySlotProps = {
   setTarget: (target: SlotInfo | undefined) => void;
   x: number;
   y: number;
+  width?: number;
+  height?: number;
   containerId: string;
 };
 export const InventorySlot = React.memo(
@@ -20,6 +22,8 @@ export const InventorySlot = React.memo(
     canDrop,
     required,
     setTarget,
+    width = 1,
+    height = 1,
     state,
     x,
     y,
@@ -29,18 +33,18 @@ export const InventorySlot = React.memo(
     const [, drop] = useDrop<DraggableItem, DraggableResult, void>({
       accept: ["ITEM"],
       canDrop: (draggable) => {
-        const {
-          item: { width, height },
+        const { item, slotId } = draggable;
+        return canDrop({
+          x,
+          y,
+          width: item.width,
+          height: item.height,
           slotId,
-        } = draggable;
-        return canDrop({ x, y, width, height, slotId });
+        });
       },
       hover: (draggable) => {
-        const {
-          item: { width, height },
-          slotId,
-        } = draggable;
-        setTarget({ x, y, width, height, slotId });
+        const { item, slotId } = draggable;
+        setTarget({ x, y, width: item.width, height: item.height, slotId });
       },
       drop: () => {
         setTarget(undefined);
@@ -54,10 +58,13 @@ export const InventorySlot = React.memo(
         css={css`
           border-right: 1px solid #888;
           border-bottom: 1px solid #888;
-          width: ${theme.tileSize}px;
-          height: ${theme.tileSize}px;
+          width: ${theme.tileSize * width}px;
+          height: ${theme.tileSize * height}px;
           position: relative;
           z-index: 2;
+          display: flex;
+          justify-content: center;
+          align-items: center;
         `}
       >
         <div

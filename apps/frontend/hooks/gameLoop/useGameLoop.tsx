@@ -9,8 +9,7 @@ import { kill } from "./kill";
 
 export const useGameLoop = ({
   loot,
-  heldItem,
-  availableItems,
+  heldSlot,
   purchasedUpgrades,
   pack,
   sort,
@@ -37,12 +36,11 @@ export const useGameLoop = ({
 
   const loop = (delta: number) => {
     kill({
-      heldItem,
+      heldSlot,
       loot,
       lastKill,
       setLastKill,
       delta,
-      availableItems,
       playerAction,
       upgrade: purchasedUpgrades.KILL,
       autoUpgrade: purchasedUpgrades.AUTOMATE_KILL,
@@ -55,7 +53,7 @@ export const useGameLoop = ({
       autoUpgrade: purchasedUpgrades.AUTOMATE_PACK,
       upgrade: purchasedUpgrades.PACK,
       pack,
-      heldItem,
+      heldSlot,
       delta,
       lastPack,
       setLastPack,

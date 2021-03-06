@@ -1,4 +1,4 @@
-import { Item, PlayerAction, PlayerLocation } from "@botnet/messages";
+import { Item, PlayerAction, PlayerLocation, Slot } from "@botnet/messages";
 import React, { useContext } from "react";
 import { AllInventory } from "./AllInventory";
 import { Inventory } from "./Inventory";
@@ -21,15 +21,18 @@ import {
   Sort,
   StoreHeldItem,
   Travel,
+  Disable,
+  Enable,
+  Cheat,
+  Reset,
 } from "./useStore";
 
 export type StoreContextType = {
   storeHeldItem: StoreHeldItem;
   addSlot: AddSlot;
-  availableItems: Item[];
   buyContainerUpgrade: BuyContainerUpgrade;
   buyUpgrade: BuyUpgrade;
-  heldItem: Item | undefined;
+  heldSlot: (Slot & { item: Item }) | undefined;
   inventory: Inventory;
   moneys: number;
   moveSlot: MoveSlot;
@@ -51,6 +54,10 @@ export type StoreContextType = {
   goInventory: GoInventory;
   buyContainer: BuyContainer;
   allInventory: AllInventory;
+  disable: Disable;
+  enable: Enable;
+  reset: Reset;
+  cheat: Cheat;
 };
 
 const StoreContext = React.createContext<StoreContextType>(undefined as any);

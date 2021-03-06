@@ -1,12 +1,17 @@
-import { useStoreValue } from "@botnet/store";
+import {
+  AutomatedUpgrade,
+  PurchasedUpgrade,
+  useStoreValue,
+} from "@botnet/store";
 import { css } from "@emotion/react";
 import { useProgress } from "../../hooks/ProgressContext";
 import React from "react";
 import { Progress } from "../Progress";
+import { Button } from "../Button";
 
 export const ActionPanel = () => {
   const {
-    heldItem,
+    heldSlot,
     playerAction,
     inventory,
     purchasedUpgrades,
@@ -33,53 +38,50 @@ export const ActionPanel = () => {
       >
         Actions
       </h1>
-      <Progress
-        button
+      <AutoAction
         percent={killProgress}
         disabled={
           !(
             playerLocation === "KILLING_FIELDS" &&
             playerAction === "IDLE" &&
-            !heldItem
+            !heldSlot
           )
         }
-        css={css`
-          display: block;
-        `}
+        upgrade={purchasedUpgrades.AUTOMATE_KILL}
+        upgradeName="AUTOMATE_KILL"
         onClick={() => {
           adventure();
         }}
       >
         Kill something {playerLocation === "TOWN" && "(not in town)"}
-      </Progress>
+      </AutoAction>
       {!!purchasedUpgrades.PACK.level && (
-        <Progress
-          button
-          disabled={!(heldItem && playerAction === "IDLE" && !inventory.full)}
+        <AutoAction
+          disabled={!(heldSlot && playerAction === "IDLE" && !inventory.full)}
           percent={packProgress}
-          css={css`
-            display: block;
-          `}
+          upgrade={purchasedUpgrades.AUTOMATE_PACK}
+          upgradeName="AUTOMATE_PACK"
           onClick={() => {
             pack();
           }}
         >
           Store item
-        </Progress>
+        </AutoAction>
       )}
       {!!purchasedUpgrades.SORT.level && (
-        <Progress
-          button
+        <AutoAction
+          disabled={!inventory.slots}
           percent={0}
           onClick={() => {
             sort({ containerId: inventory.id });
           }}
+          upgrade={purchasedUpgrades.AUTOMATE_SORT}
+          upgradeName="AUTOMATE_SORT"
         >
           Sort
-        </Progress>
+        </AutoAction>
       )}
-      <Progress
-        button
+      <AutoAction
         percent={sellProgress}
         disabled={
           !(
@@ -88,22 +90,19 @@ export const ActionPanel = () => {
             !!inventory.slots.length
           )
         }
-        css={css`
-          display: block;
-        `}
+        upgrade={purchasedUpgrades.AUTOMATE_SELL}
+        upgradeName="AUTOMATE_SELL"
         onClick={() => {
           sell();
         }}
       >
         Sell something {playerLocation !== "TOWN" && "(only in town)"}
-      </Progress>
-      <Progress
-        button
+      </AutoAction>
+      <AutoAction
+        upgrade={purchasedUpgrades.AUTOMATE_TRAVEL}
+        upgradeName="AUTOMATE_TRAVEL"
         disabled={playerAction === "TRAVELLING"}
         percent={travelProgress}
-        css={css`
-          display: block;
-        `}
         onClick={() => {
           travel({
             destination: playerLocation === "TOWN" ? "KILLING_FIELDS" : "TOWN",
@@ -112,7 +111,50 @@ export const ActionPanel = () => {
       >
         Travel to{" "}
         {playerLocation === "KILLING_FIELDS" ? "Town" : "the Killing Fields"}
-      </Progress>
+      </AutoAction>
     </>
+  );
+};
+
+type AutoActionProps = {
+  percent: number;
+  children: React.ReactNode;
+  disabled: boolean;
+  onClick: React.MouseEventHandler;
+  upgrade: PurchasedUpgrade;
+  upgradeName: AutomatedUpgrade;
+};
+const AutoAction = ({
+  children,
+  disabled,
+  onClick,
+  upgrade,
+  percent,
+  upgradeName,
+}: AutoActionProps) => {
+  const { disable, enable } = useStoreValue();
+
+  return (
+    <div
+      css={css`
+        display: flex;
+        flex: row nowrap;
+      `}
+    >
+      <Progress button disabled={disabled} percent={percent} onClick={onClick}>
+        {children}
+      </Progress>
+      <Button
+        css={css`
+          flex: 1 0 auto;
+          margin-left: 20px;
+        `}
+        onClick={() => {
+          upgrade.enabled ? disable(upgradeName) : enable(upgradeName);
+        }}
+      >
+        Auto: {upgrade.enabled ? "On" : "Off"}
+      </Button>
+    </div>
   );
 };
