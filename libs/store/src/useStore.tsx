@@ -864,12 +864,17 @@ const randomLoot = (available: ItemDefinition[]): Item => {
     prefix = choice(getAvailableModifiers(itemDefinition, rarity, "PREFIX"));
     suffix = choice(getAvailableModifiers(itemDefinition, rarity, "SUFFIX"));
   }
+  const modifiers = [prefix, suffix].filter(isNonNullable);
+  const modifierMultiplier = modifiers.reduce((total, modifier) => {
+    return modifier.multiplier * total;
+  }, 1);
+
   return {
     ...itemDefinition,
     id: uuid(),
     rarity,
-    modifiers: [prefix, suffix].filter(isNonNullable),
-    value: itemDefinition.value * rarityValues[rarity],
+    modifiers,
+    value: itemDefinition.value * modifierMultiplier,
   };
 };
 
@@ -898,13 +903,4 @@ const getAvailableModifiers = (
       modifier.type === type
     );
   });
-};
-
-const rarityValues: { [Key in Rarity]: number } = {
-  JUNK: 0.5,
-  COMMON: 1,
-  UNCOMMON: 1.5,
-  RARE: 2,
-  EPIC: 3,
-  LEGENDARY: 5,
 };
