@@ -9,7 +9,7 @@ export const items: ItemDefinition[] = [
     image: "assets/potion.svg",
     value: 10,
     rarities: ["COMMON"],
-    category: "CONSUMABLE",
+    category: "POTION",
   },
   {
     id: "BOMB",
@@ -19,7 +19,7 @@ export const items: ItemDefinition[] = [
     image: "assets/bomb.svg",
     value: 10,
     rarities: ["COMMON"],
-    category: "CONSUMABLE",
+    category: "THROWABLE",
   },
   {
     id: "GEM",

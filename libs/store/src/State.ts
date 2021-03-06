@@ -24,6 +24,7 @@ export const State = Record({
   availableItems: Array(ItemDefinition),
   playerLocation: PlayerLocation,
   handContainerId: String,
+  floorContainerId: String,
   purchasedContainerIds: Array(String),
   purchasedContainerMap: PurchasedContainerMap,
   containerMap: ContainerMap,

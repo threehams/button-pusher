@@ -1,23 +1,7 @@
-import {
-  Array,
-  Record,
-  String,
-  Number,
-  Static,
-  Union,
-  Literal,
-} from "runtypes";
+import { Array, Record, String, Number, Static } from "runtypes";
 import { Category } from "./Category";
 import { Rarity } from "./Rarity";
-
-export const Stat = Union(
-  Literal("DAMAGE"),
-  Literal("DEFENSE"),
-  Literal("BLOCK"),
-  Literal("HEALING"),
-  Literal("FIRE_DAMAGE"),
-  Literal("ICE_DAMAGE"),
-);
+import { Stat } from "./Stat";
 
 export const Modifier = Record({
   name: String,

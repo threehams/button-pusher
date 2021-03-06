@@ -80,6 +80,7 @@ const STARTING_CONTAINER: PurchasedContainer = {
   height: containersData[1].baseHeight,
   maxWidth: containersData[1].maxWidth,
   maxHeight: containersData[1].maxHeight,
+  type: containersData[1].type,
   slotIds: [],
   sorted: false,
 };
@@ -91,12 +92,25 @@ const HAND_CONTAINER: PurchasedContainer = {
   height: containersData[0].baseHeight,
   maxWidth: containersData[0].maxWidth,
   maxHeight: containersData[0].maxHeight,
+  type: containersData[0].type,
+  slotIds: [],
+  sorted: false,
+};
+const FLOOR_CONTAINER: PurchasedContainer = {
+  id: containersData[2].id,
+  level: 0,
+  width: containersData[2].baseWidth,
+  height: containersData[2].baseHeight,
+  maxWidth: containersData[2].maxWidth,
+  maxHeight: containersData[2].maxHeight,
+  type: containersData[2].type,
   slotIds: [],
   sorted: false,
 };
 
 const INITIAL_STATE: State = {
   handContainerId: HAND_CONTAINER.id,
+  floorContainerId: FLOOR_CONTAINER.id,
   containerMap: Object.fromEntries(
     containersData.map((item) => [item.id, item]),
   ),
@@ -156,10 +170,15 @@ const INITIAL_STATE: State = {
       enabled: true,
     },
   },
-  purchasedContainerIds: [STARTING_CONTAINER.id, HAND_CONTAINER.id],
+  purchasedContainerIds: [
+    STARTING_CONTAINER.id,
+    HAND_CONTAINER.id,
+    FLOOR_CONTAINER.id,
+  ],
   purchasedContainerMap: {
     [STARTING_CONTAINER.id]: STARTING_CONTAINER,
     [HAND_CONTAINER.id]: HAND_CONTAINER,
+    [FLOOR_CONTAINER.id]: FLOOR_CONTAINER,
   },
   playerAction: "IDLE" as const,
   playerLocation: "TOWN" as const,
@@ -228,12 +247,16 @@ export const useStore = (): StoreContextType => {
     );
   }, [state.purchasedUpgradeMap, state.upgradeMap]);
 
+  const bags = state.purchasedContainerIds.filter((id) => {
+    return state.purchasedContainerMap[id].type === "BAG";
+  });
+
   const currentCapacity = useMemo(() => {
-    return state.purchasedContainerIds.reduce((sum, id) => {
+    return bags.reduce((sum, id) => {
       const { width, height } = state.purchasedContainerMap[id];
       return sum + width * height;
     }, 0);
-  }, [state.purchasedContainerIds, state.purchasedContainerMap]);
+  }, [bags, state.purchasedContainerMap]);
 
   const getInventory = useCallback(
     (containerId: string): Inventory => {
@@ -316,6 +339,9 @@ export const useStore = (): StoreContextType => {
     let full = true;
     for (const containerId of state.purchasedContainerIds) {
       const inv = getInventory(containerId);
+      if (inv.type === "FLOOR") {
+        continue;
+      }
       if (!inv.full) {
         full = false;
       }
@@ -447,7 +473,7 @@ export const useStore = (): StoreContextType => {
       return;
     }
     const { width, height } = heldSlot.item;
-    for (const containerId of state.purchasedContainerIds) {
+    for (const containerId of bags) {
       const container = state.purchasedContainerMap[containerId];
       const containerInv = getInventory(container.id);
       const target = findSlot({
@@ -468,11 +494,11 @@ export const useStore = (): StoreContextType => {
       }
     }
   }, [
+    bags,
     getInventory,
     heldSlot,
     moveSlot,
     setState,
-    state.purchasedContainerIds,
     state.purchasedContainerMap,
   ]);
 
@@ -523,7 +549,8 @@ export const useStore = (): StoreContextType => {
     setState((draft) => {
       draft.playerAction = "IDLE";
       const container = Object.values(draft.purchasedContainerMap).filter(
-        (cont) => cont.slotIds.length,
+        (cont) =>
+          cont.slotIds.length && (cont.type === "BAG" || cont.type === "EQUIP"),
       )[0];
       if (!container) {
         return;
@@ -573,6 +600,7 @@ export const useStore = (): StoreContextType => {
           id,
           height: cont.baseHeight,
           width: cont.baseWidth,
+          type: cont.type,
           level: 0,
           maxHeight: cont.maxHeight,
           maxWidth: cont.maxWidth,
@@ -584,16 +612,12 @@ export const useStore = (): StoreContextType => {
   }, [currentCapacity, setState, state.moneys]);
 
   const nextInventory = () => {
-    const current = state.purchasedContainerIds.indexOf(
-      state.currentContainerId,
-    );
-    return state.purchasedContainerIds[current + 1];
+    const current = bags.indexOf(state.currentContainerId);
+    return bags[current + 1];
   };
   const prevInventory = () => {
-    const current = state.purchasedContainerIds.indexOf(
-      state.currentContainerId,
-    );
-    return state.purchasedContainerIds[current - 1];
+    const current = bags.indexOf(state.currentContainerId);
+    return bags[current - 1];
   };
   const goInventory: GoInventory = ({ containerId }) => {
     setState((draft) => {
