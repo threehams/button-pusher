@@ -33,18 +33,18 @@ export const InventorySlot = React.memo(
     const [, drop] = useDrop<DraggableItem, DraggableResult, void>({
       accept: ["ITEM"],
       canDrop: (draggable) => {
-        const {
-          item: { width, height },
+        const { item, slotId } = draggable;
+        return canDrop({
+          x,
+          y,
+          width: item.width,
+          height: item.height,
           slotId,
-        } = draggable;
-        return canDrop({ x, y, width, height, slotId });
+        });
       },
       hover: (draggable) => {
-        const {
-          item: { width, height },
-          slotId,
-        } = draggable;
-        setTarget({ x, y, width, height, slotId });
+        const { item, slotId } = draggable;
+        setTarget({ x, y, width: item.width, height: item.height, slotId });
       },
       drop: () => {
         setTarget(undefined);

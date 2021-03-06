@@ -1,8 +1,9 @@
 import { Item, Rarity } from "@botnet/messages";
 import { AddSlot, MoveSlot } from "@botnet/store";
 import { css, useTheme } from "@emotion/react";
-import React from "react";
+import React, { useState } from "react";
 import { useDrag } from "react-dnd";
+import ReactDOM from "react-dom";
 import { DraggableItem, DraggableResult } from "./DraggableItem";
 
 const FILTERS: { [Key in Rarity]: string } = {
@@ -29,6 +30,14 @@ type InventoryItemProps = {
 };
 export const InventoryItem = React.memo(
   ({ item, slotId, className, addSlot, moveSlot }: InventoryItemProps) => {
+    const [tooltipOpen, setTooltipOpen] = useState(false);
+    const [tooltipPosition, setTooltipPosition] = useState<
+      | {
+          x: number;
+          y: number;
+        }
+      | undefined
+    >(undefined);
     const theme = useTheme();
     const [{ isDragging }, drag] = useDrag<
       DraggableItem,
@@ -59,21 +68,67 @@ export const InventoryItem = React.memo(
     });
 
     return (
-      <div
-        ref={drag}
-        css={css`
-          filter: ${FILTERS[item.rarity]};
-          background: url(${item.image}) center no-repeat;
-          position: relative;
-          z-index: 3;
-          cursor: pointer;
-          width: ${item.width * theme.tileSize}px;
-          height: ${item.height * theme.tileSize}px;
-          opacity: ${isDragging ? 0 : 1};
-          pointer-events: ${isDragging ? "none" : "auto"};
-        `}
-        className={className}
-      />
+      <>
+        <div
+          onMouseEnter={() => {
+            setTooltipOpen(true);
+          }}
+          onMouseOut={() => {
+            setTooltipOpen(false);
+          }}
+          onMouseMove={(event) => {
+            setTooltipPosition({ x: event.clientX, y: event.clientY });
+          }}
+          ref={drag}
+          css={css`
+            filter: ${FILTERS[item.rarity]};
+            background: url(${item.image}) center no-repeat;
+            position: relative;
+            z-index: 3;
+            cursor: pointer;
+            width: ${item.width * theme.tileSize}px;
+            height: ${item.height * theme.tileSize}px;
+            opacity: ${isDragging ? 0 : 1};
+            pointer-events: ${isDragging ? "none" : "auto"};
+          `}
+          className={className}
+        />
+        {tooltipOpen && !isDragging && (
+          <Tooltip position={tooltipPosition}>
+            <div>{item.name}</div>
+            <p>{item.rarity}</p>
+            <p>${item.value}</p>
+          </Tooltip>
+        )}
+      </>
     );
   },
 );
+
+type TooltipProps = {
+  children: React.ReactNode;
+  position: { x: number; y: number } | undefined;
+};
+const Tooltip = ({ children, position }: TooltipProps) => {
+  if (!position) {
+    return null;
+  }
+  return ReactDOM.createPortal(
+    <div
+      css={css`
+        pointer-events: none;
+        position: absolute;
+        top: 0;
+        left: 0;
+        transform: translate(${position.x}px, ${position.y}px);
+        padding: 20px;
+        border: 1px solid #ccc;
+        background-color: #060606;
+        z-index: 100;
+      `}
+    >
+      {children}
+    </div>,
+    document.querySelector("#tooltip")!,
+  );
+};

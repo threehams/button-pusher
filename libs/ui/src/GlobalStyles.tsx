@@ -24,8 +24,7 @@ export const GlobalStyles = () => {
 
           body {
             margin: 0;
-            background-color: black;
-            background-image: radial-gradient(#111, #181818 120%);
+            background-color: #060606;
             min-height: 100vh;
           }
 

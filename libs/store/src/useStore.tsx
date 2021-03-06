@@ -19,7 +19,6 @@ import { range } from "lodash";
 import { getTargetCoords } from "./getTargetCoords";
 import { PurchasedUpgradeMap } from "./PurchasedUpgradeMap";
 import { StoreContextType } from "./StoreContext";
-import midgameState from "./saves/midgame.json";
 import { choice } from "./choice";
 
 type FullSlot = {
@@ -349,7 +348,6 @@ export const useStore = (): StoreContextType => {
 
   const loot: Loot = useCallback(() => {
     setState((draft) => {
-      console.log(state.availableItems);
       const item = randomLoot(state.availableItems);
       draft.itemMap[item.id] = item;
       addSlot({
@@ -654,10 +652,6 @@ export const useStore = (): StoreContextType => {
           });
         });
         return;
-      } else {
-        setState(() => {
-          return midgameState;
-        });
       }
     },
     [setState],

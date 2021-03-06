@@ -16,6 +16,7 @@ export const Game = () => {
       <ProgressProvider value={progress}>
         <DndProvider backend={HTML5Backend}>
           <Layout />
+          <div id="tooltip"></div>
           <Debug />
         </DndProvider>
       </ProgressProvider>
