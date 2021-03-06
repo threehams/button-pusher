@@ -116,6 +116,7 @@ const Tooltip = ({ children, position }: TooltipProps) => {
   return ReactDOM.createPortal(
     <div
       css={css`
+        max-width: 350px;
         pointer-events: none;
         position: absolute;
         top: 0;

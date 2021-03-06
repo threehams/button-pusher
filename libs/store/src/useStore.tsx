@@ -429,6 +429,7 @@ export const useStore = (): StoreContextType => {
             (currentSlotId) => currentSlotId === slotId,
           );
           draft.purchasedContainerMap[containerId].slotIds.push(slot.id);
+          draft.purchasedContainerMap[containerId].sorted = false;
         }
         slot.x = x;
         slot.y = y;

@@ -70,7 +70,7 @@ export const ActionPanel = () => {
       )}
       {!!purchasedUpgrades.SORT.level && (
         <AutoAction
-          disabled={inventory.sorted || !inventory.slots}
+          disabled={!inventory.slots}
           percent={0}
           onClick={() => {
             sort({ containerId: inventory.id });
