@@ -97,6 +97,13 @@ export const Layout = () => {
             grid-area: floor;
           `}
         >
+          <h2
+            css={css`
+              margin-bottom: 20px;
+            `}
+          >
+            Floor
+          </h2>
           <InventoryPanel inventory={floor} />
         </Box>
         <Box
