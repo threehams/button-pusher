@@ -114,7 +114,12 @@ const Tooltip = ({ item, position }: TooltipProps) => {
       {!!item.modifiers.length && (
         <ul>
           {item.modifiers.map((modifier) => {
-            return <li key={modifier.name}>+{modifier.stat}</li>;
+            return (
+              <li key={modifier.name}>
+                {modifier.power > 1 ? "+" : "-"}
+                {modifier.stat}
+              </li>
+            );
           })}
         </ul>
       )}

@@ -1,11 +1,11 @@
 import {
-  ContainerMap,
   ItemMap,
   PlayerLocation,
   PlayerAction,
   PurchasedContainerMap,
   PurchasedUpgradeMapState,
   SlotMap,
+  FloorContainerMap,
 } from "@botnet/messages";
 import {
   Array,
@@ -20,10 +20,9 @@ import {
 export const State = Record({
   playerLocation: PlayerLocation,
   handContainerId: String,
-  floorContainerId: String,
+  floorIds: FloorContainerMap,
   purchasedContainerIds: Array(String),
   purchasedContainerMap: PurchasedContainerMap,
-  containerMap: ContainerMap,
   currentContainerId: String,
   itemMap: ItemMap,
   slotMap: SlotMap,

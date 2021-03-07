@@ -77,7 +77,7 @@ type SortMethod = "horizontal" | "vertical";
 const SAVE_KEY = "youAreOverburdenedSave";
 
 const STARTING_CONTAINER: PurchasedContainer = {
-  id: availableContainers[1].id,
+  id: uuid(),
   level: 0,
   width: availableContainers[1].baseWidth,
   height: availableContainers[1].baseHeight,
@@ -87,9 +87,8 @@ const STARTING_CONTAINER: PurchasedContainer = {
   slotIds: [],
   sorted: false,
 };
-
 const HAND_CONTAINER: PurchasedContainer = {
-  id: availableContainers[0].id,
+  id: uuid(),
   level: 0,
   width: availableContainers[0].baseWidth,
   height: availableContainers[0].baseHeight,
@@ -99,8 +98,19 @@ const HAND_CONTAINER: PurchasedContainer = {
   slotIds: [],
   sorted: false,
 };
-const FLOOR_CONTAINER: PurchasedContainer = {
-  id: availableContainers[2].id,
+const TOWN_FLOOR_CONTAINER: PurchasedContainer = {
+  id: uuid(),
+  level: 0,
+  width: availableContainers[2].baseWidth,
+  height: availableContainers[2].baseHeight,
+  maxWidth: availableContainers[2].maxWidth,
+  maxHeight: availableContainers[2].maxHeight,
+  type: availableContainers[2].type,
+  slotIds: [],
+  sorted: false,
+};
+const KILLING_FIELDS_FLOOR_CONTAINER: PurchasedContainer = {
+  id: uuid(),
   level: 0,
   width: availableContainers[2].baseWidth,
   height: availableContainers[2].baseHeight,
@@ -113,10 +123,10 @@ const FLOOR_CONTAINER: PurchasedContainer = {
 
 const INITIAL_STATE: State = {
   handContainerId: HAND_CONTAINER.id,
-  floorContainerId: FLOOR_CONTAINER.id,
-  containerMap: Object.fromEntries(
-    availableContainers.map((item) => [item.id, item]),
-  ),
+  floorIds: {
+    TOWN: TOWN_FLOOR_CONTAINER.id,
+    KILLING_FIELDS: KILLING_FIELDS_FLOOR_CONTAINER.id,
+  },
   currentContainerId: STARTING_CONTAINER.id,
   itemMap: {},
   slotMap: {},
@@ -174,12 +184,14 @@ const INITIAL_STATE: State = {
   purchasedContainerIds: [
     STARTING_CONTAINER.id,
     HAND_CONTAINER.id,
-    FLOOR_CONTAINER.id,
+    TOWN_FLOOR_CONTAINER.id,
+    KILLING_FIELDS_FLOOR_CONTAINER.id,
   ],
   purchasedContainerMap: {
     [STARTING_CONTAINER.id]: STARTING_CONTAINER,
     [HAND_CONTAINER.id]: HAND_CONTAINER,
-    [FLOOR_CONTAINER.id]: FLOOR_CONTAINER,
+    [TOWN_FLOOR_CONTAINER.id]: TOWN_FLOOR_CONTAINER,
+    [KILLING_FIELDS_FLOOR_CONTAINER.id]: KILLING_FIELDS_FLOOR_CONTAINER,
   },
   playerAction: "IDLE" as const,
   playerLocation: "TOWN" as const,
@@ -593,9 +605,6 @@ export const useStore = (): StoreContextType => {
       );
       if (next.cost <= state.moneys) {
         const id = uuid();
-        draft.containerMap[id] = {
-          ...cont,
-        };
         draft.purchasedContainerIds.push(id);
         draft.purchasedContainerMap[id] = {
           id,
@@ -691,7 +700,7 @@ export const useStore = (): StoreContextType => {
   });
 
   return {
-    floor: getInventory(state.floorContainerId),
+    floor: getInventory(state.floorIds[state.playerLocation]),
     addSlot,
     buyContainerUpgrade,
     buyUpgrade,
