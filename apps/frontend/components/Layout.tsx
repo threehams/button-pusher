@@ -6,13 +6,7 @@ import { InventoryPanel, HeldItemPanel, UpgradePanel } from ".";
 import { CustomDragLayer } from "./DragLayer";
 import { ActionPanel } from "./Panels/ActionPanel";
 import { StatusBar } from "./StatusBar";
-
-const fullQuotes = [
-  "I can't carry any more.",
-  "I am overburdened.",
-  "Where would I put this?",
-  "My bag is too heavy.",
-];
+import { dialogue } from "@botnet/data";
 
 export const Layout = () => {
   const {
@@ -89,7 +83,7 @@ export const Layout = () => {
           `}
         >
           <HeldItemPanel />
-          {heldSlot && <div>{fullQuotes[1]}</div>}
+          {heldSlot && <div>{dialogue.overburdened[1]}</div>}
         </Box>
         <Box
           css={css`

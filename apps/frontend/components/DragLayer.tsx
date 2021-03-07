@@ -1,7 +1,8 @@
-import { css, useTheme } from "@emotion/react";
+import { Item } from "@botnet/messages";
 import React from "react";
 import { CSSProperties } from "react";
 import { XYCoord, useDragLayer } from "react-dnd";
+import { ItemTile } from "./ItemTile";
 
 const layerStyles: CSSProperties = {
   position: "fixed",
@@ -32,15 +33,17 @@ function getItemStyles(
 }
 
 export const CustomDragLayer = () => {
-  const theme = useTheme();
-  const { isDragging, item, initialOffset, currentOffset } = useDragLayer(
-    (monitor) => ({
-      item: monitor.getItem(),
-      initialOffset: monitor.getInitialSourceClientOffset(),
-      currentOffset: monitor.getSourceClientOffset(),
-      isDragging: monitor.isDragging(),
-    }),
-  );
+  const { isDragging, item, initialOffset, currentOffset } = useDragLayer<{
+    item: Item;
+    initialOffset: XYCoord | null;
+    currentOffset: XYCoord | null;
+    isDragging: boolean;
+  }>((monitor) => ({
+    item: monitor.getItem()?.item,
+    initialOffset: monitor.getInitialSourceClientOffset(),
+    currentOffset: monitor.getSourceClientOffset(),
+    isDragging: monitor.isDragging(),
+  }));
 
   if (!isDragging) {
     return null;
@@ -48,15 +51,7 @@ export const CustomDragLayer = () => {
   return (
     <div style={layerStyles} id="drag-layer">
       <div style={getItemStyles(initialOffset, currentOffset)}>
-        <img
-          src={item.image}
-          alt={item.name}
-          css={css`
-            width: ${item.width * theme.tileSize}px;
-            height: ${item.height * theme.tileSize}px;
-            opacity: ${isDragging ? 0 : 1};
-          `}
-        />
+        <ItemTile item={item} visible={isDragging} />
       </div>
     </div>
   );
