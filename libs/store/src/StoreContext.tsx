@@ -25,6 +25,9 @@ import {
   Enable,
   Cheat,
   Reset,
+  Trash,
+  DropJunk,
+  DropJunkItem,
 } from "./useStore";
 
 export type StoreContextType = {
@@ -59,6 +62,9 @@ export type StoreContextType = {
   enable: Enable;
   reset: Reset;
   cheat: Cheat;
+  trash: Trash;
+  dropJunk: DropJunk;
+  dropJunkItem: DropJunkItem;
 };
 
 const StoreContext = React.createContext<StoreContextType>(undefined as any);

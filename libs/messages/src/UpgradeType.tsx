@@ -13,5 +13,7 @@ export const UpgradeType = Union(
   Literal("AUTOMATE_TRAVEL"),
   Literal("KILL"),
   Literal("AUTOMATE_KILL"),
+  Literal("DROP_JUNK"),
+  Literal("AUTOMATE_DROP_JUNK"),
 );
 export type UpgradeType = Static<typeof UpgradeType>;

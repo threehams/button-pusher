@@ -6,5 +6,6 @@ export const PlayerAction = Union(
   Literal("SELLING"),
   Literal("IDLE"),
   Literal("STORING"),
+  Literal("DROPPING"),
 );
 export type PlayerAction = Static<typeof PlayerAction>;

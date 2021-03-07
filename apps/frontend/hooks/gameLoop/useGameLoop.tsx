@@ -1,6 +1,7 @@
 import { StoreContextType } from "@botnet/store";
 import { useLoop } from "@botnet/worker";
 import { useState } from "react";
+import { autoDropJunk } from "./autoDropJunk";
 import { autoPack } from "./autoPack";
 import { autoSell } from "./autoSell";
 import { autoSort } from "./autoSort";
@@ -23,6 +24,8 @@ export const useGameLoop = ({
   storeHeldItem,
   travel,
   allInventory,
+  dropJunk,
+  dropJunkItem,
 }: StoreContextType) => {
   const [lastKill, setLastKill] = useState(0);
   const [lastAutoKill, setLastAutoKill] = useState(0);
@@ -33,6 +36,8 @@ export const useGameLoop = ({
   const [lastAutoTravel, setLastAutoTravel] = useState(0);
   const [lastTravel, setLastTravel] = useState(0);
   const [lastSell, setLastSell] = useState(0);
+  const [lastAutoDropJunk, setLastAutoDropJunk] = useState(0);
+  const [lastDropJunk, setLastDropJunk] = useState(0);
 
   const loop = (delta: number) => {
     kill({
@@ -71,6 +76,19 @@ export const useGameLoop = ({
       lastSort,
       setLastSort,
       inventory,
+    });
+    autoDropJunk({
+      upgrade: purchasedUpgrades.DROP_JUNK,
+      autoUpgrade: purchasedUpgrades.AUTOMATE_DROP_JUNK,
+      allInventory,
+      delta,
+      dropJunk,
+      dropJunkItem,
+      lastAutoDropJunk,
+      lastDropJunk,
+      playerAction,
+      setLastAutoDropJunk,
+      setLastDropJunk,
     });
     autoTravel({
       lastAutoTravel,
@@ -140,6 +158,14 @@ export const useGameLoop = ({
     autoTravelProgress: progress({
       last: lastAutoTravel,
       total: purchasedUpgrades.AUTOMATE_TRAVEL.time,
+    }),
+    dropJunkProgress: progress({
+      last: lastDropJunk,
+      total: purchasedUpgrades.DROP_JUNK.time,
+    }),
+    autoDropJunkProgress: progress({
+      last: lastAutoDropJunk,
+      total: purchasedUpgrades.AUTOMATE_DROP_JUNK.time,
     }),
   };
 };

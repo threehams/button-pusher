@@ -21,12 +21,14 @@ export const ActionPanel = () => {
     adventure,
     sell,
     travel,
+    dropJunk,
   } = useStoreValue();
   const {
     killProgress,
     packProgress,
     sellProgress,
     travelProgress,
+    dropJunkProgress,
   } = useProgress();
 
   return (
@@ -66,6 +68,19 @@ export const ActionPanel = () => {
           }}
         >
           Store item
+        </AutoAction>
+      )}
+      {!!purchasedUpgrades.DROP_JUNK.level && (
+        <AutoAction
+          disabled={!inventory.junk}
+          percent={dropJunkProgress}
+          upgrade={purchasedUpgrades.AUTOMATE_DROP_JUNK}
+          upgradeName="AUTOMATE_DROP_JUNK"
+          onClick={() => {
+            dropJunk();
+          }}
+        >
+          Drop Junk
         </AutoAction>
       )}
       {!!purchasedUpgrades.SORT.level && (

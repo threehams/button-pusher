@@ -56,7 +56,10 @@ module.exports = {
         next: "import",
       },
     ],
-    "react-hooks/exhaustive-deps": "error",
+    "react-hooks/exhaustive-deps": [
+      "error",
+      { enableDangerousAutofixThisMayCauseInfiniteLoops: true },
+    ],
     "react-hooks/rules-of-hooks": "error",
     "react/display-name": "off",
     "react/jsx-key": "error",

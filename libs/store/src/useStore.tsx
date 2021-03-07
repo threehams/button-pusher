@@ -65,12 +65,16 @@ export type AutomatedUpgrade =
   | "AUTOMATE_PACK"
   | "AUTOMATE_SELL"
   | "AUTOMATE_SORT"
-  | "AUTOMATE_TRAVEL";
+  | "AUTOMATE_TRAVEL"
+  | "AUTOMATE_DROP_JUNK";
 export type Disable = (action: AutomatedUpgrade) => void;
 export type Enable = (action: AutomatedUpgrade) => void;
 export type CheatType = "AUTOMATION" | "MIDGAME";
 export type Cheat = (type: CheatType) => void;
 export type Reset = () => void;
+export type Trash = () => void;
+export type DropJunk = () => void;
+export type DropJunkItem = () => void;
 
 type SortMethod = "horizontal" | "vertical";
 
@@ -177,6 +181,14 @@ const INITIAL_STATE: State = {
       enabled: true,
     },
     TRAVEL: {
+      level: 0,
+      enabled: true,
+    },
+    DROP_JUNK: {
+      level: 0,
+      enabled: true,
+    },
+    AUTOMATE_DROP_JUNK: {
       level: 0,
       enabled: true,
     },
@@ -323,6 +335,13 @@ export const useStore = (): StoreContextType => {
           full = true;
         }
       }
+      let junk = false;
+      for (const slot of slots) {
+        if (slot.item.rarity === "JUNK") {
+          junk = true;
+          break;
+        }
+      }
 
       return {
         ...container,
@@ -331,6 +350,7 @@ export const useStore = (): StoreContextType => {
         cost,
         nextAvailable: cost !== 0 || !isLast ? 0 : nextContainer.cost,
         full,
+        junk,
       };
     },
     [
@@ -350,19 +370,27 @@ export const useStore = (): StoreContextType => {
   const allInventory = useMemo(() => {
     let slots = 0;
     let full = true;
+    let junk = false;
     for (const containerId of state.purchasedContainerIds) {
       const inv = getInventory(containerId);
-      if (inv.type === "FLOOR") {
+      if (inv.type === "FLOOR" || inv.type === "EQUIP") {
         continue;
       }
       if (!inv.full) {
         full = false;
       }
       slots += inv.slots.length;
+      for (const slot of inv.slots) {
+        if (slot.item.rarity === "JUNK") {
+          junk = true;
+          break;
+        }
+      }
     }
     return {
       slots,
       full,
+      junk,
     };
   }, [getInventory, state.purchasedContainerIds]);
 
@@ -689,6 +717,56 @@ export const useStore = (): StoreContextType => {
     [setState],
   );
 
+  const dropJunk: DropJunk = useCallback(() => {
+    setState((draft) => {
+      draft.playerAction = "DROPPING";
+    });
+  }, [setState]);
+
+  const floor = getInventory(state.floorIds[state.playerLocation]);
+
+  const dropJunkItem: DropJunk = useCallback(() => {
+    setState((draft) => {
+      draft.playerAction = "IDLE";
+      for (const id of bags) {
+        const container = draft.purchasedContainerMap[id];
+        for (const slotId of container.slotIds) {
+          const item = draft.itemMap[draft.slotMap[slotId].itemId];
+          if (item.rarity === "JUNK") {
+            // const floorContainer = draft.purchasedContainerMap[floor.id];
+            const target = findSlot({
+              containerInv: floor,
+              height: item.height,
+              width: item.width,
+              method: "vertical",
+            });
+            if (target) {
+              moveSlot({
+                containerId: floor.id,
+                x: target.x,
+                y: target.y,
+                slotId,
+              });
+              return;
+            }
+          }
+        }
+      }
+    });
+  }, [bags, floor, moveSlot, setState]);
+
+  const trash: Trash = useCallback(() => {
+    setState((draft) => {
+      for (const slot of floor.slots) {
+        delete draft.itemMap[slot.item.id];
+        delete draft.slotMap[slot.id];
+      }
+      draft.purchasedContainerMap[
+        draft.floorIds[state.playerLocation]
+      ].slotIds = [];
+    });
+  }, [floor.slots, setState, state.playerLocation]);
+
   useEffect(() => {
     setState((draft) => {
       draft.highestMoneys = Math.max(draft.highestMoneys, draft.moneys);
@@ -700,7 +778,10 @@ export const useStore = (): StoreContextType => {
   });
 
   return {
-    floor: getInventory(state.floorIds[state.playerLocation]),
+    dropJunk,
+    dropJunkItem,
+    trash,
+    floor,
     addSlot,
     buyContainerUpgrade,
     buyUpgrade,

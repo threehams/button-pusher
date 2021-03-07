@@ -16,4 +16,5 @@ export type Inventory = {
   nextAvailable: number;
   sorted: boolean;
   type: ContainerType;
+  junk: boolean;
 };

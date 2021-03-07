@@ -93,7 +93,7 @@ export const Layout = () => {
         >
           <h2
             css={css`
-              margin-bottom: 20px;
+              margin-bottom: 10px;
             `}
           >
             Floor

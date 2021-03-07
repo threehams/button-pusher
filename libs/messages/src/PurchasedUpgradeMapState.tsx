@@ -14,5 +14,7 @@ export const PurchasedUpgradeMapState = Record({
   AUTOMATE_TRAVEL: PurchasedUpgradeState,
   KILL: PurchasedUpgradeState,
   AUTOMATE_KILL: PurchasedUpgradeState,
+  DROP_JUNK: PurchasedUpgradeState,
+  AUTOMATE_DROP_JUNK: PurchasedUpgradeState,
 });
 export type PurchasedUpgradeMapState = Static<typeof PurchasedUpgradeMapState>;

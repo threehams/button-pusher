@@ -93,6 +93,7 @@ const Tooltip = ({ item, position }: TooltipProps) => {
   const itemName = [prefix?.name, item.name, suffix?.name]
     .filter(isNonNullable)
     .join(" ");
+
   return ReactDOM.createPortal(
     <div
       css={css`

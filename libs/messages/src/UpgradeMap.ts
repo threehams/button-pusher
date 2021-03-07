@@ -14,5 +14,7 @@ export const UpgradeMap = Record({
   AUTOMATE_TRAVEL: Upgrade,
   KILL: Upgrade,
   AUTOMATE_KILL: Upgrade,
+  DROP_JUNK: Upgrade,
+  AUTOMATE_DROP_JUNK: Upgrade,
 });
 export type UpgradeMap = Static<typeof UpgradeMap>;

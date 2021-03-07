@@ -20,6 +20,7 @@ export const InventoryPanel = React.memo(({ inventory }: Props) => {
     nextInventory,
     prevInventory,
     goInventory,
+    trash,
   } = useStoreValue();
   const { nextAvailable, height, width, slots, cost } = inventory;
   const [target, setTargetState] = useState<SlotInfo | undefined>();
@@ -49,7 +50,7 @@ export const InventoryPanel = React.memo(({ inventory }: Props) => {
 
   return (
     <div>
-      {!nextAvailable && (
+      {!nextAvailable && inventory.type === "BAG" && (
         <Button
           disabled={!cost || cost > moneys}
           onClick={() => {
@@ -156,6 +157,16 @@ export const InventoryPanel = React.memo(({ inventory }: Props) => {
           </button>
         )}
       </div>
+      {inventory.type === "FLOOR" && (
+        <Button
+          disabled={!inventory.slots}
+          onClick={() => {
+            trash();
+          }}
+        >
+          Leave Behind
+        </Button>
+      )}
     </div>
   );
 });
