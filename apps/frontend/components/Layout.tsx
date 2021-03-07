@@ -15,7 +15,13 @@ const fullQuotes = [
 ];
 
 export const Layout = () => {
-  const { moneys, playerLocation, heldSlot } = useStoreValue();
+  const {
+    moneys,
+    playerLocation,
+    heldSlot,
+    inventory,
+    floor,
+  } = useStoreValue();
 
   return (
     <Box
@@ -24,6 +30,7 @@ export const Layout = () => {
         grid-template-areas:
           "header header header"
           "inventory inventory hand"
+          "floor floor floor"
           "upgrades upgrades upgrades";
         grid-template-columns: 1fr 1fr 1fr;
         grid-template-rows: auto auto 1fr;
@@ -73,7 +80,7 @@ export const Layout = () => {
             justify-self: flex-end;
           `}
         >
-          <InventoryPanel />
+          <InventoryPanel inventory={inventory} />
         </Box>
         <Box
           css={css`
@@ -83,6 +90,14 @@ export const Layout = () => {
         >
           <HeldItemPanel />
           {heldSlot && <div>{fullQuotes[1]}</div>}
+        </Box>
+        <Box
+          css={css`
+            padding-top: 20px;
+            grid-area: floor;
+          `}
+        >
+          <InventoryPanel inventory={floor} />
         </Box>
         <Box
           css={css`

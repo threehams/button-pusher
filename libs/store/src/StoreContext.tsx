@@ -34,6 +34,7 @@ export type StoreContextType = {
   buyUpgrade: BuyUpgrade;
   heldSlot: (Slot & { item: Item }) | undefined;
   inventory: Inventory;
+  floor: Inventory;
   moneys: number;
   moveSlot: MoveSlot;
   pack: Pack;

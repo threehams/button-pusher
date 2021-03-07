@@ -452,9 +452,9 @@ export const useStore = (): StoreContextType => {
         if (currentContainerId !== containerId) {
           draft.purchasedContainerMap[
             currentContainerId
-          ].slotIds = draft.purchasedContainerMap[containerId].slotIds.filter(
-            (currentSlotId) => currentSlotId === slotId,
-          );
+          ].slotIds = draft.purchasedContainerMap[
+            currentContainerId
+          ].slotIds.filter((currentSlotId) => currentSlotId !== slotId);
           draft.purchasedContainerMap[containerId].slotIds.push(slot.id);
           draft.purchasedContainerMap[containerId].sorted = false;
         }
@@ -691,6 +691,7 @@ export const useStore = (): StoreContextType => {
   });
 
   return {
+    floor: getInventory(state.floorContainerId),
     addSlot,
     buyContainerUpgrade,
     buyUpgrade,

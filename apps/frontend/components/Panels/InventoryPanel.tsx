@@ -1,4 +1,4 @@
-import { SlotInfo, useStoreValue } from "@botnet/store";
+import { Inventory, SlotInfo, useStoreValue } from "@botnet/store";
 import React, { useCallback, useState } from "react";
 import { range } from "lodash";
 import { css, useTheme } from "@emotion/react";
@@ -8,9 +8,11 @@ import deepEqual from "deep-equal";
 import { getTargetCoords } from "@botnet/store";
 import { Button } from "../Button";
 
-export const InventoryPanel = () => {
+type Props = {
+  inventory: Inventory;
+};
+export const InventoryPanel = React.memo(({ inventory }: Props) => {
   const {
-    inventory,
     buyContainerUpgrade,
     addSlot,
     moveSlot,
@@ -18,7 +20,6 @@ export const InventoryPanel = () => {
     nextInventory,
     prevInventory,
     goInventory,
-    buyContainer,
   } = useStoreValue();
   const { nextAvailable, height, width, slots, cost } = inventory;
   const [target, setTargetState] = useState<SlotInfo | undefined>();
@@ -59,16 +60,6 @@ export const InventoryPanel = () => {
         >
           Upgrade Bag: {cost ? `$${cost}` : "(MAX)"}
           {!cost}
-        </Button>
-      )}
-      {!!nextAvailable && (
-        <Button
-          disabled={!nextAvailable || nextAvailable > moneys}
-          onClick={() => {
-            buyContainer();
-          }}
-        >
-          Buy New Bag: ${nextAvailable}
         </Button>
       )}
 
@@ -167,4 +158,4 @@ export const InventoryPanel = () => {
       </div>
     </div>
   );
-};
+});
