@@ -51,7 +51,7 @@ export const CustomDragLayer = () => {
   return (
     <div style={layerStyles} id="drag-layer">
       <div style={getItemStyles(initialOffset, currentOffset)}>
-        <ItemTile item={item} visible={isDragging} />
+        <ItemTile item={item} visible={isDragging} preview />
       </div>
     </div>
   );

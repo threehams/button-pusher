@@ -20,9 +20,10 @@ const FILTERS: { [Key in Rarity]: string } = {
 type Props = React.ComponentProps<"div"> & {
   item: Item;
   visible: boolean;
+  preview?: boolean;
 };
 export const ItemTile = React.forwardRef<HTMLDivElement, Props>(
-  ({ item, visible, ...rest }, ref) => {
+  ({ item, visible, preview, ...rest }, ref) => {
     const theme = useTheme();
     return (
       <div
@@ -38,7 +39,7 @@ export const ItemTile = React.forwardRef<HTMLDivElement, Props>(
           width: ${item.width * theme.tileSize}px;
           height: ${item.height * theme.tileSize}px;
           opacity: ${visible ? 1 : 0};
-          pointer-events: ${visible ? "auto" : "none"};
+          pointer-events: ${visible && !preview ? "auto" : "none"};
         `}
         {...rest}
       />

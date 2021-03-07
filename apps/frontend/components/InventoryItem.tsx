@@ -4,6 +4,7 @@ import { isNonNullable } from "@botnet/utils";
 import { css } from "@emotion/react";
 import React, { useState } from "react";
 import { useDrag } from "react-dnd";
+import { getEmptyImage } from "react-dnd-html5-backend";
 import ReactDOM from "react-dom";
 import { DraggableItem, DraggableResult } from "./DraggableItem";
 import { ItemTile } from "./ItemTile";
@@ -25,7 +26,7 @@ export const InventoryItem = React.memo(
         }
       | undefined
     >(undefined);
-    const [{ isDragging }, drag] = useDrag<
+    const [{ isDragging }, drag, preview] = useDrag<
       DraggableItem,
       DraggableResult,
       { isDragging: boolean }
@@ -52,6 +53,7 @@ export const InventoryItem = React.memo(
         }
       },
     });
+    preview(getEmptyImage());
 
     return (
       <>
