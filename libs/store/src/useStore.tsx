@@ -242,6 +242,11 @@ export const useStore = (): StoreContextType => {
       return undefined;
     }
     const slot = state.slotMap[slotId];
+    const item = state.itemMap[slot.itemId];
+    if (!item) {
+      console.error("itemMap", state.itemMap);
+      throw new Error(`Could not find item with ID: ${slot.itemId}`);
+    }
     return {
       ...slot,
       item: state.itemMap[slot.itemId],
@@ -272,9 +277,11 @@ export const useStore = (): StoreContextType => {
     );
   }, [state.purchasedUpgradeMap]);
 
-  const bags = state.purchasedContainerIds.filter((id) => {
-    return state.purchasedContainerMap[id].type === "BAG";
-  });
+  const bags = useMemo(() => {
+    return state.purchasedContainerIds.filter((id) => {
+      return state.purchasedContainerMap[id].type === "BAG";
+    });
+  }, [state.purchasedContainerIds, state.purchasedContainerMap]);
 
   const currentCapacity = useMemo(() => {
     return bags.reduce((sum, id) => {
@@ -417,6 +424,7 @@ export const useStore = (): StoreContextType => {
   const loot: Loot = useCallback(() => {
     setState((draft) => {
       const item = randomLoot(availableItems);
+      console.log("setting itemMap", item);
       draft.itemMap[item.id] = item;
       addSlot({
         containerId: draft.handContainerId,
@@ -649,19 +657,22 @@ export const useStore = (): StoreContextType => {
     });
   }, [currentCapacity, setState, state.moneys]);
 
-  const nextInventory = () => {
+  const nextInventory = useCallback(() => {
     const current = bags.indexOf(state.currentContainerId);
     return bags[current + 1];
-  };
-  const prevInventory = () => {
+  }, [bags, state.currentContainerId]);
+  const prevInventory = useCallback(() => {
     const current = bags.indexOf(state.currentContainerId);
     return bags[current - 1];
-  };
-  const goInventory: GoInventory = ({ containerId }) => {
-    setState((draft) => {
-      draft.currentContainerId = containerId;
-    });
-  };
+  }, [bags, state.currentContainerId]);
+  const goInventory: GoInventory = useCallback(
+    ({ containerId }) => {
+      setState((draft) => {
+        draft.currentContainerId = containerId;
+      });
+    },
+    [setState],
+  );
 
   const buyContainerUpgrade: BuyContainerUpgrade = useCallback(
     ({ id }) => {
@@ -723,7 +734,9 @@ export const useStore = (): StoreContextType => {
     });
   }, [setState]);
 
-  const floor = getInventory(state.floorIds[state.playerLocation]);
+  const floor = useMemo(() => {
+    return getInventory(state.floorIds[state.playerLocation]);
+  }, [getInventory, state.floorIds, state.playerLocation]);
 
   const dropJunkItem: DropJunk = useCallback(() => {
     setState((draft) => {
@@ -777,42 +790,80 @@ export const useStore = (): StoreContextType => {
     localStorage.setItem(SAVE_KEY, JSON.stringify(state));
   });
 
-  return {
-    dropJunk,
-    dropJunkItem,
-    trash,
-    floor,
-    addSlot,
-    buyContainerUpgrade,
-    buyUpgrade,
-    heldSlot,
-    inventory,
-    moneys: state.moneys,
-    moveSlot,
-    pack,
-    playerAction: state.playerAction,
-    playerDestination: state.playerDestination,
-    playerLocation: state.playerLocation,
-    storeHeldItem,
-    sell,
-    loot,
-    sort,
-    travel,
-    arrive,
-    adventure,
-    sellItem,
-    purchasedUpgrades,
-    highestMoneys: state.highestMoneys,
-    buyContainer,
-    nextInventory: nextInventory(),
-    prevInventory: prevInventory(),
-    goInventory,
-    allInventory,
-    disable,
-    enable,
-    cheat,
-    reset,
-  };
+  return useMemo(
+    () => ({
+      dropJunk,
+      dropJunkItem,
+      trash,
+      floor,
+      addSlot,
+      buyContainerUpgrade,
+      buyUpgrade,
+      heldSlot,
+      inventory,
+      moneys: state.moneys,
+      moveSlot,
+      pack,
+      playerAction: state.playerAction,
+      playerDestination: state.playerDestination,
+      playerLocation: state.playerLocation,
+      storeHeldItem,
+      sell,
+      loot,
+      sort,
+      travel,
+      arrive,
+      adventure,
+      sellItem,
+      purchasedUpgrades,
+      highestMoneys: state.highestMoneys,
+      buyContainer,
+      nextInventory: nextInventory(),
+      prevInventory: prevInventory(),
+      goInventory,
+      allInventory,
+      disable,
+      enable,
+      cheat,
+      reset,
+    }),
+    [
+      addSlot,
+      adventure,
+      allInventory,
+      arrive,
+      buyContainer,
+      buyContainerUpgrade,
+      buyUpgrade,
+      cheat,
+      disable,
+      dropJunk,
+      dropJunkItem,
+      enable,
+      floor,
+      goInventory,
+      heldSlot,
+      inventory,
+      loot,
+      moveSlot,
+      nextInventory,
+      pack,
+      prevInventory,
+      purchasedUpgrades,
+      reset,
+      sell,
+      sellItem,
+      sort,
+      state.highestMoneys,
+      state.moneys,
+      state.playerAction,
+      state.playerDestination,
+      state.playerLocation,
+      storeHeldItem,
+      trash,
+      travel,
+    ],
+  );
 };
 
 const initializeGrid = ({
