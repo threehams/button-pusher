@@ -85,4 +85,16 @@ export const upgrades: UpgradeMap = {
     baseCost: 100,
     maxLevel: undefined,
   },
+  TRASH: {
+    name: "Drop inventory junk onto floor",
+    upgradeName: "",
+    baseCost: 100,
+    maxLevel: undefined,
+  },
+  AUTOMATE_TRASH: {
+    name: "Drop junk automatically",
+    upgradeName: "",
+    baseCost: 100,
+    maxLevel: undefined,
+  },
 };

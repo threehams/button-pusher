@@ -5,82 +5,93 @@ import { autoDropJunk } from "./autoDropJunk";
 import { autoPack } from "./autoPack";
 import { autoSell } from "./autoSell";
 import { autoSort } from "./autoSort";
+import { autoTrash } from "./autoTrash";
 import { autoTravel } from "./autoTravel";
 import { kill } from "./kill";
 
 export const useGameLoop = ({
-  loot,
-  heldSlot,
-  purchasedUpgrades,
-  pack,
-  sort,
-  sell,
-  inventory,
   adventure,
-  arrive,
-  playerAction,
-  playerLocation,
-  sellItem,
-  storeHeldItem,
-  travel,
   allInventory,
+  arrive,
   dropJunk,
   dropJunkItem,
+  floor,
+  heldSlot,
+  inventory,
+  loot,
+  pack,
+  playerAction,
+  playerLocation,
+  purchasedUpgrades,
+  sell,
+  sellItem,
+  sort,
+  startSort,
+  storeHeldItem,
+  trash,
+  trashAll,
+  travel,
 }: StoreContextType) => {
   const [lastKill, setLastKill] = useState(0);
   const [lastAutoKill, setLastAutoKill] = useState(0);
   const [lastPack, setLastPack] = useState(0);
   const [lastAutoPack, setLastAutoPack] = useState(0);
   const [lastSort, setLastSort] = useState(0);
-  const [lastAutoSell, setLastAutoSell] = useState(0);
-  const [lastAutoTravel, setLastAutoTravel] = useState(0);
+  const [lastAutoSort, setLastAutoSort] = useState(0);
   const [lastTravel, setLastTravel] = useState(0);
+  const [lastAutoTravel, setLastAutoTravel] = useState(0);
   const [lastSell, setLastSell] = useState(0);
-  const [lastAutoDropJunk, setLastAutoDropJunk] = useState(0);
+  const [lastAutoSell, setLastAutoSell] = useState(0);
   const [lastDropJunk, setLastDropJunk] = useState(0);
+  const [lastAutoDropJunk, setLastAutoDropJunk] = useState(0);
+  const [lastTrash, setLastTrash] = useState(0);
+  const [lastAutoTrash, setLastAutoTrash] = useState(0);
 
   const loop = (delta: number) => {
     kill({
-      heldSlot,
-      loot,
-      lastKill,
-      setLastKill,
-      delta,
-      playerAction,
-      upgrade: purchasedUpgrades.KILL,
-      autoUpgrade: purchasedUpgrades.AUTOMATE_KILL,
-      lastAutoKill,
-      setLastAutoKill,
       adventure,
+      autoUpgrade: purchasedUpgrades.AUTOMATE_KILL,
+      delta,
+      heldSlot,
+      lastAutoKill,
+      lastKill,
+      loot,
+      playerAction,
       playerLocation,
+      setLastAutoKill,
+      setLastKill,
+      upgrade: purchasedUpgrades.KILL,
     });
     autoPack({
-      autoUpgrade: purchasedUpgrades.AUTOMATE_PACK,
-      upgrade: purchasedUpgrades.PACK,
-      pack,
-      heldSlot,
-      delta,
-      lastPack,
-      setLastPack,
-      lastAutoPack,
-      setLastAutoPack,
-      playerAction,
-      storeHeldItem,
       allInventory,
+      autoUpgrade: purchasedUpgrades.AUTOMATE_PACK,
+      delta,
+      heldSlot,
+      lastAutoPack,
+      lastPack,
+      pack,
+      playerAction,
+      setLastAutoPack,
+      setLastPack,
+      storeHeldItem,
+      upgrade: purchasedUpgrades.PACK,
     });
     autoSort({
-      upgrade: purchasedUpgrades.SORT,
       autoUpgrade: purchasedUpgrades.AUTOMATE_SORT,
-      sort,
       delta,
-      lastSort,
-      setLastSort,
       inventory,
+      lastAutoSort,
+      lastSort,
+      playerAction,
+      setLastAutoSort,
+      setLastSort,
+      sort,
+      startSort,
+      upgrade: purchasedUpgrades.SORT,
     });
     autoDropJunk({
-      upgrade: purchasedUpgrades.DROP_JUNK,
-      autoUpgrade: purchasedUpgrades.AUTOMATE_DROP_JUNK,
       allInventory,
+      autoUpgrade: purchasedUpgrades.AUTOMATE_DROP_JUNK,
       delta,
       dropJunk,
       dropJunkItem,
@@ -89,35 +100,50 @@ export const useGameLoop = ({
       playerAction,
       setLastAutoDropJunk,
       setLastDropJunk,
+      upgrade: purchasedUpgrades.DROP_JUNK,
+    });
+    autoTrash({
+      allInventory,
+      autoUpgrade: purchasedUpgrades.AUTOMATE_TRASH,
+      delta,
+      floor,
+      lastAutoTrash,
+      lastTrash,
+      playerAction,
+      setLastAutoTrash,
+      setLastTrash,
+      trash,
+      trashAll,
+      upgrade: purchasedUpgrades.TRASH,
     });
     autoTravel({
-      lastAutoTravel,
-      setLastAutoTravel,
       allInventory,
-      playerLocation,
-      travel,
       arrive,
+      autoUpgrade: purchasedUpgrades.AUTOMATE_TRAVEL,
       delta,
+      lastAutoTravel,
       lastTravel,
       playerAction,
+      playerLocation,
+      setLastAutoTravel,
       setLastTravel,
+      travel,
       upgrade: purchasedUpgrades.TRAVEL,
-      autoUpgrade: purchasedUpgrades.AUTOMATE_TRAVEL,
     });
     autoSell({
+      adventure,
+      allInventory,
       autoUpgrade: purchasedUpgrades.AUTOMATE_SELL,
-      upgrade: purchasedUpgrades.SELL,
-      sell,
       delta,
       lastAutoSell,
       lastSell,
-      setLastAutoSell,
-      allInventory,
-      setLastSell,
-      adventure,
       playerAction,
       playerLocation,
+      sell,
       sellItem,
+      setLastAutoSell,
+      setLastSell,
+      upgrade: purchasedUpgrades.SELL,
     });
   };
   useLoop(loop);
@@ -139,9 +165,13 @@ export const useGameLoop = ({
       last: lastAutoPack,
       total: purchasedUpgrades.AUTOMATE_PACK.time,
     }),
-    autoSortProgress: progress({
+    sortProgress: progress({
       last: lastSort,
       total: purchasedUpgrades.SORT.time,
+    }),
+    autoSortProgress: progress({
+      last: lastAutoSort,
+      total: purchasedUpgrades.AUTOMATE_SORT.time,
     }),
     sellProgress: progress({
       last: lastSell,
@@ -166,6 +196,14 @@ export const useGameLoop = ({
     autoDropJunkProgress: progress({
       last: lastAutoDropJunk,
       total: purchasedUpgrades.AUTOMATE_DROP_JUNK.time,
+    }),
+    trashProgress: progress({
+      last: lastTrash,
+      total: purchasedUpgrades.TRASH.time,
+    }),
+    autoTrashProgress: progress({
+      last: lastAutoTrash,
+      total: purchasedUpgrades.AUTOMATE_TRASH.time,
     }),
   };
 };

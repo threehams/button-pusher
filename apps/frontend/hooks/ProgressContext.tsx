@@ -5,6 +5,7 @@ export type ProgressContextType = {
   autoKillProgress: number;
   packProgress: number;
   autoPackProgress: number;
+  sortProgress: number;
   autoSortProgress: number;
   sellProgress: number;
   autoSellProgress: number;
@@ -12,6 +13,8 @@ export type ProgressContextType = {
   autoTravelProgress: number;
   dropJunkProgress: number;
   autoDropJunkProgress: number;
+  trashProgress: number;
+  autoTrashProgress: number;
 };
 
 const ProgressContext = React.createContext<ProgressContextType>(

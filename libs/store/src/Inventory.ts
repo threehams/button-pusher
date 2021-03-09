@@ -17,4 +17,5 @@ export type Inventory = {
   sorted: boolean;
   type: ContainerType;
   junk: boolean;
+  allJunk: boolean;
 };

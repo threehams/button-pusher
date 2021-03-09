@@ -50,7 +50,8 @@ export type BuyUpgrade = (options: { id: UpgradeType }) => void;
 export type BuyContainerUpgrade = (options: { id: string }) => void;
 export type Pack = () => void;
 export type StoreHeldItem = () => void;
-export type Sort = (options: { containerId: string }) => void;
+export type StartSort = () => void;
+export type Sort = () => void;
 export type Sell = () => void;
 export type Travel = (options: { destination: PlayerLocation }) => void;
 export type Adventure = () => void;
@@ -66,15 +67,17 @@ export type AutomatedUpgrade =
   | "AUTOMATE_SELL"
   | "AUTOMATE_SORT"
   | "AUTOMATE_TRAVEL"
-  | "AUTOMATE_DROP_JUNK";
+  | "AUTOMATE_DROP_JUNK"
+  | "AUTOMATE_TRASH";
 export type Disable = (action: AutomatedUpgrade) => void;
 export type Enable = (action: AutomatedUpgrade) => void;
 export type CheatType = "AUTOMATION" | "MIDGAME";
 export type Cheat = (type: CheatType) => void;
 export type Reset = () => void;
-export type Trash = () => void;
 export type DropJunk = () => void;
 export type DropJunkItem = () => void;
+export type Trash = () => void;
+export type TrashAll = () => void;
 
 type SortMethod = "horizontal" | "vertical";
 
@@ -192,6 +195,14 @@ const INITIAL_STATE: State = {
       level: 0,
       enabled: true,
     },
+    TRASH: {
+      level: 0,
+      enabled: true,
+    },
+    AUTOMATE_TRASH: {
+      level: 0,
+      enabled: true,
+    },
   },
   purchasedContainerIds: [
     STARTING_CONTAINER.id,
@@ -244,6 +255,7 @@ export const useStore = (): StoreContextType => {
     const slot = state.slotMap[slotId];
     const item = state.itemMap[slot.itemId];
     if (!item) {
+      // eslint-disable-next-line no-console
       console.error("itemMap", state.itemMap);
       throw new Error(`Could not find item with ID: ${slot.itemId}`);
     }
@@ -343,10 +355,12 @@ export const useStore = (): StoreContextType => {
         }
       }
       let junk = false;
+      let allJunk = !!slots.length;
       for (const slot of slots) {
         if (slot.item.rarity === "JUNK") {
           junk = true;
-          break;
+        } else {
+          allJunk = false;
         }
       }
 
@@ -358,6 +372,7 @@ export const useStore = (): StoreContextType => {
         nextAvailable: cost !== 0 || !isLast ? 0 : nextContainer.cost,
         full,
         junk,
+        allJunk,
       };
     },
     [
@@ -424,7 +439,6 @@ export const useStore = (): StoreContextType => {
   const loot: Loot = useCallback(() => {
     setState((draft) => {
       const item = randomLoot(availableItems);
-      console.log("setting itemMap", item);
       draft.itemMap[item.id] = item;
       addSlot({
         containerId: draft.handContainerId,
@@ -436,61 +450,73 @@ export const useStore = (): StoreContextType => {
     });
   }, [addSlot, setState]);
 
-  const sort: Sort = useCallback(
-    ({ containerId }) => {
-      const container = state.purchasedContainerMap[containerId];
-      const currentSlots = container.slotIds.map((slotId) => {
-        const slot = state.slotMap[slotId];
-        return {
-          ...slot,
-          item: state.itemMap[slot.itemId],
-        };
-      });
-      let grid = initializeGrid({
-        width: container.width,
-        height: container.height,
-      });
-      const sorted = currentSlots.slice().sort((a, b) => {
-        return a.item.width * a.item.height < b.item.width * b.item.height
-          ? 1
-          : -1;
-      });
-      const targetSlots: FullSlot[] = [];
-      for (const slot of sorted) {
-        const target = findSlot({
-          containerInv: {
-            grid,
-            width: container.width,
-            height: container.height,
-          },
-          height: slot.item.height,
-          width: slot.item.width,
-          method: "vertical",
-        });
-        if (!target) {
-          return;
-        }
-        targetSlots.push({
-          ...slot,
-          x: target.x,
-          y: target.y,
-        });
-
-        recalculateGrid({
-          slots: targetSlots,
+  const startSort: StartSort = useCallback(() => {
+    setState((draft) => {
+      draft.playerAction = "SORTING";
+    });
+  }, [setState]);
+  const sort: Sort = useCallback(() => {
+    const container = state.purchasedContainerMap[state.currentContainerId];
+    const currentSlots = container.slotIds.map((slotId) => {
+      const slot = state.slotMap[slotId];
+      return {
+        ...slot,
+        item: state.itemMap[slot.itemId],
+      };
+    });
+    let grid = initializeGrid({
+      width: container.width,
+      height: container.height,
+    });
+    const sorted = currentSlots.slice().sort((a, b) => {
+      return a.item.width * a.item.height < b.item.width * b.item.height
+        ? 1
+        : -1;
+    });
+    const targetSlots: FullSlot[] = [];
+    for (const slot of sorted) {
+      const target = findSlot({
+        containerInv: {
           grid,
-        });
-      }
-      setState((draft) => {
-        targetSlots.forEach((slot) => {
-          draft.slotMap[slot.id].x = slot.x;
-          draft.slotMap[slot.id].y = slot.y;
-          draft.purchasedContainerMap[containerId].sorted = true;
-        });
+          width: container.width,
+          height: container.height,
+        },
+        height: slot.item.height,
+        width: slot.item.width,
+        method: "vertical",
       });
-    },
-    [setState, state.itemMap, state.purchasedContainerMap, state.slotMap],
-  );
+      if (!target) {
+        setState((draft) => {
+          draft.playerAction = "IDLE";
+        });
+        return;
+      }
+      targetSlots.push({
+        ...slot,
+        x: target.x,
+        y: target.y,
+      });
+
+      recalculateGrid({
+        slots: targetSlots,
+        grid,
+      });
+    }
+    setState((draft) => {
+      draft.playerAction = "IDLE";
+      targetSlots.forEach((slot) => {
+        draft.slotMap[slot.id].x = slot.x;
+        draft.slotMap[slot.id].y = slot.y;
+        draft.purchasedContainerMap[state.currentContainerId].sorted = true;
+      });
+    });
+  }, [
+    setState,
+    state.currentContainerId,
+    state.itemMap,
+    state.purchasedContainerMap,
+    state.slotMap,
+  ]);
 
   const moveSlot: MoveSlot = useCallback(
     ({ slotId, x, y, containerId }) => {
@@ -770,6 +796,12 @@ export const useStore = (): StoreContextType => {
 
   const trash: Trash = useCallback(() => {
     setState((draft) => {
+      draft.playerAction = "TRASHING";
+    });
+  }, [setState]);
+
+  const trashAll: TrashAll = useCallback(() => {
+    setState((draft) => {
       for (const slot of floor.slots) {
         delete draft.itemMap[slot.item.id];
         delete draft.slotMap[slot.id];
@@ -777,6 +809,7 @@ export const useStore = (): StoreContextType => {
       draft.purchasedContainerMap[
         draft.floorIds[state.playerLocation]
       ].slotIds = [];
+      draft.playerAction = "IDLE";
     });
   }, [floor.slots, setState, state.playerLocation]);
 
@@ -795,6 +828,7 @@ export const useStore = (): StoreContextType => {
       dropJunk,
       dropJunkItem,
       trash,
+      trashAll,
       floor,
       addSlot,
       buyContainerUpgrade,
@@ -826,6 +860,7 @@ export const useStore = (): StoreContextType => {
       enable,
       cheat,
       reset,
+      startSort,
     }),
     [
       addSlot,
@@ -854,6 +889,7 @@ export const useStore = (): StoreContextType => {
       sell,
       sellItem,
       sort,
+      startSort,
       state.highestMoneys,
       state.moneys,
       state.playerAction,
@@ -861,6 +897,7 @@ export const useStore = (): StoreContextType => {
       state.playerLocation,
       storeHeldItem,
       trash,
+      trashAll,
       travel,
     ],
   );

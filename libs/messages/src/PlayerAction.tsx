@@ -7,5 +7,7 @@ export const PlayerAction = Union(
   Literal("IDLE"),
   Literal("STORING"),
   Literal("DROPPING"),
+  Literal("TRASHING"),
+  Literal("SORTING"),
 );
 export type PlayerAction = Static<typeof PlayerAction>;

@@ -12,6 +12,8 @@ export const StatusBar = () => {
     autoTravelProgress,
     packProgress,
     travelProgress,
+    autoDropJunkProgress,
+    autoTrashProgress,
   } = useProgress();
   if (autoTravelProgress) {
     return (
@@ -29,16 +31,26 @@ export const StatusBar = () => {
   } else if (autoKillProgress) {
     return (
       <Progress percent={autoKillProgress}>
-        Searching for something to kill...
+        Searching for something to kill
       </Progress>
     );
   } else if (autoPackProgress) {
     return (
-      <Progress percent={autoPackProgress}>Searching for storage...</Progress>
+      <Progress percent={autoPackProgress}>Searching for storage</Progress>
     );
   } else if (packProgress) {
     return (
       <Progress percent={packProgress}>Storing {heldSlot?.item.name}</Progress>
+    );
+  } else if (autoDropJunkProgress) {
+    return (
+      <Progress percent={autoDropJunkProgress}>
+        Deciding where to drop junk
+      </Progress>
+    );
+  } else if (autoTrashProgress) {
+    return (
+      <Progress percent={autoTrashProgress}>Leaving this junk behind</Progress>
     );
   }
   return null;

@@ -7,6 +7,8 @@ import { InventoryItem } from "../InventoryItem";
 import deepEqual from "deep-equal";
 import { getTargetCoords } from "@botnet/store";
 import { Button } from "../Button";
+import { AutoAction } from "../AutoAction";
+import { useProgress } from "../../hooks/ProgressContext";
 
 type Props = {
   inventory: Inventory;
@@ -21,7 +23,10 @@ export const InventoryPanel = React.memo(({ inventory }: Props) => {
     prevInventory,
     goInventory,
     trash,
+    purchasedUpgrades,
+    floor,
   } = useStoreValue();
+  const { trashProgress } = useProgress();
   const { nextAvailable, height, width, slots, cost } = inventory;
   const [target, setTargetState] = useState<SlotInfo | undefined>();
 
@@ -137,7 +142,7 @@ export const InventoryPanel = React.memo(({ inventory }: Props) => {
                     state={
                       required && targetCoords?.valid ? "VALID" : "INVALID"
                     }
-                  ></InventorySlot>
+                  />
                 );
               });
             })}
@@ -158,14 +163,25 @@ export const InventoryPanel = React.memo(({ inventory }: Props) => {
         )}
       </div>
       {inventory.type === "FLOOR" && (
-        <Button
-          disabled={!inventory.slots}
-          onClick={() => {
-            trash();
-          }}
+        <div
+          css={css`
+            width: 50%;
+            margin-top: 20px;
+            padding-right: 20px;
+          `}
         >
-          Leave Behind
-        </Button>
+          <AutoAction
+            percent={trashProgress}
+            upgrade={purchasedUpgrades.AUTOMATE_TRASH}
+            upgradeName="AUTOMATE_TRASH"
+            disabled={!floor.slots.length}
+            onClick={() => {
+              trash();
+            }}
+          >
+            Leave Behind
+          </AutoAction>
+        </div>
       )}
     </div>
   );

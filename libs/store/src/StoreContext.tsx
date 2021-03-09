@@ -28,43 +28,47 @@ import {
   Trash,
   DropJunk,
   DropJunkItem,
+  TrashAll,
+  StartSort,
 } from "./useStore";
 
 export type StoreContextType = {
-  storeHeldItem: StoreHeldItem;
   addSlot: AddSlot;
+  adventure: Adventure;
+  allInventory: AllInventory;
+  arrive: Arrive;
+  buyContainer: BuyContainer;
   buyContainerUpgrade: BuyContainerUpgrade;
   buyUpgrade: BuyUpgrade;
-  heldSlot: (Slot & { item: Item }) | undefined;
-  inventory: Inventory;
-  floor: Inventory;
-  moneys: number;
-  moveSlot: MoveSlot;
-  pack: Pack;
-  purchasedUpgrades: PurchasedUpgradeMap;
-  sell: Sell;
-  loot: Loot;
-  sort: Sort;
-  adventure: Adventure;
-  arrive: Arrive;
-  playerAction: PlayerAction;
-  playerLocation: PlayerLocation;
-  playerDestination: PlayerLocation | undefined;
-  sellItem: SellItem;
-  travel: Travel;
-  highestMoneys: number;
-  nextInventory: NextInventory;
-  prevInventory: PrevInventory;
-  goInventory: GoInventory;
-  buyContainer: BuyContainer;
-  allInventory: AllInventory;
-  disable: Disable;
-  enable: Enable;
-  reset: Reset;
   cheat: Cheat;
-  trash: Trash;
+  disable: Disable;
   dropJunk: DropJunk;
   dropJunkItem: DropJunkItem;
+  enable: Enable;
+  floor: Inventory;
+  goInventory: GoInventory;
+  heldSlot: (Slot & { item: Item }) | undefined;
+  highestMoneys: number;
+  inventory: Inventory;
+  loot: Loot;
+  moneys: number;
+  moveSlot: MoveSlot;
+  nextInventory: NextInventory;
+  pack: Pack;
+  playerAction: PlayerAction;
+  playerDestination: PlayerLocation | undefined;
+  playerLocation: PlayerLocation;
+  prevInventory: PrevInventory;
+  purchasedUpgrades: PurchasedUpgradeMap;
+  reset: Reset;
+  sell: Sell;
+  sellItem: SellItem;
+  sort: Sort;
+  startSort: StartSort;
+  storeHeldItem: StoreHeldItem;
+  trash: Trash;
+  trashAll: TrashAll;
+  travel: Travel;
 };
 
 const StoreContext = React.createContext<StoreContextType>(undefined as any);
