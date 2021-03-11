@@ -4,6 +4,7 @@
 /dist
 /tmp
 /out-tsc
+apps/frontend/out
 
 # dependencies
 node_modules

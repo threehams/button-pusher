@@ -7,7 +7,7 @@
     "start": "cd apps/frontend && npx next start",
     "build": "cd apps/frontend && cross-env NODE_ENV=production npx next build",
     "build:profile": "cd apps/frontend && cross-env NODE_ENV=production PROFILE=true npx next build",
-    "export": "cross-env cd apps/frontend && npx next export",
+    "export": "cd apps/frontend && cross-env NODE_ENV=production npx next export",
     "test": "nx test",
     "lint": "nx workspace-lint && nx lint"
   },
