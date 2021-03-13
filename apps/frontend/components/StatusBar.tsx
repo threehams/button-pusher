@@ -5,52 +5,47 @@ import { Progress } from "./Progress";
 
 export const StatusBar = () => {
   const { heldSlot, playerDestination } = useStoreValue();
-  const {
-    autoKillProgress,
-    autoPackProgress,
-    autoSellProgress,
-    autoTravelProgress,
-    packProgress,
-    travelProgress,
-    autoDropJunkProgress,
-    autoTrashProgress,
-  } = useProgress();
-  if (autoTravelProgress) {
+  const progress = useProgress();
+  if (progress.autoTravel) {
     return (
-      <Progress percent={autoTravelProgress}>Deciding where to travel</Progress>
+      <Progress percent={progress.autoTravel}>
+        Deciding where to travel
+      </Progress>
     );
-  } else if (travelProgress) {
+  } else if (progress.travel) {
     return (
-      <Progress percent={travelProgress}>
+      <Progress percent={progress.travel}>
         Travelling to{" "}
         {playerDestination === "TOWN" ? "Town" : "the Killing Fields"}
       </Progress>
     );
-  } else if (autoSellProgress) {
-    return <Progress percent={autoSellProgress}>Looking for a vendor</Progress>;
-  } else if (autoKillProgress) {
+  } else if (progress.autoSell) {
     return (
-      <Progress percent={autoKillProgress}>
+      <Progress percent={progress.autoSell}>Looking for a vendor</Progress>
+    );
+  } else if (progress.autoKill) {
+    return (
+      <Progress percent={progress.autoKill}>
         Searching for something to kill
       </Progress>
     );
-  } else if (autoPackProgress) {
+  } else if (progress.autoPack) {
     return (
-      <Progress percent={autoPackProgress}>Searching for storage</Progress>
+      <Progress percent={progress.autoPack}>Searching for storage</Progress>
     );
-  } else if (packProgress) {
+  } else if (progress.pack) {
     return (
-      <Progress percent={packProgress}>Storing {heldSlot?.item.name}</Progress>
+      <Progress percent={progress.pack}>Storing {heldSlot?.item.name}</Progress>
     );
-  } else if (autoDropJunkProgress) {
+  } else if (progress.autoDropJunk) {
     return (
-      <Progress percent={autoDropJunkProgress}>
+      <Progress percent={progress.autoDropJunk}>
         Deciding where to drop junk
       </Progress>
     );
-  } else if (autoTrashProgress) {
+  } else if (progress.autoTrash) {
     return (
-      <Progress percent={autoTrashProgress}>Leaving this junk behind</Progress>
+      <Progress percent={progress.autoTrash}>Leaving this junk behind</Progress>
     );
   }
   return null;

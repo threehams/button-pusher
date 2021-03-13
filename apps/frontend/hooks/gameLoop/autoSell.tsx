@@ -6,14 +6,13 @@ import {
   AllInventory,
   PurchasedUpgrade,
 } from "@botnet/store";
+import { LastTimes, SetLastTime } from "./lastTimes";
 
 type AutoSell = {
   upgrade: PurchasedUpgrade;
   autoUpgrade: PurchasedUpgrade;
-  lastAutoSell: number;
-  setLastAutoSell: (value: number) => void;
-  lastSell: number;
-  setLastSell: (value: number) => void;
+  lastTimes: LastTimes;
+  setLastTime: SetLastTime;
   sell: Sell;
   adventure: Adventure;
   sellItem: SellItem;
@@ -23,10 +22,6 @@ type AutoSell = {
   allInventory: AllInventory;
 };
 export const autoSell = ({
-  lastAutoSell: lastAutoSell,
-  lastSell: lastSell,
-  setLastAutoSell,
-  setLastSell,
   sell,
   sellItem,
   delta,
@@ -35,12 +30,14 @@ export const autoSell = ({
   playerAction,
   playerLocation,
   allInventory,
+  setLastTime,
+  lastTimes,
 }: AutoSell) => {
   if (playerAction === "SELLING") {
-    setLastSell(lastSell + delta);
-    if (lastSell > upgrade.time) {
+    setLastTime("sell", lastTimes.sell + delta);
+    if (lastTimes.sell > upgrade.time) {
       sellItem();
-      setLastSell(0);
+      setLastTime("sell", 0);
       return;
     }
   }
@@ -51,10 +48,10 @@ export const autoSell = ({
     playerLocation === "TOWN" &&
     allInventory.slots
   ) {
-    setLastAutoSell(lastAutoSell + delta);
-    if (lastAutoSell > autoUpgrade.time) {
+    setLastTime("autoSell", lastTimes.autoSell + delta);
+    if (lastTimes.autoSell > autoUpgrade.time) {
       sell();
-      setLastAutoSell(0);
+      setLastTime("autoSell", 0);
       return;
     }
   }

@@ -62,13 +62,13 @@ export type NextInventory = string | undefined;
 export type PrevInventory = string | undefined;
 export type GoInventory = (options: { containerId: string }) => void;
 export type AutomatedUpgrade =
-  | "AUTOMATE_KILL"
-  | "AUTOMATE_PACK"
-  | "AUTOMATE_SELL"
-  | "AUTOMATE_SORT"
-  | "AUTOMATE_TRAVEL"
-  | "AUTOMATE_DROP_JUNK"
-  | "AUTOMATE_TRASH";
+  | "autoKill"
+  | "autoPack"
+  | "autoSell"
+  | "autoSort"
+  | "autoTravel"
+  | "autoDropJunk"
+  | "autoTrash";
 export type Disable = (action: AutomatedUpgrade) => void;
 export type Enable = (action: AutomatedUpgrade) => void;
 export type CheatType = "AUTOMATION" | "MIDGAME";
@@ -139,67 +139,59 @@ const INITIAL_STATE: State = {
   slotMap: {},
   moneys: 0,
   purchasedUpgradeMap: {
-    AUTOMATE_PACK: {
+    autoPack: {
       level: 0,
       enabled: true,
     },
-    AUTOMATE_SELL: {
+    autoSell: {
       level: 0,
       enabled: true,
     },
-    AUTOMATE_TRAVEL: {
+    autoTravel: {
       level: 0,
       enabled: true,
     },
-    AUTOMATE_SORT: {
+    autoSort: {
       level: 0,
       enabled: true,
     },
-    SORT: {
+    sort: {
       level: 0,
       enabled: true,
     },
-    PACK: {
+    pack: {
       level: 0,
       enabled: true,
     },
-    APPRAISE: {
+    autoKill: {
       level: 0,
       enabled: true,
     },
-    AUTOMATE_KILL: {
+    kill: {
       level: 0,
       enabled: true,
     },
-    AUTOMATE_APPRAISE: {
+    sell: {
       level: 0,
       enabled: true,
     },
-    KILL: {
+    travel: {
       level: 0,
       enabled: true,
     },
-    SELL: {
+    dropJunk: {
       level: 0,
       enabled: true,
     },
-    TRAVEL: {
+    autoDropJunk: {
       level: 0,
       enabled: true,
     },
-    DROP_JUNK: {
+    trash: {
       level: 0,
       enabled: true,
     },
-    AUTOMATE_DROP_JUNK: {
-      level: 0,
-      enabled: true,
-    },
-    TRASH: {
-      level: 0,
-      enabled: true,
-    },
-    AUTOMATE_TRASH: {
+    autoTrash: {
       level: 0,
       enabled: true,
     },

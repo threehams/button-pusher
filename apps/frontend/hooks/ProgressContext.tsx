@@ -1,21 +1,7 @@
+import { UpgradeType } from "@botnet/messages";
 import React, { useContext } from "react";
 
-export type ProgressContextType = {
-  killProgress: number;
-  autoKillProgress: number;
-  packProgress: number;
-  autoPackProgress: number;
-  sortProgress: number;
-  autoSortProgress: number;
-  sellProgress: number;
-  autoSellProgress: number;
-  travelProgress: number;
-  autoTravelProgress: number;
-  dropJunkProgress: number;
-  autoDropJunkProgress: number;
-  trashProgress: number;
-  autoTrashProgress: number;
-};
+export type ProgressContextType = { [Key in UpgradeType]: number };
 
 const ProgressContext = React.createContext<ProgressContextType>(
   undefined as any,

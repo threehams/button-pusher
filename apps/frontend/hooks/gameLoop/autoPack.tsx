@@ -5,15 +5,14 @@ import {
   PurchasedUpgrade,
   StoreHeldItem,
 } from "@botnet/store";
+import { LastTimes, SetLastTime } from "./lastTimes";
 
 type AutoPack = {
   upgrade: PurchasedUpgrade;
   autoUpgrade: PurchasedUpgrade;
   heldSlot: (Slot & { item: Item }) | undefined;
-  lastPack: number;
-  setLastPack: (value: number) => void;
-  lastAutoPack: number;
-  setLastAutoPack: (value: number) => void;
+  lastTimes: LastTimes;
+  setLastTime: SetLastTime;
   pack: Pack;
   storeHeldItem: StoreHeldItem;
   delta: number;
@@ -24,21 +23,19 @@ export const autoPack = ({
   autoUpgrade,
   upgrade,
   heldSlot,
-  lastPack,
-  setLastPack,
+  lastTimes,
+  setLastTime,
   pack,
   storeHeldItem,
   delta,
   playerAction,
-  lastAutoPack,
-  setLastAutoPack,
   allInventory,
 }: AutoPack) => {
   if (playerAction === "STORING" && heldSlot) {
-    setLastPack(lastPack + delta);
-    if (lastPack > upgrade.time) {
+    setLastTime("pack", lastTimes.pack + delta);
+    if (lastTimes.pack > upgrade.time) {
       storeHeldItem();
-      setLastPack(0);
+      setLastTime("pack", 0);
     }
   }
 
@@ -49,10 +46,10 @@ export const autoPack = ({
     heldSlot &&
     playerAction === "IDLE"
   ) {
-    setLastAutoPack(lastAutoPack + delta);
-    if (lastAutoPack > autoUpgrade.time) {
+    setLastTime("autoPack", lastTimes.autoPack + delta);
+    if (lastTimes.autoPack > autoUpgrade.time) {
       pack();
-      setLastAutoPack(0);
+      setLastTime("autoPack", 0);
     }
   }
 };

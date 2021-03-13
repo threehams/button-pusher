@@ -1,97 +1,85 @@
 import { UpgradeMap } from "@botnet/messages";
 
 export const upgrades: UpgradeMap = {
-  KILL: {
+  kill: {
     name: "Kill things faster",
     upgradeName: "Kill things faster",
     baseCost: 100,
     maxLevel: undefined,
   },
-  SELL: {
+  sell: {
     name: "Sell stuff faster",
     upgradeName: "Sell stuff faster",
     baseCost: 500,
     maxLevel: undefined,
   },
-  AUTOMATE_KILL: {
+  autoKill: {
     name: "Kill things automatically",
     upgradeName: "Auto kill faster",
     baseCost: 1200,
     maxLevel: undefined,
   },
-  PACK: {
+  pack: {
     name: "Store stuff in inventory",
     upgradeName: "Store things faster",
     baseCost: 1000,
     maxLevel: undefined,
   },
-  SORT: {
+  sort: {
     name: "Sort inventory",
     upgradeName: "Sort inventory",
     baseCost: 3500,
     maxLevel: 1,
   },
-  TRAVEL: {
+  travel: {
     name: "Travel faster",
     upgradeName: "Travel faster",
     baseCost: 4000,
     maxLevel: undefined,
   },
-  AUTOMATE_PACK: {
+  autoPack: {
     name: "Auto store in inventory",
     upgradeName: "Auto store faster",
     baseCost: 6000,
     maxLevel: undefined,
   },
-  AUTOMATE_TRAVEL: {
+  autoTravel: {
     name: "Auto travel to/from town",
     upgradeName: "Auto travel with less delay",
     baseCost: 30000,
     maxLevel: undefined,
   },
-  AUTOMATE_SORT: {
+  autoSort: {
     name: "Auto sort inventory",
     upgradeName: "Auto sort faster",
     baseCost: 10000,
     maxLevel: undefined,
   },
-  AUTOMATE_SELL: {
+  autoSell: {
     name: "Auto sell while in town",
     upgradeName: "Auto sell faster",
     baseCost: 20000,
     maxLevel: undefined,
   },
-  APPRAISE: {
-    name: "Appraise inventory value",
-    upgradeName: "",
-    baseCost: 100,
-    maxLevel: undefined,
-  },
-  AUTOMATE_APPRAISE: {
-    name: "Automatically appraise inventory value",
-    upgradeName: "",
-    baseCost: 100,
-    maxLevel: undefined,
-  },
-  DROP_JUNK: {
+  dropJunk: {
     name: "Drop inventory junk onto floor",
     upgradeName: "",
     baseCost: 100,
     maxLevel: undefined,
   },
-  AUTOMATE_DROP_JUNK: {
+  autoDropJunk: {
     name: "Drop junk automatically",
     upgradeName: "",
     baseCost: 100,
     maxLevel: undefined,
   },
-  TRASH: {
+  trash: {
     name: "Drop inventory junk onto floor",
     upgradeName: "",
     baseCost: 100,
     maxLevel: undefined,
   },
-  AUTOMATE_TRASH: {
+  autoTrash: {
     name: "Drop junk automatically",
     upgradeName: "",
     baseCost: 100,

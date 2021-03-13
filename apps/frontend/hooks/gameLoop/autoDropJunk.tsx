@@ -5,14 +5,13 @@ import {
   DropJunk,
   PurchasedUpgrade,
 } from "@botnet/store";
+import { LastTimes, SetLastTime } from "./lastTimes";
 
 type AutoDropJunk = {
   upgrade: PurchasedUpgrade;
   autoUpgrade: PurchasedUpgrade;
-  lastDropJunk: number;
-  setLastDropJunk: (value: number) => void;
-  lastAutoDropJunk: number;
-  setLastAutoDropJunk: (value: number) => void;
+  lastTimes: LastTimes;
+  setLastTime: SetLastTime;
   dropJunk: DropJunk;
   dropJunkItem: DropJunkItem;
   delta: number;
@@ -27,16 +26,14 @@ export const autoDropJunk = ({
   allInventory,
   dropJunk,
   dropJunkItem,
-  lastAutoDropJunk,
-  lastDropJunk,
-  setLastAutoDropJunk,
-  setLastDropJunk,
+  lastTimes,
+  setLastTime,
 }: AutoDropJunk) => {
   if (playerAction === "DROPPING" && allInventory.junk) {
-    setLastDropJunk(lastDropJunk + delta);
-    if (lastDropJunk > upgrade.time) {
+    setLastTime("dropJunk", lastTimes.dropJunk + delta);
+    if (lastTimes.dropJunk > upgrade.time) {
       dropJunkItem();
-      setLastDropJunk(0);
+      setLastTime("dropJunk", 0);
     }
   }
 
@@ -46,10 +43,10 @@ export const autoDropJunk = ({
     autoUpgrade.enabled &&
     playerAction === "IDLE"
   ) {
-    setLastAutoDropJunk(lastAutoDropJunk + delta);
-    if (lastAutoDropJunk > autoUpgrade.time) {
+    setLastTime("autoDropJunk", lastTimes.autoDropJunk + delta);
+    if (lastTimes.autoDropJunk > autoUpgrade.time) {
       dropJunk();
-      setLastAutoDropJunk(0);
+      setLastTime("autoDropJunk", 0);
     }
   }
 };

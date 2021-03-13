@@ -18,14 +18,7 @@ export const ActionPanel = () => {
     travel,
     dropJunk,
   } = useStoreValue();
-  const {
-    killProgress,
-    packProgress,
-    sellProgress,
-    travelProgress,
-    dropJunkProgress,
-    sortProgress,
-  } = useProgress();
+  const progress = useProgress();
 
   return (
     <>
@@ -37,7 +30,7 @@ export const ActionPanel = () => {
         Actions
       </h1>
       <AutoAction
-        percent={killProgress}
+        percent={progress.kill}
         disabled={
           !(
             playerLocation === "KILLING_FIELDS" &&
@@ -45,20 +38,20 @@ export const ActionPanel = () => {
             !heldSlot
           )
         }
-        upgrade={purchasedUpgrades.AUTOMATE_KILL}
-        upgradeName="AUTOMATE_KILL"
+        upgrade={purchasedUpgrades.autoKill}
+        upgradeName="autoKill"
         onClick={() => {
           adventure();
         }}
       >
         Kill something {playerLocation === "TOWN" && "(not in town)"}
       </AutoAction>
-      {!!purchasedUpgrades.PACK.level && (
+      {!!purchasedUpgrades.pack.level && (
         <AutoAction
           disabled={!(heldSlot && playerAction === "IDLE" && !inventory.full)}
-          percent={packProgress}
-          upgrade={purchasedUpgrades.AUTOMATE_PACK}
-          upgradeName="AUTOMATE_PACK"
+          percent={progress.pack}
+          upgrade={purchasedUpgrades.autoPack}
+          upgradeName="autoPack"
           onClick={() => {
             pack();
           }}
@@ -66,12 +59,12 @@ export const ActionPanel = () => {
           Store item
         </AutoAction>
       )}
-      {!!purchasedUpgrades.DROP_JUNK.level && (
+      {!!purchasedUpgrades.dropJunk.level && (
         <AutoAction
           disabled={!inventory.junk}
-          percent={dropJunkProgress}
-          upgrade={purchasedUpgrades.AUTOMATE_DROP_JUNK}
-          upgradeName="AUTOMATE_DROP_JUNK"
+          percent={progress.dropJunk}
+          upgrade={purchasedUpgrades.autoDropJunk}
+          upgradeName="autoDropJunk"
           onClick={() => {
             dropJunk();
           }}
@@ -79,21 +72,21 @@ export const ActionPanel = () => {
           Drop Junk
         </AutoAction>
       )}
-      {!!purchasedUpgrades.SORT.level && (
+      {!!purchasedUpgrades.sort.level && (
         <AutoAction
           disabled={!inventory.slots}
-          percent={sortProgress}
+          percent={progress.sort}
           onClick={() => {
             startSort();
           }}
-          upgrade={purchasedUpgrades.AUTOMATE_SORT}
-          upgradeName="AUTOMATE_SORT"
+          upgrade={purchasedUpgrades.autoSort}
+          upgradeName="autoSort"
         >
           Sort
         </AutoAction>
       )}
       <AutoAction
-        percent={sellProgress}
+        percent={progress.sell}
         disabled={
           !(
             playerLocation === "TOWN" &&
@@ -101,8 +94,8 @@ export const ActionPanel = () => {
             !!inventory.slots.length
           )
         }
-        upgrade={purchasedUpgrades.AUTOMATE_SELL}
-        upgradeName="AUTOMATE_SELL"
+        upgrade={purchasedUpgrades.autoSell}
+        upgradeName="autoSell"
         onClick={() => {
           sell();
         }}
@@ -110,10 +103,10 @@ export const ActionPanel = () => {
         Sell something {playerLocation !== "TOWN" && "(only in town)"}
       </AutoAction>
       <AutoAction
-        upgrade={purchasedUpgrades.AUTOMATE_TRAVEL}
-        upgradeName="AUTOMATE_TRAVEL"
+        upgrade={purchasedUpgrades.autoTravel}
+        upgradeName="autoTravel"
         disabled={playerAction === "TRAVELLING"}
-        percent={travelProgress}
+        percent={progress.travel}
         onClick={() => {
           travel({
             destination: playerLocation === "TOWN" ? "KILLING_FIELDS" : "TOWN",

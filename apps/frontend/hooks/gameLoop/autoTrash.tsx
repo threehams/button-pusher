@@ -6,20 +6,18 @@ import {
   PurchasedUpgrade,
   Inventory,
 } from "@botnet/store";
+import { LastTimes, SetLastTime } from "./lastTimes";
 
 type AutoTrash = {
   upgrade: PurchasedUpgrade;
   autoUpgrade: PurchasedUpgrade;
-  lastTrash: number;
-  setLastTrash: (value: number) => void;
-  lastAutoTrash: number;
-  setLastAutoTrash: (value: number) => void;
   trash: Trash;
   trashAll: TrashAll;
   delta: number;
   playerAction: PlayerAction;
-  allInventory: AllInventory;
   floor: Inventory;
+  lastTimes: LastTimes;
+  setLastTime: SetLastTime;
 };
 export const autoTrash = ({
   autoUpgrade,
@@ -29,16 +27,14 @@ export const autoTrash = ({
   floor,
   trash,
   trashAll,
-  lastAutoTrash,
-  lastTrash,
-  setLastAutoTrash,
-  setLastTrash,
+  lastTimes,
+  setLastTime,
 }: AutoTrash) => {
   if (playerAction === "TRASHING") {
-    setLastTrash(lastTrash + delta);
-    if (lastTrash > upgrade.time) {
+    setLastTime("trash", lastTimes.trash + delta);
+    if (lastTimes.trash > upgrade.time) {
       trashAll();
-      setLastTrash(0);
+      setLastTime("trash", 0);
     }
   }
 
@@ -49,10 +45,10 @@ export const autoTrash = ({
     autoUpgrade.enabled &&
     playerAction === "IDLE"
   ) {
-    setLastAutoTrash(lastAutoTrash + delta);
-    if (lastAutoTrash > autoUpgrade.time) {
+    setLastTime("autoTrash", lastTimes.autoTrash + delta);
+    if (lastTimes.autoTrash > autoUpgrade.time) {
       trash();
-      setLastAutoTrash(0);
+      setLastTime("autoTrash", 0);
     }
   }
 };

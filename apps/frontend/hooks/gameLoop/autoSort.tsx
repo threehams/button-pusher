@@ -1,14 +1,13 @@
 import { PlayerAction } from "@botnet/messages";
 import { Inventory, PurchasedUpgrade, Sort, StartSort } from "@botnet/store";
+import { LastTimes, SetLastTime } from "./lastTimes";
 
 type AutoSort = {
   upgrade: PurchasedUpgrade;
   autoUpgrade: PurchasedUpgrade;
   inventory: Inventory;
-  lastSort: number;
-  setLastSort: (value: number) => void;
-  lastAutoSort: number;
-  setLastAutoSort: (value: number) => void;
+  lastTimes: LastTimes;
+  setLastTime: SetLastTime;
   startSort: StartSort;
   sort: Sort;
   delta: number;
@@ -17,21 +16,19 @@ type AutoSort = {
 export const autoSort = ({
   upgrade,
   inventory,
-  lastSort,
-  setLastSort,
   startSort,
-  setLastAutoSort,
-  lastAutoSort,
   sort,
   delta,
   autoUpgrade,
   playerAction,
+  lastTimes,
+  setLastTime,
 }: AutoSort) => {
   if (playerAction === "SORTING") {
-    setLastSort(lastSort + delta);
-    if (lastSort > upgrade.time) {
+    setLastTime("sort", lastTimes.sort + delta);
+    if (lastTimes.sort > upgrade.time) {
       sort();
-      setLastSort(0);
+      setLastTime("sort", 0);
     }
   }
 
@@ -41,10 +38,10 @@ export const autoSort = ({
     inventory.full &&
     !inventory.sorted
   ) {
-    setLastAutoSort(lastAutoSort + delta);
-    if (lastAutoSort > autoUpgrade.time) {
+    setLastTime("autoSort", lastTimes.autoSort + delta);
+    if (lastTimes.autoSort > autoUpgrade.time) {
       startSort();
-      setLastAutoSort(0);
+      setLastTime("autoSort", 0);
     }
   }
 };

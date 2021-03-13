@@ -26,7 +26,7 @@ export const InventoryPanel = React.memo(({ inventory }: Props) => {
     purchasedUpgrades,
     floor,
   } = useStoreValue();
-  const { trashProgress } = useProgress();
+  const progress = useProgress();
   const { nextAvailable, height, width, slots, cost } = inventory;
   const [target, setTargetState] = useState<SlotInfo | undefined>();
 
@@ -171,9 +171,9 @@ export const InventoryPanel = React.memo(({ inventory }: Props) => {
           `}
         >
           <AutoAction
-            percent={trashProgress}
-            upgrade={purchasedUpgrades.AUTOMATE_TRASH}
-            upgradeName="AUTOMATE_TRASH"
+            percent={progress.trash}
+            upgrade={purchasedUpgrades.autoTrash}
+            upgradeName="autoTrash"
             disabled={!floor.slots.length}
             onClick={() => {
               trash();

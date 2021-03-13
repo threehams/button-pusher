@@ -14,11 +14,11 @@ export const UpgradePanel = () => {
     return <div>Nothing here</div>;
   }
   const automationUpgrades = [
-    purchasedUpgrades.AUTOMATE_KILL,
-    purchasedUpgrades.AUTOMATE_PACK,
-    purchasedUpgrades.AUTOMATE_SELL,
-    purchasedUpgrades.AUTOMATE_SORT,
-    purchasedUpgrades.AUTOMATE_TRAVEL,
+    purchasedUpgrades.autoKill,
+    purchasedUpgrades.autoPack,
+    purchasedUpgrades.autoSell,
+    purchasedUpgrades.autoSort,
+    purchasedUpgrades.autoTravel,
   ].filter((upgrade) => {
     return (
       upgrade.level > 0 ||
@@ -27,11 +27,11 @@ export const UpgradePanel = () => {
   });
 
   const standardUpgrades = [
-    purchasedUpgrades.KILL,
-    purchasedUpgrades.PACK,
-    purchasedUpgrades.SELL,
-    purchasedUpgrades.SORT,
-    purchasedUpgrades.TRAVEL,
+    purchasedUpgrades.kill,
+    purchasedUpgrades.pack,
+    purchasedUpgrades.sell,
+    purchasedUpgrades.sort,
+    purchasedUpgrades.travel,
   ].filter((upgrade) => {
     return (
       upgrade.level > 0 ||

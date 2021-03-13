@@ -1,6 +1,6 @@
 import { StoreContextType } from "@botnet/store";
 import { useLoop } from "@botnet/worker";
-import { useState } from "react";
+import { ProgressContextType } from "../ProgressContext";
 import { autoDropJunk } from "./autoDropJunk";
 import { autoPack } from "./autoPack";
 import { autoSell } from "./autoSell";
@@ -8,6 +8,7 @@ import { autoSort } from "./autoSort";
 import { autoTrash } from "./autoTrash";
 import { autoTravel } from "./autoTravel";
 import { kill } from "./kill";
+import { useLastTimes } from "./lastTimes";
 
 export const useGameLoop = ({
   adventure,
@@ -31,187 +32,127 @@ export const useGameLoop = ({
   trash,
   trashAll,
   travel,
-}: StoreContextType) => {
-  const [lastKill, setLastKill] = useState(0);
-  const [lastAutoKill, setLastAutoKill] = useState(0);
-  const [lastPack, setLastPack] = useState(0);
-  const [lastAutoPack, setLastAutoPack] = useState(0);
-  const [lastSort, setLastSort] = useState(0);
-  const [lastAutoSort, setLastAutoSort] = useState(0);
-  const [lastTravel, setLastTravel] = useState(0);
-  const [lastAutoTravel, setLastAutoTravel] = useState(0);
-  const [lastSell, setLastSell] = useState(0);
-  const [lastAutoSell, setLastAutoSell] = useState(0);
-  const [lastDropJunk, setLastDropJunk] = useState(0);
-  const [lastAutoDropJunk, setLastAutoDropJunk] = useState(0);
-  const [lastTrash, setLastTrash] = useState(0);
-  const [lastAutoTrash, setLastAutoTrash] = useState(0);
+}: StoreContextType): ProgressContextType => {
+  const [lastTimes, setLastTime] = useLastTimes();
 
   const loop = (delta: number) => {
     kill({
       adventure,
-      autoUpgrade: purchasedUpgrades.AUTOMATE_KILL,
+      autoUpgrade: purchasedUpgrades.autoKill,
       delta,
       heldSlot,
-      lastAutoKill,
-      lastKill,
+      lastTimes,
+      setLastTime,
       loot,
       playerAction,
       playerLocation,
-      setLastAutoKill,
-      setLastKill,
-      upgrade: purchasedUpgrades.KILL,
+      upgrade: purchasedUpgrades.kill,
     });
     autoPack({
       allInventory,
-      autoUpgrade: purchasedUpgrades.AUTOMATE_PACK,
+      autoUpgrade: purchasedUpgrades.autoPack,
       delta,
       heldSlot,
-      lastAutoPack,
-      lastPack,
       pack,
       playerAction,
-      setLastAutoPack,
-      setLastPack,
       storeHeldItem,
-      upgrade: purchasedUpgrades.PACK,
+      upgrade: purchasedUpgrades.pack,
+      lastTimes,
+      setLastTime,
     });
     autoSort({
-      autoUpgrade: purchasedUpgrades.AUTOMATE_SORT,
+      autoUpgrade: purchasedUpgrades.autoSort,
       delta,
       inventory,
-      lastAutoSort,
-      lastSort,
       playerAction,
-      setLastAutoSort,
-      setLastSort,
       sort,
       startSort,
-      upgrade: purchasedUpgrades.SORT,
+      upgrade: purchasedUpgrades.sort,
+      lastTimes,
+      setLastTime,
     });
     autoDropJunk({
       allInventory,
-      autoUpgrade: purchasedUpgrades.AUTOMATE_DROP_JUNK,
+      autoUpgrade: purchasedUpgrades.autoDropJunk,
       delta,
       dropJunk,
       dropJunkItem,
-      lastAutoDropJunk,
-      lastDropJunk,
       playerAction,
-      setLastAutoDropJunk,
-      setLastDropJunk,
-      upgrade: purchasedUpgrades.DROP_JUNK,
+      upgrade: purchasedUpgrades.dropJunk,
+      lastTimes,
+      setLastTime,
     });
     autoTrash({
-      allInventory,
-      autoUpgrade: purchasedUpgrades.AUTOMATE_TRASH,
+      autoUpgrade: purchasedUpgrades.autoTrash,
       delta,
       floor,
-      lastAutoTrash,
-      lastTrash,
       playerAction,
-      setLastAutoTrash,
-      setLastTrash,
       trash,
       trashAll,
-      upgrade: purchasedUpgrades.TRASH,
+      upgrade: purchasedUpgrades.trash,
+      lastTimes,
+      setLastTime,
     });
     autoTravel({
       allInventory,
       arrive,
-      autoUpgrade: purchasedUpgrades.AUTOMATE_TRAVEL,
+      autoUpgrade: purchasedUpgrades.autoTravel,
       delta,
-      lastAutoTravel,
-      lastTravel,
       playerAction,
       playerLocation,
-      setLastAutoTravel,
-      setLastTravel,
       travel,
-      upgrade: purchasedUpgrades.TRAVEL,
+      upgrade: purchasedUpgrades.travel,
+      lastTimes,
+      setLastTime,
     });
     autoSell({
       adventure,
       allInventory,
-      autoUpgrade: purchasedUpgrades.AUTOMATE_SELL,
+      autoUpgrade: purchasedUpgrades.autoSell,
       delta,
-      lastAutoSell,
-      lastSell,
       playerAction,
       playerLocation,
       sell,
       sellItem,
-      setLastAutoSell,
-      setLastSell,
-      upgrade: purchasedUpgrades.SELL,
+      upgrade: purchasedUpgrades.sell,
+      lastTimes,
+      setLastTime,
     });
   };
   useLoop(loop);
 
-  return {
-    killProgress: progress({
-      last: lastKill,
-      total: purchasedUpgrades.KILL.time,
+  return Object.fromEntries(
+    Object.entries(lastTimes).map(([name, lastTime]) => {
+      return [name, (lastTime / purchasedUpgrades[name].time) * 100] as const;
     }),
-    autoKillProgress: progress({
-      last: lastAutoKill,
-      total: purchasedUpgrades.AUTOMATE_KILL.time,
-    }),
-    packProgress: progress({
-      last: lastPack,
-      total: purchasedUpgrades.PACK.time,
-    }),
-    autoPackProgress: progress({
-      last: lastAutoPack,
-      total: purchasedUpgrades.AUTOMATE_PACK.time,
-    }),
-    sortProgress: progress({
-      last: lastSort,
-      total: purchasedUpgrades.SORT.time,
-    }),
-    autoSortProgress: progress({
-      last: lastAutoSort,
-      total: purchasedUpgrades.AUTOMATE_SORT.time,
-    }),
-    sellProgress: progress({
-      last: lastSell,
-      total: purchasedUpgrades.SELL.time,
-    }),
-    autoSellProgress: progress({
-      last: lastAutoSell,
-      total: purchasedUpgrades.AUTOMATE_SELL.time,
-    }),
-    travelProgress: progress({
-      last: lastTravel,
-      total: purchasedUpgrades.TRAVEL.time,
-    }),
-    autoTravelProgress: progress({
-      last: lastAutoTravel,
-      total: purchasedUpgrades.AUTOMATE_TRAVEL.time,
-    }),
-    dropJunkProgress: progress({
-      last: lastDropJunk,
-      total: purchasedUpgrades.DROP_JUNK.time,
-    }),
-    autoDropJunkProgress: progress({
-      last: lastAutoDropJunk,
-      total: purchasedUpgrades.AUTOMATE_DROP_JUNK.time,
-    }),
-    trashProgress: progress({
-      last: lastTrash,
-      total: purchasedUpgrades.TRASH.time,
-    }),
-    autoTrashProgress: progress({
-      last: lastAutoTrash,
-      total: purchasedUpgrades.AUTOMATE_TRASH.time,
-    }),
-  };
+  );
 };
 
-type ProgressOptions = {
-  total: number;
-  last: number;
+type ValueOf<T> = T[keyof T];
+type UnionToIntersection<T> = (T extends T ? (p: T) => void : never) extends (
+  p: infer U,
+) => void
+  ? U
+  : never;
+type FromEntries<T extends readonly [PropertyKey, any]> = T extends T
+  ? Record<T[0], T[1]>
+  : never;
+type Flatten<T> = {} & {
+  [P in keyof T]: T[P];
 };
-const progress = ({ last, total }: ProgressOptions) => {
-  return (last / total) * 100;
-};
+declare global {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+  interface ObjectConstructor {
+    keys<T>(o: T): Array<Extract<keyof T, string>>;
+    entries<T extends { [key: string]: unknown }, K extends keyof T>(
+      o: T,
+    ): Array<[Extract<keyof T, string>, T[K]]>;
+    values<T extends { [key: string]: any }>(o: T): ValueOf<T>[];
+    fromEntries<
+      V extends PropertyKey,
+      T extends [readonly [V, any]] | Array<readonly [V, any]>
+    >(
+      entries: T,
+    ): Flatten<UnionToIntersection<FromEntries<T[number]>>>;
+  }
+}

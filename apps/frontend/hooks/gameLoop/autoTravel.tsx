@@ -1,11 +1,10 @@
 import { PlayerAction, PlayerLocation } from "@botnet/messages";
 import { Arrive, AllInventory, PurchasedUpgrade, Travel } from "@botnet/store";
+import { LastTimes, SetLastTime } from "./lastTimes";
 
 type AutoTravel = {
-  lastTravel: number;
-  setLastTravel: (value: number) => void;
-  lastAutoTravel: number;
-  setLastAutoTravel: (value: number) => void;
+  lastTimes: LastTimes;
+  setLastTime: SetLastTime;
   arrive: Arrive;
   delta: number;
   playerAction: PlayerAction;
@@ -17,23 +16,21 @@ type AutoTravel = {
 };
 export const autoTravel = ({
   playerAction,
-  lastTravel,
   delta,
-  setLastTravel,
   arrive,
   upgrade,
   allInventory,
   travel,
   playerLocation,
-  lastAutoTravel,
-  setLastAutoTravel,
   autoUpgrade,
+  lastTimes,
+  setLastTime,
 }: AutoTravel) => {
   if (playerAction === "TRAVELLING") {
-    setLastTravel(lastTravel + delta);
-    if (lastTravel > upgrade.time) {
+    setLastTime("travel", lastTimes.travel + delta);
+    if (lastTimes.travel > upgrade.time) {
       arrive();
-      setLastTravel(0);
+      setLastTime("travel", 0);
       return;
     }
   }
@@ -47,10 +44,10 @@ export const autoTravel = ({
     playerAction === "IDLE" &&
     allInventory.slots === 0
   ) {
-    setLastAutoTravel(lastAutoTravel + delta);
-    if (lastAutoTravel > autoUpgrade.time) {
+    setLastTime("autoTravel", lastTimes.autoTravel + delta);
+    if (lastTimes.autoTravel > autoUpgrade.time) {
       travel({ destination: "KILLING_FIELDS" });
-      setLastAutoTravel(0);
+      setLastTime("autoTravel", 0);
       return;
     }
   } else if (
@@ -58,10 +55,10 @@ export const autoTravel = ({
     playerAction === "IDLE" &&
     allInventory.full
   ) {
-    setLastAutoTravel(lastAutoTravel + delta);
-    if (lastAutoTravel > autoUpgrade.time) {
+    setLastTime("autoTravel", lastTimes.autoTravel + delta);
+    if (lastTimes.autoTravel > autoUpgrade.time) {
       travel({ destination: "TOWN" });
-      setLastAutoTravel(0);
+      setLastTime("autoTravel", 0);
       return;
     }
   }
