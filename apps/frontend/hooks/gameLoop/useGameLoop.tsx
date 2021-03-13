@@ -128,6 +128,7 @@ export const useGameLoop = ({
   );
 };
 
+// Can't figure out how to make this available normally
 type ValueOf<T> = T[keyof T];
 type UnionToIntersection<T> = (T extends T ? (p: T) => void : never) extends (
   p: infer U,
