@@ -1,15 +1,32 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./apps/frontend/tsconfig.json" },
-    { "path": "./apps/frontend/tsconfig.spec.json" },
-    { "path": "./apps/frontend-e2e/tsconfig.json" },
-    { "path": "./apps/frontend-e2e/tsconfig.e2e.json" },
-    { "path": "./libs/commands/tsconfig.json" },
-    { "path": "./libs/messages/tsconfig.json" },
-    { "path": "./libs/store/tsconfig.json" },
-    { "path": "./libs/ui/tsconfig.json" },
-    { "path": "./libs/utils/tsconfig.json" },
-    { "path": "./libs/worker/tsconfig.json" }
-  ]
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declaration": false,
+    "allowSyntheticDefaultImports": true,
+    "importHelpers": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "lib": ["esnext", "dom"],
+    "module": "esnext",
+    "moduleResolution": "node",
+    "noEmit": true,
+    "outDir": "./dist/out-tsc",
+    "resolveJsonModule": true,
+    "paths": {
+      "@botnet/messages": ["libs/messages/src/index.ts"],
+      "@botnet/ui": ["libs/ui/src/index.ts"],
+      "@botnet/commands": ["libs/commands/src/index.ts"],
+      "@botnet/utils": ["libs/utils/src/index.ts"],
+      "@botnet/store": ["libs/store/src/index.ts"],
+      "@botnet/worker": ["libs/worker/src/index.ts"],
+      "@botnet/data": ["libs/data/src/index.ts"]
+    },
+    "rootDir": ".",
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "es2015",
+    "typeRoots": ["node_modules/@types"]
+  },
+  "exclude": ["node_modules", "tmp", "apps/frontend-e2e/**"]
 }
