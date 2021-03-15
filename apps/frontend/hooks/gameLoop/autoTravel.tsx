@@ -1,19 +1,5 @@
-import { Player } from "@botnet/messages";
-import { AllInventory, PurchasedUpgrade } from "@botnet/store";
-import { Dispatch } from "react-redux";
-import { LastTimes, SetLastTime } from "./lastTimes";
+import { UpdateProps } from "./updateProps";
 
-type AutoTravel = {
-  lastTimes: LastTimes;
-  setLastTime: SetLastTime;
-  delta: number;
-  player: Player;
-  autoUpgrade: PurchasedUpgrade;
-  upgrade: PurchasedUpgrade;
-  allInventory: AllInventory;
-
-  dispatch: Dispatch;
-};
 export const autoTravel = ({
   delta,
   upgrade,
@@ -23,7 +9,7 @@ export const autoTravel = ({
   lastTimes,
   setLastTime,
   dispatch,
-}: AutoTravel) => {
+}: UpdateProps) => {
   if (player.action === "TRAVELLING") {
     setLastTime("travel", lastTimes.travel + delta);
     if (lastTimes.travel > upgrade.time) {

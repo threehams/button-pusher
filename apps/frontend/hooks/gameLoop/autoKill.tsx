@@ -1,31 +1,15 @@
-import { Item, Player, Slot } from "@botnet/messages";
-import { PurchasedUpgrade } from "@botnet/store";
-import { Dispatch } from "react-redux";
-import { LastTimes, SetLastTime } from "./lastTimes";
+import { UpdateProps } from "./updateProps";
 
-type Kill = {
-  heldSlot: (Slot & { item: Item }) | undefined;
-  lastTimes: LastTimes;
-  setLastTime: SetLastTime;
-  delta: number;
-
-  upgrade: PurchasedUpgrade;
-  autoUpgrade: PurchasedUpgrade;
-  player: Player;
-
-  dispatch: Dispatch;
-};
 export const autoKill = ({
   delta,
   heldSlot,
   player,
   upgrade,
-
   autoUpgrade,
   lastTimes,
   setLastTime,
   dispatch,
-}: Kill) => {
+}: UpdateProps) => {
   if (heldSlot) {
     return;
   }

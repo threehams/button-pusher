@@ -1,18 +1,5 @@
-import { Player } from "@botnet/messages";
-import { Inventory, PurchasedUpgrade } from "@botnet/store";
-import { Dispatch } from "react-redux";
-import { LastTimes, SetLastTime } from "./lastTimes";
+import { UpdateProps } from "./updateProps";
 
-type AutoSort = {
-  upgrade: PurchasedUpgrade;
-  autoUpgrade: PurchasedUpgrade;
-  inventory: Inventory;
-  lastTimes: LastTimes;
-  setLastTime: SetLastTime;
-  delta: number;
-  player: Player;
-  dispatch: Dispatch;
-};
 export const autoSort = ({
   upgrade,
   inventory,
@@ -22,7 +9,7 @@ export const autoSort = ({
   player,
   lastTimes,
   setLastTime,
-}: AutoSort) => {
+}: UpdateProps) => {
   if (player.action === "SORTING") {
     setLastTime("sort", lastTimes.sort + delta);
     if (lastTimes.sort > upgrade.time) {

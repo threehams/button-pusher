@@ -1,18 +1,5 @@
-import { Player } from "@botnet/messages";
-import { AllInventory, PurchasedUpgrade } from "@botnet/store";
-import { Dispatch } from "react-redux";
-import { LastTimes, SetLastTime } from "./lastTimes";
+import { UpdateProps } from "./updateProps";
 
-type AutoDropJunk = {
-  upgrade: PurchasedUpgrade;
-  autoUpgrade: PurchasedUpgrade;
-  lastTimes: LastTimes;
-  setLastTime: SetLastTime;
-  dispatch: Dispatch;
-  delta: number;
-  player: Player;
-  allInventory: AllInventory;
-};
 export const autoDropJunk = ({
   autoUpgrade,
   upgrade,
@@ -22,7 +9,7 @@ export const autoDropJunk = ({
   dispatch,
   lastTimes,
   setLastTime,
-}: AutoDropJunk) => {
+}: UpdateProps) => {
   if (player.action === "DROPPING" && allInventory.junk) {
     setLastTime("dropJunk", lastTimes.dropJunk + delta);
     if (lastTimes.dropJunk > upgrade.time) {

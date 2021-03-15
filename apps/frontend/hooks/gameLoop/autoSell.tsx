@@ -1,18 +1,5 @@
-import { Player } from "@botnet/messages";
-import { AllInventory, PurchasedUpgrade } from "@botnet/store";
-import { Dispatch } from "react-redux";
-import { LastTimes, SetLastTime } from "./lastTimes";
+import { UpdateProps } from "./updateProps";
 
-type AutoSell = {
-  upgrade: PurchasedUpgrade;
-  autoUpgrade: PurchasedUpgrade;
-  lastTimes: LastTimes;
-  setLastTime: SetLastTime;
-  delta: number;
-  player: Player;
-  allInventory: AllInventory;
-  dispatch: Dispatch;
-};
 export const autoSell = ({
   delta,
   upgrade,
@@ -22,7 +9,7 @@ export const autoSell = ({
   setLastTime,
   lastTimes,
   dispatch,
-}: AutoSell) => {
+}: UpdateProps) => {
   if (player.action === "SELLING") {
     setLastTime("sell", lastTimes.sell + delta);
     if (lastTimes.sell > upgrade.time) {
