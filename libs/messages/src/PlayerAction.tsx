@@ -9,5 +9,13 @@ export const PlayerAction = Union(
   Literal("DROPPING"),
   Literal("TRASHING"),
   Literal("SORTING"),
+  Literal("AUTO_KILLING"),
+  Literal("AUTO_TRAVELLING"),
+  Literal("AUTO_SELLING"),
+  Literal("AUTO_IDLE"),
+  Literal("AUTO_STORING"),
+  Literal("AUTO_DROPPING"),
+  Literal("AUTO_TRASHING"),
+  Literal("AUTO_SORTING"),
 );
 export type PlayerAction = Static<typeof PlayerAction>;

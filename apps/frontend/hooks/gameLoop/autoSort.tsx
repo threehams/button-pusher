@@ -1,33 +1,27 @@
-import { UpdateProps } from "./updateProps";
+import { Updater } from "./updateProps";
 
-export const autoSort = ({
-  upgrade,
+export const autoSort: Updater = ({
+  upgrades,
   inventory,
   dispatch,
-  delta,
-  autoUpgrade,
+  delay,
   player,
-  lastTimes,
-  setLastTime,
-}: UpdateProps) => {
+}) => {
   if (player.action === "SORTING") {
-    setLastTime("sort", lastTimes.sort + delta);
-    if (lastTimes.sort > upgrade.time) {
+    delay("sort", () => {
       dispatch({ type: "SORT" });
-      setLastTime("sort", 0);
-    }
+    });
   }
 
   if (
-    autoUpgrade.level &&
-    autoUpgrade.enabled &&
+    upgrades.autoSort.level &&
+    upgrades.autoSort.enabled &&
     inventory.full &&
     !inventory.sorted
   ) {
-    setLastTime("autoSort", lastTimes.autoSort + delta);
-    if (lastTimes.autoSort > autoUpgrade.time) {
+    delay("autoSort", () => {
       dispatch({ type: "START_SORT" });
-      setLastTime("autoSort", 0);
-    }
+    });
   }
+  return false;
 };

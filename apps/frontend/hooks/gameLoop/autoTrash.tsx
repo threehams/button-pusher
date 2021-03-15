@@ -1,37 +1,31 @@
-import { UpdateProps } from "./updateProps";
+import { Updater } from "./updateProps";
 
-export const autoTrash = ({
-  autoUpgrade,
-  upgrade,
-  delta,
+export const autoTrash: Updater = ({
+  upgrades,
+  delay,
   player,
   floor,
-  lastTimes,
-  setLastTime,
   dispatch,
-}: UpdateProps) => {
+}) => {
   if (player.action === "TRASHING") {
-    setLastTime("trash", lastTimes.trash + delta);
-    if (lastTimes.trash > upgrade.time) {
+    delay("trash", () => {
       dispatch({
         type: "TRASH_ALL",
         payload: { playerLocation: player.location },
       });
-      setLastTime("trash", 0);
-    }
+    });
   }
 
   if (
     floor.allJunk &&
     floor.full &&
-    autoUpgrade.level &&
-    autoUpgrade.enabled &&
+    upgrades.autoTrash.level &&
+    upgrades.autoTrash.enabled &&
     player.action === "IDLE"
   ) {
-    setLastTime("autoTrash", lastTimes.autoTrash + delta);
-    if (lastTimes.autoTrash > autoUpgrade.time) {
+    delay("autoTrash", () => {
       dispatch({ type: "TRASH" });
-      setLastTime("autoTrash", 0);
-    }
+    });
   }
+  return false;
 };

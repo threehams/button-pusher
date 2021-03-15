@@ -16,7 +16,17 @@ import {
   selectPurchasedUpgrades,
   selectFloor,
 } from "@botnet/store";
-import { UpgradeType } from "@botnet/messages";
+import { createDelay } from "./delay";
+
+const updateList = [
+  autoDropJunk,
+  autoTrash,
+  autoPack,
+  autoSort,
+  autoKill,
+  autoSell,
+  autoTravel,
+];
 
 export const useGameLoop = (): ProgressContextType => {
   const inventory = useSelector((state) => {
@@ -38,39 +48,29 @@ export const useGameLoop = (): ProgressContextType => {
   const dispatch = useDispatch();
 
   const loop = (delta: number) => {
-    const getUpdateProps = ({
-      upgrade,
-      autoUpgrade,
-    }: {
-      upgrade: UpgradeType;
-      autoUpgrade: UpgradeType;
-    }) => {
-      return {
-        delta,
-        dispatch,
-        player,
-        lastTimes,
-        setLastTime,
-        upgrade: purchasedUpgrades[upgrade],
-        autoUpgrade: purchasedUpgrades[autoUpgrade],
-        allInventory,
-        heldSlot,
-        floor,
-        inventory,
-      };
+    const upgrades = purchasedUpgrades;
+    const delay = createDelay({
+      delta,
+      lastTimes,
+      setLastTime,
+      upgrades,
+    });
+    const updateProps = {
+      dispatch,
+      player,
+      delay,
+      upgrades,
+      allInventory,
+      heldSlot,
+      floor,
+      inventory,
     };
 
-    autoDropJunk(
-      getUpdateProps({ upgrade: "dropJunk", autoUpgrade: "autoDropJunk" }),
-    );
-    autoTrash(getUpdateProps({ upgrade: "trash", autoUpgrade: "autoTrash" }));
-    autoPack(getUpdateProps({ upgrade: "pack", autoUpgrade: "autoPack" }));
-    autoSort(getUpdateProps({ upgrade: "sort", autoUpgrade: "autoSort" }));
-    autoKill(getUpdateProps({ upgrade: "kill", autoUpgrade: "autoKill" }));
-    autoSell(getUpdateProps({ upgrade: "sell", autoUpgrade: "autoSell" }));
-    autoTravel(
-      getUpdateProps({ upgrade: "travel", autoUpgrade: "autoTravel" }),
-    );
+    for (const updater of updateList) {
+      if (updater(updateProps)) {
+        break;
+      }
+    }
   };
   useLoop(loop);
 

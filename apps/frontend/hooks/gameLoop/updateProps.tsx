@@ -1,18 +1,17 @@
 import { Item, Player, Slot } from "@botnet/messages";
-import { AllInventory, Inventory, PurchasedUpgrade } from "@botnet/store";
+import { AllInventory, Inventory, PurchasedUpgradeMap } from "@botnet/store";
 import { Dispatch } from "react-redux";
-import { LastTimes, SetLastTime } from "./lastTimes";
+import { Delay } from "./delay";
 
 export type UpdateProps = {
   allInventory: AllInventory;
-  autoUpgrade: PurchasedUpgrade;
-  delta: number;
+  upgrades: PurchasedUpgradeMap;
   dispatch: Dispatch;
-  lastTimes: LastTimes;
+  delay: Delay;
   player: Player;
-  setLastTime: SetLastTime;
-  upgrade: PurchasedUpgrade;
   heldSlot: (Slot & { item: Item }) | undefined;
   floor: Inventory;
   inventory: Inventory;
 };
+
+export type Updater = (props: UpdateProps) => boolean;

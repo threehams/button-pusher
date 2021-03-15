@@ -1,36 +1,31 @@
-import { UpdateProps } from "./updateProps";
+import { Updater } from "./updateProps";
 
-export const autoDropJunk = ({
-  autoUpgrade,
-  upgrade,
-  delta,
+export const autoDropJunk: Updater = ({
+  delay,
   player,
   allInventory,
   dispatch,
-  lastTimes,
-  setLastTime,
-}: UpdateProps) => {
+  upgrades,
+}) => {
   if (player.action === "DROPPING" && allInventory.junk) {
-    setLastTime("dropJunk", lastTimes.dropJunk + delta);
-    if (lastTimes.dropJunk > upgrade.time) {
+    delay("dropJunk", () => {
       dispatch({
         type: "DROP_JUNK_ITEM",
         payload: { playerLocation: player.location },
       });
-      setLastTime("dropJunk", 0);
-    }
+    });
   }
 
   if (
     allInventory.junk &&
-    autoUpgrade.level &&
-    autoUpgrade.enabled &&
+    upgrades.autoDropJunk.level &&
+    upgrades.autoDropJunk.enabled &&
     player.action === "IDLE"
   ) {
-    setLastTime("autoDropJunk", lastTimes.autoDropJunk + delta);
-    if (lastTimes.autoDropJunk > autoUpgrade.time) {
+    delay("autoDropJunk", () => {
       dispatch({ type: "DROP_JUNK" });
-      setLastTime("autoDropJunk", 0);
-    }
+    });
   }
+
+  return false;
 };

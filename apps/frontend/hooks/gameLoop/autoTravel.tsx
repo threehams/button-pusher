@@ -1,26 +1,20 @@
-import { UpdateProps } from "./updateProps";
+import { Updater } from "./updateProps";
 
-export const autoTravel = ({
-  delta,
-  upgrade,
+export const autoTravel: Updater = ({
+  delay,
+  upgrades,
   allInventory,
   player,
-  autoUpgrade,
-  lastTimes,
-  setLastTime,
   dispatch,
-}: UpdateProps) => {
+}) => {
   if (player.action === "TRAVELLING") {
-    setLastTime("travel", lastTimes.travel + delta);
-    if (lastTimes.travel > upgrade.time) {
+    delay("travel", () => {
       dispatch({ type: "ARRIVE" });
-      setLastTime("travel", 0);
-      return;
-    }
+    });
   }
 
-  if (!autoUpgrade.level || !autoUpgrade.enabled) {
-    return;
+  if (!upgrades.autoTravel.level || !upgrades.autoTravel.enabled) {
+    return false;
   }
 
   if (
@@ -28,22 +22,17 @@ export const autoTravel = ({
     player.action === "IDLE" &&
     allInventory.slots === 0
   ) {
-    setLastTime("autoTravel", lastTimes.autoTravel + delta);
-    if (lastTimes.autoTravel > autoUpgrade.time) {
+    delay("autoTravel", () => {
       dispatch({ type: "TRAVEL", payload: { destination: "KILLING_FIELDS" } });
-      setLastTime("autoTravel", 0);
-      return;
-    }
+    });
   } else if (
     player.location !== "TOWN" &&
     player.action === "IDLE" &&
     allInventory.full
   ) {
-    setLastTime("autoTravel", lastTimes.autoTravel + delta);
-    if (lastTimes.autoTravel > autoUpgrade.time) {
+    delay("autoTravel", () => {
       dispatch({ type: "TRAVEL", payload: { destination: "TOWN" } });
-      setLastTime("autoTravel", 0);
-      return;
-    }
+    });
   }
+  return false;
 };

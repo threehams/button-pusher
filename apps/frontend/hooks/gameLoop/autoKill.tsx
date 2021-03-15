@@ -1,37 +1,32 @@
-import { UpdateProps } from "./updateProps";
+import { Updater } from "./updateProps";
 
-export const autoKill = ({
-  delta,
+export const autoKill: Updater = ({
   heldSlot,
-  player,
-  upgrade,
-  autoUpgrade,
-  lastTimes,
-  setLastTime,
   dispatch,
-}: UpdateProps) => {
+  player,
+  upgrades,
+  delay,
+}) => {
   if (heldSlot) {
-    return;
+    return false;
   }
 
   if (player.action === "KILLING") {
-    setLastTime("kill", lastTimes.kill + delta);
-    if (lastTimes.kill > upgrade.time) {
+    delay("kill", () => {
       dispatch({ type: "LOOT" });
-      setLastTime("kill", 0);
-    }
+    });
   }
 
   if (
-    autoUpgrade.level &&
-    autoUpgrade.enabled &&
+    upgrades.autoKill.level &&
+    upgrades.autoKill.enabled &&
     player.action === "IDLE" &&
     player.location !== "TOWN"
   ) {
-    setLastTime("autoKill", lastTimes.autoKill + delta);
-    if (lastTimes.autoKill > autoUpgrade.time) {
+    delay("autoKill", () => {
       dispatch({ type: "ADVENTURE" });
-      setLastTime("autoKill", 0);
-    }
+    });
   }
+
+  return false;
 };

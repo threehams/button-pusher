@@ -1,35 +1,30 @@
-import { UpdateProps } from "./updateProps";
+import { Updater } from "./updateProps";
 
-export const autoPack = ({
-  autoUpgrade,
-  upgrade,
+export const autoPack: Updater = ({
+  upgrades,
   heldSlot,
-  lastTimes,
-  setLastTime,
-  delta,
+  delay,
   player,
   allInventory,
   dispatch,
-}: UpdateProps) => {
+}) => {
   if (player.action === "STORING" && heldSlot) {
-    setLastTime("pack", lastTimes.pack + delta);
-    if (lastTimes.pack > upgrade.time) {
+    delay("pack", () => {
       dispatch({ type: "STORE_HELD_ITEM" });
-      setLastTime("pack", 0);
-    }
+    });
   }
 
   if (
     !allInventory.full &&
-    autoUpgrade.level &&
-    autoUpgrade.enabled &&
+    upgrades.autoPack.level &&
+    upgrades.autoPack.enabled &&
     heldSlot &&
     player.action === "IDLE"
   ) {
-    setLastTime("autoPack", lastTimes.autoPack + delta);
-    if (lastTimes.autoPack > autoUpgrade.time) {
+    delay("autoPack", () => {
       dispatch({ type: "PACK" });
-      setLastTime("autoPack", 0);
-    }
+    });
   }
+
+  return false;
 };

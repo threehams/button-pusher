@@ -1,35 +1,27 @@
-import { UpdateProps } from "./updateProps";
+import { Updater } from "./updateProps";
 
-export const autoSell = ({
-  delta,
-  upgrade,
-  autoUpgrade,
+export const autoSell: Updater = ({
+  delay,
+  upgrades,
   player,
   allInventory,
-  setLastTime,
-  lastTimes,
   dispatch,
-}: UpdateProps) => {
+}) => {
   if (player.action === "SELLING") {
-    setLastTime("sell", lastTimes.sell + delta);
-    if (lastTimes.sell > upgrade.time) {
+    delay("sell", () => {
       dispatch({ type: "SELL_ITEM" });
-      setLastTime("sell", 0);
-      return;
-    }
+    });
   }
   if (
-    autoUpgrade.level &&
-    autoUpgrade.enabled &&
+    upgrades.autoSell.level &&
+    upgrades.autoSell.enabled &&
     player.action === "IDLE" &&
     player.location === "TOWN" &&
     allInventory.slots
   ) {
-    setLastTime("autoSell", lastTimes.autoSell + delta);
-    if (lastTimes.autoSell > autoUpgrade.time) {
+    delay("autoSell", () => {
       dispatch({ type: "SELL" });
-      setLastTime("autoSell", 0);
-      return;
-    }
+    });
   }
+  return false;
 };
