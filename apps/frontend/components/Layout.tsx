@@ -1,4 +1,3 @@
-import { useStoreValue } from "@botnet/store";
 import { Box } from "@botnet/ui";
 import { css } from "@emotion/react";
 import React from "react";
@@ -7,15 +6,19 @@ import { CustomDragLayer } from "./DragLayer";
 import { ActionPanel } from "./Panels/ActionPanel";
 import { StatusBar } from "./StatusBar";
 import { dialogue } from "@botnet/data";
+import { useSelector } from "react-redux";
+import { selectFloor, selectHeldSlot, selectInventory } from "@botnet/store";
 
 export const Layout = () => {
-  const {
-    moneys,
-    playerLocation,
-    heldSlot,
-    inventory,
-    floor,
-  } = useStoreValue();
+  const moneys = useSelector((state) => state.data.moneys);
+  const playerLocation = useSelector((state) => state.data.playerLocation);
+  const heldSlot = useSelector(selectHeldSlot);
+  const inventory = useSelector((state) => {
+    return selectInventory(state, {
+      containerId: state.data.currentContainerId,
+    });
+  });
+  const floor = useSelector(selectFloor);
 
   return (
     <Box

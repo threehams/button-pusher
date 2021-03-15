@@ -1,24 +1,39 @@
-import { useStoreValue } from "@botnet/store";
 import { css } from "@emotion/react";
 import { useProgress } from "../../hooks/ProgressContext";
 import React from "react";
 import { AutoAction } from "../AutoAction";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  selectHeldSlot,
+  selectInventory,
+  selectPurchasedUpgrades,
+} from "@botnet/store";
 
 export const ActionPanel = () => {
-  const {
-    heldSlot,
-    playerAction,
-    inventory,
-    purchasedUpgrades,
-    playerLocation,
-    startSort,
-    pack,
-    adventure,
-    sell,
-    travel,
-    dropJunk,
-  } = useStoreValue();
+  const heldSlot = useSelector(selectHeldSlot);
+  const { playerAction, playerLocation } = useSelector((state) => ({
+    playerLocation: state.data.playerLocation,
+    playerAction: state.data.playerAction,
+  }));
+  const purchasedUpgrades = useSelector(selectPurchasedUpgrades);
+  const inventory = useSelector((state) => {
+    const containerId = state.data.currentContainerId;
+    return selectInventory(state, { containerId });
+  });
+  // const {
+  //   playerAction,
+  //   inventory,
+  //   purchasedUpgrades,
+  //   playerLocation,
+  //   startSort,
+  //   pack,
+  //   adventure,
+  //   sell,
+  //   travel,
+  //   dropJunk,
+  // } = useStoreValue();
   const progress = useProgress();
+  const dispatch = useDispatch();
 
   return (
     <>
@@ -41,7 +56,7 @@ export const ActionPanel = () => {
         upgrade={purchasedUpgrades.autoKill}
         upgradeName="autoKill"
         onClick={() => {
-          adventure();
+          dispatch({ type: "ADVENTURE" });
         }}
       >
         Kill something {playerLocation === "TOWN" && "(not in town)"}
@@ -53,7 +68,7 @@ export const ActionPanel = () => {
           upgrade={purchasedUpgrades.autoPack}
           upgradeName="autoPack"
           onClick={() => {
-            pack();
+            dispatch({ type: "PACK" });
           }}
         >
           Store item
@@ -66,7 +81,7 @@ export const ActionPanel = () => {
           upgrade={purchasedUpgrades.autoDropJunk}
           upgradeName="autoDropJunk"
           onClick={() => {
-            dropJunk();
+            dispatch({ type: "DROP_JUNK" });
           }}
         >
           Drop Junk
@@ -77,7 +92,7 @@ export const ActionPanel = () => {
           disabled={!inventory.slots}
           percent={progress.sort}
           onClick={() => {
-            startSort();
+            dispatch({ type: "START_SORT" });
           }}
           upgrade={purchasedUpgrades.autoSort}
           upgradeName="autoSort"
@@ -97,7 +112,7 @@ export const ActionPanel = () => {
         upgrade={purchasedUpgrades.autoSell}
         upgradeName="autoSell"
         onClick={() => {
-          sell();
+          dispatch({ type: "SELL" });
         }}
       >
         Sell something {playerLocation !== "TOWN" && "(only in town)"}
@@ -108,8 +123,13 @@ export const ActionPanel = () => {
         disabled={playerAction === "TRAVELLING"}
         percent={progress.travel}
         onClick={() => {
-          travel({
-            destination: playerLocation === "TOWN" ? "KILLING_FIELDS" : "TOWN",
+          const destination =
+            playerLocation === "TOWN" ? "KILLING_FIELDS" : "TOWN";
+          dispatch({
+            type: "TRAVEL",
+            payload: {
+              destination,
+            },
           });
         }}
       >

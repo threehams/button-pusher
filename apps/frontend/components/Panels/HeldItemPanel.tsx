@@ -1,11 +1,12 @@
-import { useStoreValue } from "@botnet/store";
+import { selectHeldSlot } from "@botnet/store";
 import { css, useTheme } from "@emotion/react";
 import React from "react";
+import { useSelector } from "react-redux";
 import { InventoryItem } from "../InventoryItem";
 import { InventorySlot } from "../InventorySlot";
 
 export const HeldItemPanel = () => {
-  const { addSlot, moveSlot, heldSlot } = useStoreValue();
+  const heldSlot = useSelector(selectHeldSlot);
   const theme = useTheme();
   return (
     <div
@@ -30,12 +31,7 @@ export const HeldItemPanel = () => {
           required={false}
           state={heldSlot ? "VALID" : "INVALID"}
         >
-          <InventoryItem
-            moveSlot={moveSlot}
-            addSlot={addSlot}
-            item={heldSlot.item}
-            slotId={heldSlot.id}
-          />
+          <InventoryItem item={heldSlot.item} slotId={heldSlot.id} />
         </InventorySlot>
       )}
     </div>

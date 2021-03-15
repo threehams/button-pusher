@@ -1,10 +1,14 @@
-import { useStoreValue } from "@botnet/store";
+import { selectHeldSlot } from "@botnet/store";
 import React from "react";
+import { useSelector } from "react-redux";
 import { useProgress } from "../hooks/ProgressContext";
 import { Progress } from "./Progress";
 
 export const StatusBar = () => {
-  const { heldSlot, playerDestination } = useStoreValue();
+  const heldSlot = useSelector(selectHeldSlot);
+  const playerDestination = useSelector(
+    (state) => state.data.playerDestination,
+  );
   const progress = useProgress();
   if (progress.autoTravel) {
     return (

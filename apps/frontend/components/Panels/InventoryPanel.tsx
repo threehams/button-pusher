@@ -1,4 +1,11 @@
-import { Inventory, SlotInfo, useStoreValue } from "@botnet/store";
+import {
+  Inventory,
+  selectFloor,
+  selectInventory,
+  selectInventoryPagination,
+  selectPurchasedUpgrades,
+  SlotInfo,
+} from "@botnet/store";
 import React, { useCallback, useState } from "react";
 import { range } from "lodash";
 import { css, useTheme } from "@emotion/react";
@@ -9,25 +16,19 @@ import { getTargetCoords } from "@botnet/store";
 import { Button } from "../Button";
 import { AutoAction } from "../AutoAction";
 import { useProgress } from "../../hooks/ProgressContext";
+import { useDispatch, useSelector } from "react-redux";
 
 type Props = {
   inventory: Inventory;
 };
 export const InventoryPanel = React.memo(({ inventory }: Props) => {
-  const {
-    buyContainerUpgrade,
-    addSlot,
-    moveSlot,
-    moneys,
-    nextInventory,
-    prevInventory,
-    goInventory,
-    trash,
-    purchasedUpgrades,
-    floor,
-  } = useStoreValue();
   const progress = useProgress();
+  const dispatch = useDispatch();
   const { nextAvailable, height, width, slots, cost } = inventory;
+  const moneys = useSelector((state) => state.data.moneys);
+  const pages = useSelector(selectInventoryPagination);
+  const floor = useSelector(selectFloor);
+  const purchasedUpgrades = useSelector(selectPurchasedUpgrades);
   const [target, setTargetState] = useState<SlotInfo | undefined>();
 
   const setTarget = useCallback(
@@ -60,7 +61,10 @@ export const InventoryPanel = React.memo(({ inventory }: Props) => {
           disabled={!cost || cost > moneys}
           onClick={() => {
             if (cost) {
-              buyContainerUpgrade({ id: inventory.id });
+              dispatch({
+                type: "BUY_CONTAINER_UPGRADE",
+                payload: { id: inventory.id },
+              });
             }
           }}
         >
@@ -75,11 +79,15 @@ export const InventoryPanel = React.memo(({ inventory }: Props) => {
           align-items: center;
         `}
       >
-        {!!(prevInventory || nextInventory) && (
+        {!!(pages.prev || pages.next) && (
           <button
-            disabled={!prevInventory}
+            disabled={!pages.prev}
             onClick={() => {
-              prevInventory && goInventory({ containerId: prevInventory });
+              pages.prev &&
+                dispatch({
+                  type: "GO_INVENTORY",
+                  payload: { containerId: pages.prev },
+                });
             }}
             css={css`
               padding: 20px;
@@ -105,8 +113,6 @@ export const InventoryPanel = React.memo(({ inventory }: Props) => {
                   top: ${theme.tileSize * slot.y}px;
                   left: ${theme.tileSize * slot.x}px;
                 `}
-                addSlot={addSlot}
-                moveSlot={moveSlot}
                 item={slot.item}
                 slotId={slot.id}
               />
@@ -148,11 +154,15 @@ export const InventoryPanel = React.memo(({ inventory }: Props) => {
             })}
           </div>
         </div>
-        {!!(prevInventory || nextInventory) && (
+        {!!(pages.prev || pages.next) && (
           <button
-            disabled={!nextInventory}
+            disabled={!pages.next}
             onClick={() => {
-              nextInventory && goInventory({ containerId: nextInventory });
+              pages.next &&
+                dispatch({
+                  type: "GO_INVENTORY",
+                  payload: { containerId: pages.next },
+                });
             }}
             css={css`
               padding: 20px;
@@ -176,7 +186,7 @@ export const InventoryPanel = React.memo(({ inventory }: Props) => {
             upgradeName="autoTrash"
             disabled={!floor.slots.length}
             onClick={() => {
-              trash();
+              dispatch({ type: "TRASH" });
             }}
           >
             Leave Behind

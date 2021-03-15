@@ -6,11 +6,7 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 6,
     sourceType: "module",
-    project: [
-      "./apps/**/*.tsconfig.*?.json",
-      "./apps/**/tsconfig.json",
-      "./libs/**/tsconfig.*?.json",
-    ],
+    project: ["./tsconfig.json"],
     ecmaFeatures: {
       modules: true,
     },
@@ -56,6 +52,7 @@ module.exports = {
         next: "import",
       },
     ],
+    "no-fallthrough": "error",
     "react-hooks/exhaustive-deps": [
       "error",
       { enableDangerousAutofixThisMayCauseInfiniteLoops: true },
@@ -67,21 +64,6 @@ module.exports = {
     "react/no-unknown-property": "error",
     "react/prop-types": "off",
     "react/react-in-jsx-scope": "off",
-    "@nrwl/nx/enforce-module-boundaries": [
-      "error",
-      {
-        enforceBuildableLibDependency: true,
-        allow: [],
-        depConstraints: [{ sourceTag: "*", onlyDependOnLibsWithTags: ["*"] }],
-      },
-    ],
   },
-  plugins: [
-    "@typescript-eslint",
-    "jsx-a11y",
-    "mocha",
-    "react-hooks",
-    "react",
-    "@nrwl/nx",
-  ],
+  plugins: ["@typescript-eslint", "jsx-a11y", "mocha", "react-hooks", "react"],
 };

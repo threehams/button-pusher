@@ -3,6 +3,10 @@ import React, { useEffect, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { Button } from "../components/Button";
 import { Game } from "../components/Game";
+import { makeStore } from "@botnet/store";
+import { Provider } from "react-redux";
+
+const store = makeStore();
 
 export const Index = () => {
   const [onClient, setOnClient] = useState(false);
@@ -12,7 +16,11 @@ export const Index = () => {
 
   return (
     <ErrorBoundary FallbackComponent={Reset}>
-      {onClient && <Game />}
+      {onClient && (
+        <Provider store={store}>
+          <Game />{" "}
+        </Provider>
+      )}
     </ErrorBoundary>
   );
 };

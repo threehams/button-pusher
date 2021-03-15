@@ -1,4 +1,3 @@
-import { StoreContextType } from "@botnet/store";
 import { useLoop } from "@botnet/worker";
 import { ProgressContextType } from "../ProgressContext";
 import { autoDropJunk } from "./autoDropJunk";
@@ -9,41 +8,41 @@ import { autoTrash } from "./autoTrash";
 import { autoTravel } from "./autoTravel";
 import { kill } from "./kill";
 import { useLastTimes } from "./lastTimes";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import {
+  selectInventory,
+  selectHeldSlot,
+  selectAllInventory,
+  selectPurchasedUpgrades,
+  selectFloor,
+} from "@botnet/store";
 
-export const useGameLoop = ({
-  adventure,
-  allInventory,
-  arrive,
-  dropJunk,
-  dropJunkItem,
-  floor,
-  heldSlot,
-  inventory,
-  loot,
-  pack,
-  playerAction,
-  playerLocation,
-  purchasedUpgrades,
-  sell,
-  sellItem,
-  sort,
-  startSort,
-  storeHeldItem,
-  trash,
-  trashAll,
-  travel,
-}: StoreContextType): ProgressContextType => {
+export const useGameLoop = (): ProgressContextType => {
+  const inventory = useSelector((state) => {
+    return selectInventory(state, {
+      containerId: state.data.currentContainerId,
+    });
+  });
+  const allInventory = useSelector((state) => selectAllInventory(state));
+  const heldSlot = useSelector((state) => selectHeldSlot(state));
+  const floor = useSelector(selectFloor);
+  const playerAction = useSelector((state) => state.data.playerAction);
+  const playerLocation = useSelector((state) => state.data.playerLocation);
+  const purchasedUpgrades = useSelector((state) =>
+    selectPurchasedUpgrades(state),
+  );
+
   const [lastTimes, setLastTime] = useLastTimes();
+  const dispatch = useDispatch();
 
   const loop = (delta: number) => {
     kill({
-      adventure,
+      dispatch,
       autoUpgrade: purchasedUpgrades.autoKill,
       delta,
       heldSlot,
       lastTimes,
       setLastTime,
-      loot,
       playerAction,
       playerLocation,
       upgrade: purchasedUpgrades.kill,
@@ -53,9 +52,8 @@ export const useGameLoop = ({
       autoUpgrade: purchasedUpgrades.autoPack,
       delta,
       heldSlot,
-      pack,
       playerAction,
-      storeHeldItem,
+      dispatch,
       upgrade: purchasedUpgrades.pack,
       lastTimes,
       setLastTime,
@@ -65,8 +63,7 @@ export const useGameLoop = ({
       delta,
       inventory,
       playerAction,
-      sort,
-      startSort,
+      dispatch,
       upgrade: purchasedUpgrades.sort,
       lastTimes,
       setLastTime,
@@ -75,8 +72,7 @@ export const useGameLoop = ({
       allInventory,
       autoUpgrade: purchasedUpgrades.autoDropJunk,
       delta,
-      dropJunk,
-      dropJunkItem,
+      dispatch,
       playerAction,
       upgrade: purchasedUpgrades.dropJunk,
       lastTimes,
@@ -87,33 +83,29 @@ export const useGameLoop = ({
       delta,
       floor,
       playerAction,
-      trash,
-      trashAll,
+      dispatch,
       upgrade: purchasedUpgrades.trash,
       lastTimes,
       setLastTime,
     });
     autoTravel({
       allInventory,
-      arrive,
+      dispatch,
       autoUpgrade: purchasedUpgrades.autoTravel,
       delta,
       playerAction,
       playerLocation,
-      travel,
       upgrade: purchasedUpgrades.travel,
       lastTimes,
       setLastTime,
     });
     autoSell({
-      adventure,
+      dispatch,
       allInventory,
       autoUpgrade: purchasedUpgrades.autoSell,
       delta,
       playerAction,
       playerLocation,
-      sell,
-      sellItem,
       upgrade: purchasedUpgrades.sell,
       lastTimes,
       setLastTime,

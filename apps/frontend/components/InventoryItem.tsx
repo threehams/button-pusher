@@ -1,11 +1,11 @@
 import { Item } from "@botnet/messages";
-import { AddSlot, MoveSlot } from "@botnet/store";
 import { isNonNullable } from "@botnet/utils";
 import { css } from "@emotion/react";
 import React, { useState } from "react";
 import { useDrag } from "react-dnd";
 import { getEmptyImage } from "react-dnd-html5-backend";
 import ReactDOM from "react-dom";
+import { useDispatch } from "react-redux";
 import { DraggableItem, DraggableResult } from "./DraggableItem";
 import { ItemTile } from "./ItemTile";
 
@@ -13,11 +13,10 @@ type InventoryItemProps = {
   item: Item;
   slotId?: string;
   className?: string;
-  addSlot: AddSlot;
-  moveSlot: MoveSlot;
 };
 export const InventoryItem = React.memo(
-  ({ item, slotId, className, addSlot, moveSlot }: InventoryItemProps) => {
+  ({ item, slotId, className }: InventoryItemProps) => {
+    const dispatch = useDispatch();
     const [tooltipOpen, setTooltipOpen] = useState(false);
     const [tooltipPosition, setTooltipPosition] = useState<
       | {
@@ -46,9 +45,15 @@ export const InventoryItem = React.memo(
         if (result) {
           const { x, y, containerId } = result;
           if (slotId) {
-            moveSlot({ x, y, containerId, slotId });
+            dispatch({
+              type: "MOVE_SLOT",
+              payload: { x, y, containerId, slotId },
+            });
           } else {
-            addSlot({ x, y, containerId, itemId: item.id });
+            dispatch({
+              type: "ADD_SLOT",
+              payload: { x, y, containerId, itemId: item.id },
+            });
           }
         }
       },

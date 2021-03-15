@@ -1,45 +1,35 @@
-import { useStoreValue } from "@botnet/store";
-import React, { useState } from "react";
+import React from "react";
+import { useDispatch } from "react-redux";
 import { Button } from "./Button";
 
 export const Debug = () => {
-  const store = useStoreValue();
-  const { reset, cheat } = store;
-  const [showState, setShowState] = useState(false);
+  const dispatch = useDispatch();
 
   return (
     <div>
       <div>
         <Button
           onClick={() => {
-            setShowState((current) => !current);
-          }}
-        >
-          {showState ? "Hide State" : "Show State"} state
-        </Button>
-        <Button
-          onClick={() => {
-            reset();
+            dispatch({ type: "RESET" });
           }}
         >
           Reset
         </Button>
         <Button
           onClick={() => {
-            cheat("AUTOMATION");
+            dispatch({ type: "CHEAT", payload: { type: "AUTOMATION" } });
           }}
         >
           Cheat: All Automation
         </Button>
         <Button
           onClick={() => {
-            cheat("MIDGAME");
+            dispatch({ type: "CHEAT", payload: { type: "MIDGAME" } });
           }}
         >
           Cheat: Mid Upgrades
         </Button>
       </div>
-      {showState && <div>{JSON.stringify(store)}</div>}
     </div>
   );
 };

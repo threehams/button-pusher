@@ -1,15 +1,13 @@
-import { BuyUpgrade, PurchasedUpgrade, useStoreValue } from "@botnet/store";
+import { PurchasedUpgrade, selectPurchasedUpgrades } from "@botnet/store";
 import { css } from "@emotion/react";
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Button } from "../Button";
 
 export const UpgradePanel = () => {
-  const {
-    purchasedUpgrades,
-    buyUpgrade,
-    highestMoneys,
-    moneys,
-  } = useStoreValue();
+  const moneys = useSelector((state) => state.data.moneys);
+  const highestMoneys = useSelector((state) => state.data.highestMoneys);
+  const purchasedUpgrades = useSelector(selectPurchasedUpgrades);
   if (!purchasedUpgrades) {
     return <div>Nothing here</div>;
   }
@@ -61,7 +59,6 @@ export const UpgradePanel = () => {
               return (
                 <UpgradeButton
                   key={upgrade.name}
-                  buyUpgrade={buyUpgrade}
                   moneys={moneys}
                   upgrade={upgrade}
                 />
@@ -90,7 +87,6 @@ export const UpgradePanel = () => {
               return (
                 <UpgradeButton
                   key={upgrade.name}
-                  buyUpgrade={buyUpgrade}
                   moneys={moneys}
                   upgrade={upgrade}
                 />
@@ -104,11 +100,11 @@ export const UpgradePanel = () => {
 };
 
 type UpgradeButtonProps = {
-  buyUpgrade: BuyUpgrade;
   upgrade: PurchasedUpgrade;
   moneys: number;
 };
-const UpgradeButton = ({ upgrade, buyUpgrade, moneys }: UpgradeButtonProps) => {
+const UpgradeButton = ({ upgrade, moneys }: UpgradeButtonProps) => {
+  const dispatch = useDispatch();
   return (
     <Button
       css={css`
@@ -118,7 +114,7 @@ const UpgradeButton = ({ upgrade, buyUpgrade, moneys }: UpgradeButtonProps) => {
       `}
       disabled={!upgrade.cost || upgrade.cost > moneys}
       onClick={() => {
-        buyUpgrade({ id: upgrade.id });
+        dispatch({ type: "BUY_UPGRADE", payload: { id: upgrade.id } });
       }}
     >
       <span>

@@ -1,4 +1,7 @@
+export * from "./reducers/actions";
+export * from "./reducers/selectors";
 export * from "./AllInventory";
+export * from "./AutomatedUpgrade";
 export * from "./AvailableUpgrade";
 export * from "./findAvailable";
 export * from "./getTargetCoords";
@@ -6,5 +9,4 @@ export * from "./Inventory";
 export * from "./PurchasedUpgrade";
 export * from "./PurchasedUpgradeMap";
 export * from "./State";
-export * from "./StoreContext";
-export * from "./useStore";
+export * from "./reducers";

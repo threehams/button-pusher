@@ -1,12 +1,9 @@
-import {
-  AutomatedUpgrade,
-  PurchasedUpgrade,
-  useStoreValue,
-} from "@botnet/store";
+import { AutomatedUpgrade, PurchasedUpgrade } from "@botnet/store";
 import { css } from "@emotion/react";
 import React from "react";
 import { Progress } from "./Progress";
 import { Button } from "./Button";
+import { useDispatch } from "react-redux";
 
 type AutoActionProps = {
   percent: number;
@@ -24,7 +21,7 @@ export const AutoAction = ({
   percent,
   upgradeName,
 }: AutoActionProps) => {
-  const { disable, enable } = useStoreValue();
+  const dispatch = useDispatch();
 
   return (
     <div
@@ -42,7 +39,9 @@ export const AutoAction = ({
           margin-left: 20px;
         `}
         onClick={() => {
-          upgrade.enabled ? disable(upgradeName) : enable(upgradeName);
+          upgrade.enabled
+            ? dispatch({ type: "DISABLE", payload: { upgrade: upgradeName } })
+            : dispatch({ type: "ENABLE", payload: { upgrade: upgradeName } });
         }}
       >
         Auto: {upgrade.enabled ? "On" : "Off"}
