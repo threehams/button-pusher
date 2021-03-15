@@ -7,7 +7,7 @@ import { Progress } from "./Progress";
 export const StatusBar = () => {
   const heldSlot = useSelector(selectHeldSlot);
   const playerDestination = useSelector(
-    (state) => state.data.playerDestination,
+    (state) => state.player.playerDestination,
   );
   const progress = useProgress();
   if (progress.autoTravel) {

@@ -12,26 +12,14 @@ import {
 export const ActionPanel = () => {
   const heldSlot = useSelector(selectHeldSlot);
   const { playerAction, playerLocation } = useSelector((state) => ({
-    playerLocation: state.data.playerLocation,
-    playerAction: state.data.playerAction,
+    playerLocation: state.player.playerLocation,
+    playerAction: state.player.playerAction,
   }));
   const purchasedUpgrades = useSelector(selectPurchasedUpgrades);
   const inventory = useSelector((state) => {
     const containerId = state.data.currentContainerId;
     return selectInventory(state, { containerId });
   });
-  // const {
-  //   playerAction,
-  //   inventory,
-  //   purchasedUpgrades,
-  //   playerLocation,
-  //   startSort,
-  //   pack,
-  //   adventure,
-  //   sell,
-  //   travel,
-  //   dropJunk,
-  // } = useStoreValue();
   const progress = useProgress();
   const dispatch = useDispatch();
 

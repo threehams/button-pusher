@@ -25,6 +25,7 @@
     "lodash": "^4.17.21",
     "lodash-es": "^4.17.21",
     "next": "10.0.8",
+    "re-reselect": "^4.0.0",
     "react": "17.0.1",
     "react-cookie": "^4.0.3",
     "react-dnd": "^13.1.1",

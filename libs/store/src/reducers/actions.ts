@@ -57,9 +57,15 @@ export type CheatType = "AUTOMATION" | "MIDGAME";
 export type CheatAction = Action<"CHEAT", { type: CheatType }>;
 export type ResetAction = Action<"RESET">;
 export type DropJunkAction = Action<"DROP_JUNK">;
-export type DropJunkItemAction = Action<"DROP_JUNK_ITEM">;
+export type DropJunkItemAction = Action<
+  "DROP_JUNK_ITEM",
+  { playerLocation: PlayerLocation }
+>;
 export type TrashAction = Action<"TRASH">;
-export type TrashAllAction = Action<"TRASH_ALL">;
+export type TrashAllAction = Action<
+  "TRASH_ALL",
+  { playerLocation: PlayerLocation }
+>;
 
 export type AnyAction =
   | LootAction

@@ -14,7 +14,7 @@ type Kill = {
   playerLocation: PlayerLocation;
   dispatch: Dispatch;
 };
-export const kill = ({
+export const autoKill = ({
   delta,
   heldSlot,
   playerAction,

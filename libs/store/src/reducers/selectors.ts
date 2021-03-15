@@ -1,26 +1,24 @@
-import { Item } from "@botnet/messages";
+import { Item, PlayerLocation } from "@botnet/messages";
 import { range } from "lodash";
 import { createSelector } from "reselect";
+import { createCachedSelector } from "re-reselect";
 import { getTargetCoords } from "../getTargetCoords";
 import { Inventory } from "../Inventory";
 import { State } from "../State";
 import {
-  items as availableItems,
   upgrades as availableUpgrades,
   availableContainers as availableContainers,
-  modifiers as availableModifiers,
 } from "@botnet/data";
 import { PurchasedUpgradeMap } from "../PurchasedUpgradeMap";
 
 export const selectAllInventory = createSelector(
-  (state: State) => state,
-  (state: State) => state.data,
-  (state, data) => {
+  (state: Pick<State, "data">) => state.data,
+  (data) => {
     let slots = 0;
     let full = true;
     let junk = false;
     for (const containerId of data.purchasedContainerIds) {
-      const inv = selectInventory(state, { containerId });
+      const inv = selectInventory({ data }, { containerId });
       if (inv.type === "FLOOR" || inv.type === "EQUIP") {
         continue;
       }
@@ -44,7 +42,7 @@ export const selectAllInventory = createSelector(
 );
 
 export const selectPurchasedUpgrades = createSelector(
-  (state: State) => state.data,
+  (state: Pick<State, "data">) => state.data,
   (state) => {
     return Object.entries(state.purchasedUpgradeMap).reduce(
       (result, [id, purchasedUpgrade]) => {
@@ -65,7 +63,7 @@ export const selectPurchasedUpgrades = createSelector(
 );
 
 export const selectHeldSlot = createSelector(
-  (state: State) => state.data,
+  (state: Pick<State, "data">) => state.data,
   (state) => {
     const handContainer = state.purchasedContainerMap[state.handContainerId];
     const slotId = handContainer.slotIds[0];
@@ -87,8 +85,8 @@ export const selectHeldSlot = createSelector(
 );
 
 export const selectBags = createSelector(
-  (state: State) => state.data.purchasedContainerIds,
-  (state: State) => state.data.purchasedContainerMap,
+  (state: Pick<State, "data">) => state.data.purchasedContainerIds,
+  (state: Pick<State, "data">) => state.data.purchasedContainerMap,
   (ids, map) => {
     return ids.filter((id) => {
       return map[id].type === "BAG";
@@ -97,7 +95,7 @@ export const selectBags = createSelector(
 );
 
 export const selectCurrentCapacity = createSelector(
-  (state: State) => state.data,
+  (state: Pick<State, "data">) => state.data,
   selectBags,
   (state, bags) => {
     return bags.reduce((sum, id) => {
@@ -110,22 +108,34 @@ export const selectCurrentCapacity = createSelector(
 type SelectInventoryProps = {
   containerId: string;
 };
-export const selectInventory = createSelector(
-  (state: State) => state.data,
+export const selectInventory = createCachedSelector(
+  (state: Pick<State, "data">) => state.data.slotMap,
+  (state: Pick<State, "data">) => state.data.itemMap,
+  (state: Pick<State, "data">) => state.data.purchasedContainerMap,
+  (state: Pick<State, "data">) => state.data.purchasedContainerIds,
   selectHeldSlot,
   selectCurrentCapacity,
-  (state: State, props: SelectInventoryProps) => props.containerId,
-  (state, heldSlot, currentCapacity, containerId) => {
-    const container = state.purchasedContainerMap[containerId];
+  (state: Pick<State, "data">, props: SelectInventoryProps) =>
+    props.containerId,
+  (
+    slotMap,
+    itemMap,
+    purchasedContainerMap,
+    purchasedContainerIds,
+    heldSlot,
+    currentCapacity,
+    containerId,
+  ) => {
+    const container = purchasedContainerMap[containerId];
     const grid = initializeGrid({
       width: container.width,
       height: container.height,
     });
     const slots = container.slotIds.map((slotId) => {
-      const slot = state.slotMap[slotId];
+      const slot = slotMap[slotId];
       return {
         ...slot,
-        item: state.itemMap[slot.itemId],
+        item: itemMap[slot.itemId],
       };
     });
     if (container.maxHeight > 1 && container.maxWidth > 1) {
@@ -147,8 +157,8 @@ export const selectInventory = createSelector(
       currentCapacity,
     );
     const isLast =
-      state.purchasedContainerIds.indexOf(containerId) ===
-      state.purchasedContainerIds.length - 1;
+      purchasedContainerIds.indexOf(containerId) ===
+      purchasedContainerIds.length - 1;
 
     let full = false;
     if (heldSlot) {
@@ -187,7 +197,9 @@ export const selectInventory = createSelector(
       allJunk,
     };
   },
-);
+)((state, props) => {
+  return props.containerId;
+});
 
 const initializeGrid = ({
   width,
@@ -341,8 +353,14 @@ export const selectInventoryPagination = createSelector(
   },
 );
 
-export const selectFloor = (state: State) => {
+type SelectFloorProps = {
+  playerLocation: PlayerLocation;
+};
+export const selectFloor = (
+  state: Pick<State, "data">,
+  props: SelectFloorProps,
+) => {
   return selectInventory(state, {
-    containerId: state.data.floorIds[state.data.playerLocation],
+    containerId: state.data.floorIds[props.playerLocation],
   });
 };

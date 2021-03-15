@@ -11,14 +11,14 @@ import { selectFloor, selectHeldSlot, selectInventory } from "@botnet/store";
 
 export const Layout = () => {
   const moneys = useSelector((state) => state.data.moneys);
-  const playerLocation = useSelector((state) => state.data.playerLocation);
+  const playerLocation = useSelector((state) => state.player.playerLocation);
   const heldSlot = useSelector(selectHeldSlot);
   const inventory = useSelector((state) => {
     return selectInventory(state, {
       containerId: state.data.currentContainerId,
     });
   });
-  const floor = useSelector(selectFloor);
+  const floor = useSelector((state) => selectFloor(state, { playerLocation }));
 
   return (
     <Box

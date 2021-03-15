@@ -1,7 +1,6 @@
 import {
   Inventory,
   selectFloor,
-  selectInventory,
   selectInventoryPagination,
   selectPurchasedUpgrades,
   SlotInfo,
@@ -27,7 +26,8 @@ export const InventoryPanel = React.memo(({ inventory }: Props) => {
   const { nextAvailable, height, width, slots, cost } = inventory;
   const moneys = useSelector((state) => state.data.moneys);
   const pages = useSelector(selectInventoryPagination);
-  const floor = useSelector(selectFloor);
+  const playerLocation = useSelector((state) => state.player.playerLocation);
+  const floor = useSelector((state) => selectFloor(state, { playerLocation }));
   const purchasedUpgrades = useSelector(selectPurchasedUpgrades);
   const [target, setTargetState] = useState<SlotInfo | undefined>();
 

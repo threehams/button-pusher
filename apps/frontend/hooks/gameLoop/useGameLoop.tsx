@@ -6,9 +6,9 @@ import { autoSell } from "./autoSell";
 import { autoSort } from "./autoSort";
 import { autoTrash } from "./autoTrash";
 import { autoTravel } from "./autoTravel";
-import { kill } from "./kill";
+import { autoKill } from "./autoKill";
 import { useLastTimes } from "./lastTimes";
-import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   selectInventory,
   selectHeldSlot,
@@ -25,9 +25,9 @@ export const useGameLoop = (): ProgressContextType => {
   });
   const allInventory = useSelector((state) => selectAllInventory(state));
   const heldSlot = useSelector((state) => selectHeldSlot(state));
-  const floor = useSelector(selectFloor);
-  const playerAction = useSelector((state) => state.data.playerAction);
-  const playerLocation = useSelector((state) => state.data.playerLocation);
+  const playerAction = useSelector((state) => state.player.playerAction);
+  const playerLocation = useSelector((state) => state.player.playerLocation);
+  const floor = useSelector((state) => selectFloor(state, { playerLocation }));
   const purchasedUpgrades = useSelector((state) =>
     selectPurchasedUpgrades(state),
   );
@@ -42,6 +42,7 @@ export const useGameLoop = (): ProgressContextType => {
       delta,
       dispatch,
       playerAction,
+      playerLocation,
       upgrade: purchasedUpgrades.dropJunk,
       lastTimes,
       setLastTime,
@@ -51,6 +52,7 @@ export const useGameLoop = (): ProgressContextType => {
       delta,
       floor,
       playerAction,
+      playerLocation,
       dispatch,
       upgrade: purchasedUpgrades.trash,
       lastTimes,
@@ -77,7 +79,7 @@ export const useGameLoop = (): ProgressContextType => {
       lastTimes,
       setLastTime,
     });
-    kill({
+    autoKill({
       dispatch,
       autoUpgrade: purchasedUpgrades.autoKill,
       delta,

@@ -3,10 +3,11 @@ import React, { useEffect, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { Button } from "../components/Button";
 import { Game } from "../components/Game";
-import { makeStore } from "@botnet/store";
+import { makeStore, setStoreCache } from "@botnet/store";
 import { Provider } from "react-redux";
 
 const store = makeStore();
+store.subscribe(() => setStoreCache(store.getState()));
 
 export const Index = () => {
   const [onClient, setOnClient] = useState(false);

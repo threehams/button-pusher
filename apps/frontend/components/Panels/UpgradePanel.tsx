@@ -17,6 +17,7 @@ export const UpgradePanel = () => {
     purchasedUpgrades.autoSell,
     purchasedUpgrades.autoSort,
     purchasedUpgrades.autoTravel,
+    purchasedUpgrades.autoDropJunk,
   ].filter((upgrade) => {
     return (
       upgrade.level > 0 ||
@@ -30,6 +31,7 @@ export const UpgradePanel = () => {
     purchasedUpgrades.sell,
     purchasedUpgrades.sort,
     purchasedUpgrades.travel,
+    purchasedUpgrades.dropJunk,
   ].filter((upgrade) => {
     return (
       upgrade.level > 0 ||

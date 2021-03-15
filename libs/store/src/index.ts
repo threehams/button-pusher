@@ -6,6 +6,7 @@ export * from "./AvailableUpgrade";
 export * from "./findAvailable";
 export * from "./getTargetCoords";
 export * from "./Inventory";
+export * from "./PlayerState";
 export * from "./PurchasedUpgrade";
 export * from "./PurchasedUpgradeMap";
 export * from "./State";

@@ -154,9 +154,9 @@ const INITIAL_STATE: DataState = {
     [TOWN_FLOOR_CONTAINER.id]: TOWN_FLOOR_CONTAINER,
     [KILLING_FIELDS_FLOOR_CONTAINER.id]: KILLING_FIELDS_FLOOR_CONTAINER,
   },
-  playerAction: "IDLE" as const,
-  playerLocation: "TOWN" as const,
-  playerDestination: undefined,
+  // playerAction: "IDLE" as const,
+  // playerLocation: "TOWN" as const,
+  // playerDestination: undefined,
   highestMoneys: 0,
   sellableItems: 0,
 };
@@ -183,18 +183,8 @@ export const dataReducer = (
         draft.purchasedContainerMap[containerId].sorted = false;
         break;
       }
-      case "ADVENTURE":
-        draft.playerAction = "KILLING";
-        break;
       case "ARRIVE":
-        if (draft.playerDestination) {
-          draft.playerLocation = draft.playerDestination;
-          draft.playerDestination = undefined;
-          draft.playerAction = "IDLE";
-          draft.sellableItems = 1; // TODO probably get this from the action;
-        } else {
-          throw new Error("somehow ended up arriving without a destination");
-        }
+        draft.sellableItems = 1; // TODO probably get this from the action;
         break;
       case "BUY_CONTAINER": {
         const currentCapacity = selectCurrentCapacity({ data: state });
@@ -248,7 +238,6 @@ export const dataReducer = (
         }
         break;
       }
-
       case "CHEAT":
         if (action.payload.type !== "AUTOMATION") {
           return state;
@@ -260,19 +249,15 @@ export const dataReducer = (
       case "DISABLE":
         draft.purchasedUpgradeMap[action.payload.upgrade].enabled = false;
         break;
-      case "DROP_JUNK":
-        draft.playerAction = "DROPPING";
-        break;
       case "DROP_JUNK_ITEM": {
-        draft.playerAction = "IDLE";
+        const { playerLocation } = action.payload;
         const bags = selectBags({ data: state });
-        const floor = selectFloor({ data: state });
+        const floor = selectFloor({ data: state }, { playerLocation });
         for (const id of bags) {
           const container = draft.purchasedContainerMap[id];
           for (const slotId of container.slotIds) {
             const item = draft.itemMap[draft.slotMap[slotId].itemId];
             if (item.rarity === "JUNK") {
-              // const floorContainer = draft.purchasedContainerMap[floor.id];
               const target = findSlot({
                 containerInv: floor,
                 height: item.height,
@@ -309,7 +294,6 @@ export const dataReducer = (
           y: 0,
           itemId: item.id,
         });
-        draft.playerAction = "IDLE";
         break;
       }
       case "MOVE_SLOT": {
@@ -319,17 +303,9 @@ export const dataReducer = (
       case "ADD_SLOT":
         addSlot(draft, action.payload);
         break;
-      case "PACK":
-        draft.playerAction = "STORING";
-        break;
       case "RESET":
         return INITIAL_STATE;
-      case "SELL":
-        draft.playerLocation = "TOWN";
-        draft.playerAction = "SELLING";
-        break;
       case "SELL_ITEM": {
-        draft.playerAction = "IDLE";
         const container = Object.values(draft.purchasedContainerMap).filter(
           (cont) =>
             cont.slotIds.length &&
@@ -343,6 +319,7 @@ export const dataReducer = (
           draft.itemMap[draft.slotMap[slotId].itemId].value *
             getSellMultiplier(draft.sellableItems),
         );
+        draft.highestMoneys = Math.max(draft.moneys, draft.highestMoneys);
         container.slotIds = container.slotIds.filter((id) => id !== slotId);
         draft.slotMap[slotId] = undefined!; // it's fine as long as I removed all references
         break;
@@ -378,7 +355,6 @@ export const dataReducer = (
             method: "vertical",
           });
           if (!target) {
-            draft.playerAction = "IDLE";
             return;
           }
           targetSlots.push({
@@ -392,7 +368,6 @@ export const dataReducer = (
             grid,
           });
         }
-        draft.playerAction = "IDLE";
         targetSlots.forEach((slot) => {
           draft.slotMap[slot.id].x = slot.x;
           draft.slotMap[slot.id].y = slot.y;
@@ -400,11 +375,7 @@ export const dataReducer = (
         });
         break;
       }
-      case "START_SORT":
-        draft.playerAction = "SORTING";
-        break;
       case "STORE_HELD_ITEM": {
-        draft.playerAction = "IDLE";
         const heldSlot = selectHeldSlot({ data: state });
         const bags = selectBags({ data: state });
         if (!heldSlot) {
@@ -436,25 +407,20 @@ export const dataReducer = (
         }
         break;
       }
-      case "TRASH":
-        draft.playerAction = "TRASHING";
-        break;
       case "TRASH_ALL": {
-        const floor = selectFloor({ data: state });
+        const { playerLocation } = action.payload;
+        const floor = selectFloor({ data: state }, { playerLocation });
         for (const slot of floor.slots) {
           delete draft.itemMap[slot.item.id];
           delete draft.slotMap[slot.id];
         }
         draft.purchasedContainerMap[
-          draft.floorIds[state.playerLocation]
+          draft.floorIds[playerLocation]
         ].slotIds = [];
-        draft.playerAction = "IDLE";
         break;
       }
       case "TRAVEL":
-        draft.playerAction = "TRAVELLING";
-        draft.playerDestination = action.payload.destination;
-        draft.sellableItems = 0;
+        draft.sellableItems = 1;
         break;
       default:
         return draft;
