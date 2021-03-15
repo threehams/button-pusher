@@ -1,5 +1,5 @@
-import { PlayerAction, PlayerLocation } from "@botnet/messages";
-import { PurchasedUpgrade, Inventory } from "@botnet/store";
+import { Player } from "@botnet/messages";
+import { Inventory, PurchasedUpgrade } from "@botnet/store";
 import { Dispatch } from "react-redux";
 import { LastTimes, SetLastTime } from "./lastTimes";
 
@@ -7,8 +7,7 @@ type AutoTrash = {
   upgrade: PurchasedUpgrade;
   autoUpgrade: PurchasedUpgrade;
   delta: number;
-  playerAction: PlayerAction;
-  playerLocation: PlayerLocation;
+  player: Player;
   floor: Inventory;
   lastTimes: LastTimes;
   setLastTime: SetLastTime;
@@ -18,17 +17,19 @@ export const autoTrash = ({
   autoUpgrade,
   upgrade,
   delta,
-  playerAction,
+  player,
   floor,
   lastTimes,
   setLastTime,
   dispatch,
-  playerLocation,
 }: AutoTrash) => {
-  if (playerAction === "TRASHING") {
+  if (player.action === "TRASHING") {
     setLastTime("trash", lastTimes.trash + delta);
     if (lastTimes.trash > upgrade.time) {
-      dispatch({ type: "TRASH_ALL", payload: { playerLocation } });
+      dispatch({
+        type: "TRASH_ALL",
+        payload: { playerLocation: player.location },
+      });
       setLastTime("trash", 0);
     }
   }
@@ -38,7 +39,7 @@ export const autoTrash = ({
     floor.full &&
     autoUpgrade.level &&
     autoUpgrade.enabled &&
-    playerAction === "IDLE"
+    player.action === "IDLE"
   ) {
     setLastTime("autoTrash", lastTimes.autoTrash + delta);
     if (lastTimes.autoTrash > autoUpgrade.time) {

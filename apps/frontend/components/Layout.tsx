@@ -11,14 +11,16 @@ import { selectFloor, selectHeldSlot, selectInventory } from "@botnet/store";
 
 export const Layout = () => {
   const moneys = useSelector((state) => state.data.moneys);
-  const playerLocation = useSelector((state) => state.player.playerLocation);
+  const player = useSelector((state) => state.player);
   const heldSlot = useSelector(selectHeldSlot);
   const inventory = useSelector((state) => {
     return selectInventory(state, {
       containerId: state.data.currentContainerId,
     });
   });
-  const floor = useSelector((state) => selectFloor(state, { playerLocation }));
+  const floor = useSelector((state) =>
+    selectFloor(state, { playerLocation: player.location }),
+  );
 
   return (
     <Box
@@ -67,7 +69,7 @@ export const Layout = () => {
               margin-left: 40px;
             `}
           >
-            Location: {playerLocation === "TOWN" ? "Town" : "Killing Fields"}
+            Location: {player.location === "TOWN" ? "Town" : "Killing Fields"}
           </div>
         </div>
         <Box

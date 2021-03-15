@@ -1,4 +1,4 @@
-import { PlayerAction, PlayerLocation } from "@botnet/messages";
+import { Player } from "@botnet/messages";
 import { AllInventory, PurchasedUpgrade } from "@botnet/store";
 import { Dispatch } from "react-redux";
 import { LastTimes, SetLastTime } from "./lastTimes";
@@ -7,25 +7,24 @@ type AutoTravel = {
   lastTimes: LastTimes;
   setLastTime: SetLastTime;
   delta: number;
-  playerAction: PlayerAction;
+  player: Player;
   autoUpgrade: PurchasedUpgrade;
   upgrade: PurchasedUpgrade;
   allInventory: AllInventory;
-  playerLocation: PlayerLocation;
+
   dispatch: Dispatch;
 };
 export const autoTravel = ({
-  playerAction,
   delta,
   upgrade,
   allInventory,
-  playerLocation,
+  player,
   autoUpgrade,
   lastTimes,
   setLastTime,
   dispatch,
 }: AutoTravel) => {
-  if (playerAction === "TRAVELLING") {
+  if (player.action === "TRAVELLING") {
     setLastTime("travel", lastTimes.travel + delta);
     if (lastTimes.travel > upgrade.time) {
       dispatch({ type: "ARRIVE" });
@@ -39,8 +38,8 @@ export const autoTravel = ({
   }
 
   if (
-    playerLocation === "TOWN" &&
-    playerAction === "IDLE" &&
+    player.location === "TOWN" &&
+    player.action === "IDLE" &&
     allInventory.slots === 0
   ) {
     setLastTime("autoTravel", lastTimes.autoTravel + delta);
@@ -50,8 +49,8 @@ export const autoTravel = ({
       return;
     }
   } else if (
-    playerLocation !== "TOWN" &&
-    playerAction === "IDLE" &&
+    player.location !== "TOWN" &&
+    player.action === "IDLE" &&
     allInventory.full
   ) {
     setLastTime("autoTravel", lastTimes.autoTravel + delta);

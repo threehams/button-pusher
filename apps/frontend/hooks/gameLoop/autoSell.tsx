@@ -1,4 +1,4 @@
-import { PlayerAction, PlayerLocation } from "@botnet/messages";
+import { Player } from "@botnet/messages";
 import { AllInventory, PurchasedUpgrade } from "@botnet/store";
 import { Dispatch } from "react-redux";
 import { LastTimes, SetLastTime } from "./lastTimes";
@@ -9,8 +9,7 @@ type AutoSell = {
   lastTimes: LastTimes;
   setLastTime: SetLastTime;
   delta: number;
-  playerAction: PlayerAction;
-  playerLocation: PlayerLocation;
+  player: Player;
   allInventory: AllInventory;
   dispatch: Dispatch;
 };
@@ -18,14 +17,13 @@ export const autoSell = ({
   delta,
   upgrade,
   autoUpgrade,
-  playerAction,
-  playerLocation,
+  player,
   allInventory,
   setLastTime,
   lastTimes,
   dispatch,
 }: AutoSell) => {
-  if (playerAction === "SELLING") {
+  if (player.action === "SELLING") {
     setLastTime("sell", lastTimes.sell + delta);
     if (lastTimes.sell > upgrade.time) {
       dispatch({ type: "SELL_ITEM" });
@@ -36,8 +34,8 @@ export const autoSell = ({
   if (
     autoUpgrade.level &&
     autoUpgrade.enabled &&
-    playerAction === "IDLE" &&
-    playerLocation === "TOWN" &&
+    player.action === "IDLE" &&
+    player.location === "TOWN" &&
     allInventory.slots
   ) {
     setLastTime("autoSell", lastTimes.autoSell + delta);

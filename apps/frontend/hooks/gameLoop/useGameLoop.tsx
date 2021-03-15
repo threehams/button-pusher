@@ -25,9 +25,10 @@ export const useGameLoop = (): ProgressContextType => {
   });
   const allInventory = useSelector((state) => selectAllInventory(state));
   const heldSlot = useSelector((state) => selectHeldSlot(state));
-  const playerAction = useSelector((state) => state.player.playerAction);
-  const playerLocation = useSelector((state) => state.player.playerLocation);
-  const floor = useSelector((state) => selectFloor(state, { playerLocation }));
+  const player = useSelector((state) => state.player);
+  const floor = useSelector((state) =>
+    selectFloor(state, { playerLocation: player.location }),
+  );
   const purchasedUpgrades = useSelector((state) =>
     selectPurchasedUpgrades(state),
   );
@@ -41,8 +42,7 @@ export const useGameLoop = (): ProgressContextType => {
       autoUpgrade: purchasedUpgrades.autoDropJunk,
       delta,
       dispatch,
-      playerAction,
-      playerLocation,
+      player,
       upgrade: purchasedUpgrades.dropJunk,
       lastTimes,
       setLastTime,
@@ -51,8 +51,7 @@ export const useGameLoop = (): ProgressContextType => {
       autoUpgrade: purchasedUpgrades.autoTrash,
       delta,
       floor,
-      playerAction,
-      playerLocation,
+      player,
       dispatch,
       upgrade: purchasedUpgrades.trash,
       lastTimes,
@@ -63,7 +62,7 @@ export const useGameLoop = (): ProgressContextType => {
       autoUpgrade: purchasedUpgrades.autoPack,
       delta,
       heldSlot,
-      playerAction,
+      player,
       dispatch,
       upgrade: purchasedUpgrades.pack,
       lastTimes,
@@ -73,7 +72,7 @@ export const useGameLoop = (): ProgressContextType => {
       autoUpgrade: purchasedUpgrades.autoSort,
       delta,
       inventory,
-      playerAction,
+      player,
       dispatch,
       upgrade: purchasedUpgrades.sort,
       lastTimes,
@@ -86,8 +85,7 @@ export const useGameLoop = (): ProgressContextType => {
       heldSlot,
       lastTimes,
       setLastTime,
-      playerAction,
-      playerLocation,
+      player,
       upgrade: purchasedUpgrades.kill,
     });
     autoSell({
@@ -95,8 +93,7 @@ export const useGameLoop = (): ProgressContextType => {
       allInventory,
       autoUpgrade: purchasedUpgrades.autoSell,
       delta,
-      playerAction,
-      playerLocation,
+      player,
       upgrade: purchasedUpgrades.sell,
       lastTimes,
       setLastTime,
@@ -106,8 +103,7 @@ export const useGameLoop = (): ProgressContextType => {
       dispatch,
       autoUpgrade: purchasedUpgrades.autoTravel,
       delta,
-      playerAction,
-      playerLocation,
+      player,
       upgrade: purchasedUpgrades.travel,
       lastTimes,
       setLastTime,

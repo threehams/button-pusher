@@ -3,9 +3,9 @@ import { PlayerState } from "../PlayerState";
 import { AnyAction } from "./actions";
 
 const INITIAL_STATE: PlayerState = {
-  playerAction: "IDLE" as const,
-  playerLocation: "TOWN" as const,
-  playerDestination: undefined,
+  action: "IDLE" as const,
+  location: "TOWN" as const,
+  destination: undefined,
 };
 
 export const playerReducer = (
@@ -15,62 +15,62 @@ export const playerReducer = (
   return produce(state, (draft) => {
     switch (action.type) {
       case "ADVENTURE":
-        draft.playerAction = "KILLING";
+        draft.action = "KILLING";
         break;
       case "ARRIVE":
-        if (draft.playerDestination) {
-          draft.playerLocation = draft.playerDestination;
-          draft.playerDestination = undefined;
-          draft.playerAction = "IDLE";
+        if (draft.destination) {
+          draft.location = draft.destination;
+          draft.destination = undefined;
+          draft.action = "IDLE";
         } else {
           throw new Error("somehow ended up arriving without a destination");
         }
         break;
       case "DROP_JUNK":
-        draft.playerAction = "DROPPING";
+        draft.action = "DROPPING";
         break;
       case "DROP_JUNK_ITEM": {
-        draft.playerAction = "IDLE";
+        draft.action = "IDLE";
         break;
       }
       case "LOOT": {
-        draft.playerAction = "IDLE";
+        draft.action = "IDLE";
         break;
       }
       case "PACK":
-        draft.playerAction = "STORING";
+        draft.action = "STORING";
         break;
       case "RESET":
         return INITIAL_STATE;
       case "SELL":
-        draft.playerLocation = "TOWN";
-        draft.playerAction = "SELLING";
+        draft.location = "TOWN";
+        draft.action = "SELLING";
         break;
       case "SELL_ITEM": {
-        draft.playerAction = "IDLE";
+        draft.action = "IDLE";
         break;
       }
       case "SORT": {
-        draft.playerAction = "IDLE";
+        draft.action = "IDLE";
         break;
       }
       case "START_SORT":
-        draft.playerAction = "SORTING";
+        draft.action = "SORTING";
         break;
       case "STORE_HELD_ITEM": {
-        draft.playerAction = "IDLE";
+        draft.action = "IDLE";
         break;
       }
       case "TRASH":
-        draft.playerAction = "TRASHING";
+        draft.action = "TRASHING";
         break;
       case "TRASH_ALL": {
-        draft.playerAction = "IDLE";
+        draft.action = "IDLE";
         break;
       }
       case "TRAVEL":
-        draft.playerAction = "TRAVELLING";
-        draft.playerDestination = action.payload.destination;
+        draft.action = "TRAVELLING";
+        draft.destination = action.payload.destination;
         break;
       default:
         return draft;

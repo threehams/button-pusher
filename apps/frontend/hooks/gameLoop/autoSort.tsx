@@ -1,4 +1,4 @@
-import { PlayerAction } from "@botnet/messages";
+import { Player } from "@botnet/messages";
 import { Inventory, PurchasedUpgrade } from "@botnet/store";
 import { Dispatch } from "react-redux";
 import { LastTimes, SetLastTime } from "./lastTimes";
@@ -10,7 +10,7 @@ type AutoSort = {
   lastTimes: LastTimes;
   setLastTime: SetLastTime;
   delta: number;
-  playerAction: PlayerAction;
+  player: Player;
   dispatch: Dispatch;
 };
 export const autoSort = ({
@@ -19,11 +19,11 @@ export const autoSort = ({
   dispatch,
   delta,
   autoUpgrade,
-  playerAction,
+  player,
   lastTimes,
   setLastTime,
 }: AutoSort) => {
-  if (playerAction === "SORTING") {
+  if (player.action === "SORTING") {
     setLastTime("sort", lastTimes.sort + delta);
     if (lastTimes.sort > upgrade.time) {
       dispatch({ type: "SORT" });

@@ -8,6 +8,7 @@ export * from "./ItemMap";
 export * from "./Message";
 export * from "./Modifier";
 export * from "./ModifierType";
+export * from "./Player";
 export * from "./PlayerAction";
 export * from "./PlayerLocation";
 export * from "./PurchasedContainer";

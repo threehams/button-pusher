@@ -1,4 +1,4 @@
-import { PlayerAction, PlayerLocation } from "@botnet/messages";
+import { Player } from "@botnet/messages";
 import { AllInventory, PurchasedUpgrade } from "@botnet/store";
 import { Dispatch } from "react-redux";
 import { LastTimes, SetLastTime } from "./lastTimes";
@@ -10,25 +10,26 @@ type AutoDropJunk = {
   setLastTime: SetLastTime;
   dispatch: Dispatch;
   delta: number;
-  playerAction: PlayerAction;
-  playerLocation: PlayerLocation;
+  player: Player;
   allInventory: AllInventory;
 };
 export const autoDropJunk = ({
   autoUpgrade,
   upgrade,
   delta,
-  playerAction,
-  playerLocation,
+  player,
   allInventory,
   dispatch,
   lastTimes,
   setLastTime,
 }: AutoDropJunk) => {
-  if (playerAction === "DROPPING" && allInventory.junk) {
+  if (player.action === "DROPPING" && allInventory.junk) {
     setLastTime("dropJunk", lastTimes.dropJunk + delta);
     if (lastTimes.dropJunk > upgrade.time) {
-      dispatch({ type: "DROP_JUNK_ITEM", payload: { playerLocation } });
+      dispatch({
+        type: "DROP_JUNK_ITEM",
+        payload: { playerLocation: player.location },
+      });
       setLastTime("dropJunk", 0);
     }
   }
@@ -37,7 +38,7 @@ export const autoDropJunk = ({
     allInventory.junk &&
     autoUpgrade.level &&
     autoUpgrade.enabled &&
-    playerAction === "IDLE"
+    player.action === "IDLE"
   ) {
     setLastTime("autoDropJunk", lastTimes.autoDropJunk + delta);
     if (lastTimes.autoDropJunk > autoUpgrade.time) {

@@ -11,10 +11,7 @@ import {
 
 export const ActionPanel = () => {
   const heldSlot = useSelector(selectHeldSlot);
-  const { playerAction, playerLocation } = useSelector((state) => ({
-    playerLocation: state.player.playerLocation,
-    playerAction: state.player.playerAction,
-  }));
+  const player = useSelector((state) => state.player);
   const purchasedUpgrades = useSelector(selectPurchasedUpgrades);
   const inventory = useSelector((state) => {
     const containerId = state.data.currentContainerId;
@@ -36,8 +33,8 @@ export const ActionPanel = () => {
         percent={progress.kill}
         disabled={
           !(
-            playerLocation === "KILLING_FIELDS" &&
-            playerAction === "IDLE" &&
+            player.location === "KILLING_FIELDS" &&
+            player.action === "IDLE" &&
             !heldSlot
           )
         }
@@ -47,11 +44,11 @@ export const ActionPanel = () => {
           dispatch({ type: "ADVENTURE" });
         }}
       >
-        Kill something {playerLocation === "TOWN" && "(not in town)"}
+        Kill something {player.location === "TOWN" && "(not in town)"}
       </AutoAction>
       {!!purchasedUpgrades.pack.level && (
         <AutoAction
-          disabled={!(heldSlot && playerAction === "IDLE" && !inventory.full)}
+          disabled={!(heldSlot && player.action === "IDLE" && !inventory.full)}
           percent={progress.pack}
           upgrade={purchasedUpgrades.autoPack}
           upgradeName="autoPack"
@@ -92,8 +89,8 @@ export const ActionPanel = () => {
         percent={progress.sell}
         disabled={
           !(
-            playerLocation === "TOWN" &&
-            playerAction !== "TRAVELLING" &&
+            player.location === "TOWN" &&
+            player.action !== "TRAVELLING" &&
             !!inventory.slots.length
           )
         }
@@ -103,16 +100,16 @@ export const ActionPanel = () => {
           dispatch({ type: "SELL" });
         }}
       >
-        Sell something {playerLocation !== "TOWN" && "(only in town)"}
+        Sell something {player.location !== "TOWN" && "(only in town)"}
       </AutoAction>
       <AutoAction
         upgrade={purchasedUpgrades.autoTravel}
         upgradeName="autoTravel"
-        disabled={playerAction === "TRAVELLING"}
+        disabled={player.action === "TRAVELLING"}
         percent={progress.travel}
         onClick={() => {
           const destination =
-            playerLocation === "TOWN" ? "KILLING_FIELDS" : "TOWN";
+            player.location === "TOWN" ? "KILLING_FIELDS" : "TOWN";
           dispatch({
             type: "TRAVEL",
             payload: {
@@ -122,7 +119,7 @@ export const ActionPanel = () => {
         }}
       >
         Travel to{" "}
-        {playerLocation === "KILLING_FIELDS" ? "Town" : "the Killing Fields"}
+        {player.location === "KILLING_FIELDS" ? "Town" : "the Killing Fields"}
       </AutoAction>
     </>
   );

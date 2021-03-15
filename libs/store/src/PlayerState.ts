@@ -1,9 +1,5 @@
-import { PlayerLocation, PlayerAction } from "@botnet/messages";
-import { Record, Static, Undefined, Union } from "runtypes";
+import { Player } from "@botnet/messages";
+import { Static } from "runtypes";
 
-export const PlayerState = Record({
-  playerAction: PlayerAction,
-  playerDestination: Union(PlayerLocation, Undefined),
-  playerLocation: PlayerLocation,
-});
+export const PlayerState = Player;
 export type PlayerState = Static<typeof PlayerState>;

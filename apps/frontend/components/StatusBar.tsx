@@ -6,9 +6,7 @@ import { Progress } from "./Progress";
 
 export const StatusBar = () => {
   const heldSlot = useSelector(selectHeldSlot);
-  const playerDestination = useSelector(
-    (state) => state.player.playerDestination,
-  );
+  const player = useSelector((state) => state.player);
   const progress = useProgress();
   if (progress.autoTravel) {
     return (
@@ -20,7 +18,7 @@ export const StatusBar = () => {
     return (
       <Progress percent={progress.travel}>
         Travelling to{" "}
-        {playerDestination === "TOWN" ? "Town" : "the Killing Fields"}
+        {player.destination === "TOWN" ? "Town" : "the Killing Fields"}
       </Progress>
     );
   } else if (progress.autoSell) {
