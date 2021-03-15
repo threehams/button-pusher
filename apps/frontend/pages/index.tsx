@@ -3,11 +3,11 @@ import React, { useEffect, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { Button } from "../components/Button";
 import { Game } from "../components/Game";
-import { makeStore, setStoreCache } from "@botnet/store";
+import { makeStore } from "@botnet/store";
 import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
 
-const store = makeStore();
-store.subscribe(() => setStoreCache(store.getState()));
+const { store, persistor } = makeStore();
 
 export const Index = () => {
   const [onClient, setOnClient] = useState(false);
@@ -19,7 +19,9 @@ export const Index = () => {
     <ErrorBoundary FallbackComponent={Reset}>
       {onClient && (
         <Provider store={store}>
-          <Game />{" "}
+          <PersistGate loading={null} persistor={persistor}>
+            <Game />
+          </PersistGate>
         </Provider>
       )}
     </ErrorBoundary>
