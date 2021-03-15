@@ -36,16 +36,25 @@ export const useGameLoop = (): ProgressContextType => {
   const dispatch = useDispatch();
 
   const loop = (delta: number) => {
-    kill({
-      dispatch,
-      autoUpgrade: purchasedUpgrades.autoKill,
+    autoDropJunk({
+      allInventory,
+      autoUpgrade: purchasedUpgrades.autoDropJunk,
       delta,
-      heldSlot,
+      dispatch,
+      playerAction,
+      upgrade: purchasedUpgrades.dropJunk,
       lastTimes,
       setLastTime,
+    });
+    autoTrash({
+      autoUpgrade: purchasedUpgrades.autoTrash,
+      delta,
+      floor,
       playerAction,
-      playerLocation,
-      upgrade: purchasedUpgrades.kill,
+      dispatch,
+      upgrade: purchasedUpgrades.trash,
+      lastTimes,
+      setLastTime,
     });
     autoPack({
       allInventory,
@@ -68,23 +77,25 @@ export const useGameLoop = (): ProgressContextType => {
       lastTimes,
       setLastTime,
     });
-    autoDropJunk({
-      allInventory,
-      autoUpgrade: purchasedUpgrades.autoDropJunk,
-      delta,
+    kill({
       dispatch,
-      playerAction,
-      upgrade: purchasedUpgrades.dropJunk,
+      autoUpgrade: purchasedUpgrades.autoKill,
+      delta,
+      heldSlot,
       lastTimes,
       setLastTime,
-    });
-    autoTrash({
-      autoUpgrade: purchasedUpgrades.autoTrash,
-      delta,
-      floor,
       playerAction,
+      playerLocation,
+      upgrade: purchasedUpgrades.kill,
+    });
+    autoSell({
       dispatch,
-      upgrade: purchasedUpgrades.trash,
+      allInventory,
+      autoUpgrade: purchasedUpgrades.autoSell,
+      delta,
+      playerAction,
+      playerLocation,
+      upgrade: purchasedUpgrades.sell,
       lastTimes,
       setLastTime,
     });
@@ -96,17 +107,6 @@ export const useGameLoop = (): ProgressContextType => {
       playerAction,
       playerLocation,
       upgrade: purchasedUpgrades.travel,
-      lastTimes,
-      setLastTime,
-    });
-    autoSell({
-      dispatch,
-      allInventory,
-      autoUpgrade: purchasedUpgrades.autoSell,
-      delta,
-      playerAction,
-      playerLocation,
-      upgrade: purchasedUpgrades.sell,
       lastTimes,
       setLastTime,
     });
