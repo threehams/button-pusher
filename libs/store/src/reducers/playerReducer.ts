@@ -14,66 +14,95 @@ export const playerReducer = (
 ): PlayerState => {
   return produce(state, (draft) => {
     switch (action.type) {
+      case "AUTO_DROP_JUNK":
+        if (draft.action === "IDLE") {
+          draft.action = "AUTO_DROPPING";
+        }
+        break;
+      case "AUTO_KILL":
+        if (draft.action === "IDLE") {
+          draft.action = "AUTO_KILLING";
+        }
+        break;
+      case "AUTO_SELL":
+        if (draft.action === "IDLE") {
+          draft.action = "AUTO_SELLING";
+        }
+        break;
+      case "AUTO_SORT":
+        if (draft.action === "IDLE") {
+          draft.action = "AUTO_SORTING";
+        }
+        break;
+      case "AUTO_STORE":
+        if (draft.action === "IDLE") {
+          draft.action = "AUTO_STORING";
+        }
+        break;
+      case "AUTO_TRASH":
+        if (draft.action === "IDLE") {
+          draft.action = "AUTO_TRASHING";
+        }
+        break;
+      case "AUTO_TRAVEL":
+        if (draft.action === "IDLE") {
+          draft.action = "AUTO_TRAVELLING";
+        }
+        break;
       case "ADVENTURE":
-        draft.action = "KILLING";
+        if (draft.action === "IDLE" || draft.action === "AUTO_KILLING") {
+          draft.action = "KILLING";
+        }
         break;
       case "ARRIVE":
+        draft.action = "IDLE";
         if (draft.destination) {
           draft.location = draft.destination;
           draft.destination = undefined;
-          draft.action = "IDLE";
-        } else {
-          throw new Error("somehow ended up arriving without a destination");
         }
         break;
       case "DROP_JUNK":
-        draft.action = "DROPPING";
+        if (draft.action === "IDLE" || draft.action === "AUTO_DROPPING") {
+          draft.action = "DROPPING";
+        }
         break;
-      case "DROP_JUNK_ITEM": {
-        draft.action = "IDLE";
-        break;
-      }
-      case "LOOT": {
-        draft.action = "IDLE";
-        break;
-      }
       case "PACK":
-        draft.action = "STORING";
+        if (draft.action === "IDLE" || draft.action === "AUTO_STORING") {
+          draft.action = "STORING";
+        }
         break;
       case "RESET":
         return INITIAL_STATE;
       case "SELL":
-        draft.location = "TOWN";
-        draft.action = "SELLING";
+        if (
+          draft.location === "TOWN" &&
+          (draft.action === "IDLE" || draft.action === "AUTO_SELLING")
+        ) {
+          draft.action = "SELLING";
+        }
         break;
-      case "SELL_ITEM": {
-        draft.action = "IDLE";
-        break;
-      }
-      case "SORT": {
-        draft.action = "IDLE";
-        break;
-      }
       case "START_SORT":
-        draft.action = "SORTING";
+        if (draft.action === "IDLE" || draft.action === "AUTO_SORTING") {
+          draft.action = "SORTING";
+        }
         break;
-      case "STORE_HELD_ITEM": {
-        draft.action = "IDLE";
-        break;
-      }
       case "TRASH":
-        draft.action = "TRASHING";
+        if (draft.action === "IDLE" || draft.action === "AUTO_TRASHING") {
+          draft.action = "TRASHING";
+        }
         break;
-      case "TRASH_ALL": {
-        draft.action = "IDLE";
-        break;
-      }
       case "TRAVEL":
         draft.action = "TRAVELLING";
         draft.destination = action.payload.destination;
         break;
-      default:
-        return draft;
+      case "TRASH_ALL":
+      case "DROP_JUNK_ITEM":
+      case "STORE_HELD_ITEM":
+      case "SELL_ITEM":
+      case "SORT":
+      case "LOOT":
+        draft.action = "IDLE";
+        break;
     }
   });
 };

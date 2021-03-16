@@ -19,12 +19,15 @@ export const autoDropJunk: Updater = ({
   if (
     allInventory.junk &&
     upgrades.autoDropJunk.level &&
-    upgrades.autoDropJunk.enabled &&
-    player.action === "IDLE"
+    upgrades.autoDropJunk.enabled
   ) {
-    delay("autoDropJunk", () => {
-      dispatch({ type: "DROP_JUNK" });
-    });
+    if (player.action === "IDLE") {
+      dispatch({ type: "AUTO_DROP_JUNK" });
+    } else if (player.action === "AUTO_DROPPING") {
+      delay("autoDropJunk", () => {
+        dispatch({ type: "DROP_JUNK" });
+      });
+    }
   }
 
   return false;

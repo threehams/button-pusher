@@ -66,8 +66,22 @@ export type TrashAllAction = Action<
   "TRASH_ALL",
   { playerLocation: PlayerLocation }
 >;
+export type AutoDropJunkAction = Action<"AUTO_DROP_JUNK">;
+export type AutoKillAction = Action<"AUTO_KILL">;
+export type AutoSellAction = Action<"AUTO_SELL">;
+export type AutoSortAction = Action<"AUTO_SORT">;
+export type AutoStoreAction = Action<"AUTO_STORE">;
+export type AutoTrashAction = Action<"AUTO_TRASH">;
+export type AutoTravelAction = Action<"AUTO_TRAVEL">;
 
 export type AnyAction =
+  | AutoDropJunkAction
+  | AutoKillAction
+  | AutoSellAction
+  | AutoSortAction
+  | AutoStoreAction
+  | AutoTrashAction
+  | AutoTravelAction
   | LootAction
   | MoveSlotAction
   | AddSlotAction

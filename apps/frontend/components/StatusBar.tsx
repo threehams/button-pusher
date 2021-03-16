@@ -8,7 +8,13 @@ export const StatusBar = () => {
   const heldSlot = useSelector(selectHeldSlot);
   const player = useSelector((state) => state.player);
   const progress = useProgress();
-  if (progress.autoTravel) {
+  if (progress.autoSort) {
+    return (
+      <Progress percent={progress.autoSort}>
+        Now where should I put this...
+      </Progress>
+    );
+  } else if (progress.autoTravel) {
     return (
       <Progress percent={progress.autoTravel}>
         Deciding where to travel
@@ -41,9 +47,7 @@ export const StatusBar = () => {
     );
   } else if (progress.autoDropJunk) {
     return (
-      <Progress percent={progress.autoDropJunk}>
-        Deciding where to drop junk
-      </Progress>
+      <Progress percent={progress.autoDropJunk}>Deciding what to drop</Progress>
     );
   } else if (progress.autoTrash) {
     return (

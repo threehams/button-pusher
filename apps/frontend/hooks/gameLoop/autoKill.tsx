@@ -20,12 +20,15 @@ export const autoKill: Updater = ({
   if (
     upgrades.autoKill.level &&
     upgrades.autoKill.enabled &&
-    player.action === "IDLE" &&
     player.location !== "TOWN"
   ) {
-    delay("autoKill", () => {
-      dispatch({ type: "ADVENTURE" });
-    });
+    if (player.action === "IDLE") {
+      dispatch({ type: "AUTO_KILL" });
+    } else if (player.action === "AUTO_KILLING") {
+      delay("autoKill", () => {
+        dispatch({ type: "ADVENTURE" });
+      });
+    }
   }
 
   return false;

@@ -17,6 +17,8 @@
     "@emotion/styled": "^11.1.5",
     "@hookstate/core": "^3.0.6",
     "@types/react-redux": "^7.1.16",
+    "@xstate/fsm": "^1.6.0",
+    "@xstate/immer": "^0.2.0",
     "app-root-path": "^3.0.0",
     "deep-equal": "^2.0.5",
     "document-register-element": "1.13.1",
@@ -43,7 +45,9 @@
     "typesafe-actions": "^5.1.0",
     "use-immer": "^0.4.2",
     "utility-types": "^3.10.0",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "xstate": "^4.16.2",
+    "xstate-codegen": "^0.3.0"
   },
   "devDependencies": {
     "@babel/core": "7.13.8",

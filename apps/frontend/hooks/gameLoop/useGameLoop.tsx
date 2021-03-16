@@ -1,7 +1,7 @@
 import { useLoop } from "@botnet/worker";
 import { ProgressContextType } from "../ProgressContext";
 import { autoDropJunk } from "./autoDropJunk";
-import { autoPack } from "./autoPack";
+import { autoStore } from "./autoStore";
 import { autoSell } from "./autoSell";
 import { autoSort } from "./autoSort";
 import { autoTrash } from "./autoTrash";
@@ -21,7 +21,7 @@ import { createDelay } from "./delay";
 const updateList = [
   autoDropJunk,
   autoTrash,
-  autoPack,
+  autoStore,
   autoSort,
   autoKill,
   autoSell,

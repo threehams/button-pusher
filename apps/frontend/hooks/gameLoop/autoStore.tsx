@@ -1,6 +1,6 @@
 import { Updater } from "./updateProps";
 
-export const autoPack: Updater = ({
+export const autoStore: Updater = ({
   upgrades,
   heldSlot,
   delay,
@@ -18,12 +18,15 @@ export const autoPack: Updater = ({
     !allInventory.full &&
     upgrades.autoPack.level &&
     upgrades.autoPack.enabled &&
-    heldSlot &&
-    player.action === "IDLE"
+    heldSlot
   ) {
-    delay("autoPack", () => {
-      dispatch({ type: "PACK" });
-    });
+    if (player.action === "IDLE") {
+      dispatch({ type: "AUTO_STORE" });
+    } else if (player.action === "AUTO_STORING") {
+      delay("autoPack", () => {
+        dispatch({ type: "PACK" });
+      });
+    }
   }
 
   return false;

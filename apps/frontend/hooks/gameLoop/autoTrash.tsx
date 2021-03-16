@@ -20,12 +20,15 @@ export const autoTrash: Updater = ({
     floor.allJunk &&
     floor.full &&
     upgrades.autoTrash.level &&
-    upgrades.autoTrash.enabled &&
-    player.action === "IDLE"
+    upgrades.autoTrash.enabled
   ) {
-    delay("autoTrash", () => {
-      dispatch({ type: "TRASH" });
-    });
+    if (player.action === "IDLE") {
+      dispatch({ type: "AUTO_TRASH" });
+    } else if (player.action === "AUTO_TRASHING") {
+      delay("autoTrash", () => {
+        dispatch({ type: "TRASH" });
+      });
+    }
   }
   return false;
 };

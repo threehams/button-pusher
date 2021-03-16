@@ -17,22 +17,25 @@ export const autoTravel: Updater = ({
     return false;
   }
 
-  if (
-    player.location === "TOWN" &&
-    player.action === "IDLE" &&
-    allInventory.slots === 0
-  ) {
-    delay("autoTravel", () => {
-      dispatch({ type: "TRAVEL", payload: { destination: "KILLING_FIELDS" } });
-    });
-  } else if (
-    player.location !== "TOWN" &&
-    player.action === "IDLE" &&
-    allInventory.full
-  ) {
-    delay("autoTravel", () => {
-      dispatch({ type: "TRAVEL", payload: { destination: "TOWN" } });
-    });
+  if (player.location === "TOWN" && allInventory.slots === 0) {
+    if (player.action === "IDLE") {
+      dispatch({ type: "AUTO_TRAVEL" });
+    } else if (player.action === "AUTO_TRAVELLING") {
+      delay("autoTravel", () => {
+        dispatch({
+          type: "TRAVEL",
+          payload: { destination: "KILLING_FIELDS" },
+        });
+      });
+    }
+  } else if (player.location !== "TOWN" && allInventory.full) {
+    if (player.action === "IDLE") {
+      dispatch({ type: "AUTO_TRAVEL" });
+    } else if (player.action === "AUTO_TRAVELLING") {
+      delay("autoTravel", () => {
+        dispatch({ type: "TRAVEL", payload: { destination: "TOWN" } });
+      });
+    }
   }
   return false;
 };

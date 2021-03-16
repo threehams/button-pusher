@@ -19,9 +19,13 @@ export const autoSort: Updater = ({
     inventory.full &&
     !inventory.sorted
   ) {
-    delay("autoSort", () => {
-      dispatch({ type: "START_SORT" });
-    });
+    if (player.action === "IDLE") {
+      dispatch({ type: "AUTO_SORT" });
+    } else if (player.action === "AUTO_SORTING") {
+      delay("autoSort", () => {
+        dispatch({ type: "START_SORT" });
+      });
+    }
   }
   return false;
 };

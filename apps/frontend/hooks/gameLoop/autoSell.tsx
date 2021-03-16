@@ -15,13 +15,16 @@ export const autoSell: Updater = ({
   if (
     upgrades.autoSell.level &&
     upgrades.autoSell.enabled &&
-    player.action === "IDLE" &&
     player.location === "TOWN" &&
     allInventory.slots
   ) {
-    delay("autoSell", () => {
-      dispatch({ type: "SELL" });
-    });
+    if (player.action === "IDLE") {
+      dispatch({ type: "AUTO_SELL" });
+    } else if (player.action === "AUTO_SELLING") {
+      delay("autoSell", () => {
+        dispatch({ type: "SELL" });
+      });
+    }
   }
   return false;
 };
