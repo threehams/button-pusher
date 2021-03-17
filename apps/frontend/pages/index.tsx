@@ -1,4 +1,3 @@
-import { css } from "@emotion/react";
 import React, { useEffect, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { Button } from "../components/Button";
@@ -41,30 +40,13 @@ const Reset = () => {
     }
   }, [confirm, reset]);
   return (
-    <div
-      css={css`
-        width: 100%;
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-      `}
-    >
-      <div
-        css={css`
-          max-width: 600px;
-        `}
-      >
+    <div className="w-full min-h-screen flex items-center justify-center text-center">
+      <div className="max-w-2xl">
         <div>Something has gone very wrong. Try reloading the page.</div>
         <div>If that doesn&apos;t work,</div>
 
         <Button
-          css={css`
-            display: block;
-            width: 100%;
-            margin: 20px 0;
-          `}
+          className="block w-full my-3"
           onClick={() => {
             setConfirm(true);
           }}
@@ -72,13 +54,11 @@ const Reset = () => {
           click here to reset your game.
         </Button>
         <Button
-          css={css`
-            display: block;
-            width: 100%;
-            margin: 20px 0;
-            visibility: ${confirm ? "visible" : "hidden"};
-            pointer-events: ${confirm ? "auto" : "none"};
-          `}
+          className="block w-full my-3"
+          style={{
+            visibility: confirm ? "visible" : "hidden",
+            pointerEvents: confirm ? "auto" : "none",
+          }}
           onClick={() => {
             setReset(true);
           }}

@@ -1,5 +1,6 @@
 import { Item, Rarity } from "@botnet/messages";
-import { css, useTheme } from "@emotion/react";
+import { theme } from "@botnet/ui";
+import classNames from "classnames";
 import React from "react";
 
 const FILTERS: { [Key in Rarity]: string } = {
@@ -23,24 +24,22 @@ type Props = React.ComponentProps<"div"> & {
   preview?: boolean;
 };
 export const ItemTile = React.forwardRef<HTMLDivElement, Props>(
-  ({ item, visible, preview, ...rest }, ref) => {
-    const theme = useTheme();
+  ({ item, visible, preview, className, style, ...rest }, ref) => {
     return (
       <div
         id="dragging-item"
         data-item={item.id}
         ref={ref}
-        css={css`
-          filter: ${FILTERS[item.rarity]};
-          background: url(${item.image}) center no-repeat;
-          position: relative;
-          z-index: 3;
-          cursor: pointer;
-          width: ${item.width * theme.tileSize}px;
-          height: ${item.height * theme.tileSize}px;
-          opacity: ${visible ? 1 : 0};
-          pointer-events: ${visible && !preview ? "auto" : "none"};
-        `}
+        style={{
+          ...style,
+          width: item.width * theme.tileSize,
+          height: item.height * theme.tileSize,
+          filter: FILTERS[item.rarity],
+          opacity: visible ? 1 : 0,
+          background: `url(${item.image}) center no-repeat`,
+          pointerEvents: visible && !preview ? "auto" : "none",
+        }}
+        className={classNames("cursor-pointer z-30", className)}
         {...rest}
       />
     );

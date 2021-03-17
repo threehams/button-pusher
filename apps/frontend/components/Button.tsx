@@ -1,11 +1,12 @@
-import { css } from "@emotion/react";
-import React from "react";
+import React, { CSSProperties } from "react";
+import classNames from "classnames";
 
 type ButtonProps = {
   children: React.ReactNode;
   disabled?: boolean;
   onClick?: React.MouseEventHandler;
   className?: string;
+  style?: CSSProperties;
 };
 export const Button = ({
   children,
@@ -21,13 +22,10 @@ export const Button = ({
           onClick?.(event);
         }
       }}
-      css={css`
-        outline: 1px solid #f8f8f8;
-        position: relative;
-        cursor: pointer;
-        padding: 0 20px;
-      `}
-      className={className}
+      className={classNames(
+        "border border-solid border-gray-50 relative cursor-pointer px-3",
+        className,
+      )}
     >
       {children}
     </button>

@@ -7,7 +7,6 @@ import {
 } from "@botnet/store";
 import React, { useCallback, useState } from "react";
 import { range } from "lodash";
-import { css, useTheme } from "@emotion/react";
 import { InventorySlot } from "../InventorySlot";
 import { InventoryItem } from "../InventoryItem";
 import deepEqual from "deep-equal";
@@ -16,6 +15,7 @@ import { Button } from "../Button";
 import { AutoAction } from "../AutoAction";
 import { useProgress } from "../../hooks/ProgressContext";
 import { useDispatch, useSelector } from "react-redux";
+import { theme } from "@botnet/ui";
 
 type Props = {
   inventory: Inventory;
@@ -42,7 +42,6 @@ export const InventoryPanel = React.memo(({ inventory }: Props) => {
     [target],
   );
 
-  const theme = useTheme();
   const canDrop = useCallback(
     (tgt: SlotInfo) => {
       return !!getTargetCoords({ inventory, target: tgt })?.valid;
@@ -75,12 +74,7 @@ export const InventoryPanel = React.memo(({ inventory }: Props) => {
         </Button>
       )}
 
-      <div
-        css={css`
-          display: flex;
-          align-items: center;
-        `}
-      >
+      <div className="flex items-center">
         {!!(pages.prev || pages.next) && (
           <button
             disabled={!pages.prev}
@@ -91,49 +85,40 @@ export const InventoryPanel = React.memo(({ inventory }: Props) => {
                   payload: { containerId: pages.prev },
                 });
             }}
-            css={css`
-              padding: 20px;
-            `}
+            className="p-3"
           >
             &lt;
           </button>
         )}
-        <div
-          css={css`
-            position: relative;
-          `}
-        >
+        <div className="relative">
           {slots.map((slot) => {
             return (
               <InventoryItem
                 key={slot.id}
-                css={css`
-                  position: absolute;
-                  /* pointer-events: none; */
-                  width: ${theme.tileSize * slot.item.width};
-                  height: ${theme.tileSize * slot.item.height};
-                  top: ${theme.tileSize * slot.y}px;
-                  left: ${theme.tileSize * slot.x}px;
-                `}
+                className="absolute"
+                style={{
+                  width: theme.tileSize * slot.item.width,
+                  height: theme.tileSize * slot.item.height,
+                  top: theme.tileSize * slot.y,
+                  left: theme.tileSize * slot.x,
+                }}
                 item={slot.item}
                 slotId={slot.id}
               />
             );
           })}
           <div
-            css={css`
-              display: grid;
-              border-top: 1px solid #888;
-              border-left: 1px solid #888;
-              width: ${width * theme.tileSize}px;
-              height: ${height * theme.tileSize}px;
-              grid-template-rows: ${range(0, height)
+            className="grid border border-solid border-gray-50 border-r-0 border-b-0"
+            style={{
+              width: width * theme.tileSize,
+              height: height * theme.tileSize,
+              gridTemplateRows: range(0, height)
                 .map(() => "1fr")
-                .join(" ")};
-              grid-template-columns: ${range(0, width)
+                .join(" "),
+              gridTemplateColumns: range(0, width)
                 .map(() => "1fr")
-                .join(" ")};
-            `}
+                .join(" "),
+            }}
           >
             {range(0, height).map((y) => {
               return range(0, width).map((x) => {
@@ -166,22 +151,14 @@ export const InventoryPanel = React.memo(({ inventory }: Props) => {
                   payload: { containerId: pages.next },
                 });
             }}
-            css={css`
-              padding: 20px;
-            `}
+            className="p-3"
           >
             &gt;
           </button>
         )}
       </div>
       {inventory.type === "FLOOR" && (
-        <div
-          css={css`
-            width: 50%;
-            margin-top: 20px;
-            padding-right: 20px;
-          `}
-        >
+        <div className="w-1/2 mt-3 pr-3">
           <AutoAction
             percent={progress.trash}
             upgrade={purchasedUpgrades.autoTrash}

@@ -1,7 +1,6 @@
 import { Item } from "@botnet/messages";
 import { isNonNullable } from "@botnet/utils";
-import { css } from "@emotion/react";
-import React, { useState } from "react";
+import React, { CSSProperties, useState } from "react";
 import { useDrag } from "react-dnd";
 import { getEmptyImage } from "react-dnd-html5-backend";
 import ReactDOM from "react-dom";
@@ -13,9 +12,10 @@ type InventoryItemProps = {
   item: Item;
   slotId?: string;
   className?: string;
+  style?: CSSProperties;
 };
 export const InventoryItem = React.memo(
-  ({ item, slotId, className }: InventoryItemProps) => {
+  ({ item, slotId, className, style }: InventoryItemProps) => {
     const dispatch = useDispatch();
     const [tooltipOpen, setTooltipOpen] = useState(false);
     const [tooltipPosition, setTooltipPosition] = useState<
@@ -63,6 +63,7 @@ export const InventoryItem = React.memo(
     return (
       <>
         <ItemTile
+          style={style}
           onMouseEnter={() => {
             setTooltipOpen(true);
           }}
@@ -101,18 +102,11 @@ const Tooltip = ({ item, position }: TooltipProps) => {
 
   return ReactDOM.createPortal(
     <div
-      css={css`
-        max-width: 350px;
-        pointer-events: none;
-        position: absolute;
-        top: 0;
-        left: 0;
-        transform: translate(${position.x}px, ${position.y}px);
-        padding: 20px;
-        border: 1px solid #ccc;
-        background-color: #060606;
-        z-index: 100;
-      `}
+      style={{
+        maxWidth: 350,
+        transform: `translate(${position.x}px, ${position.y}px)`,
+      }}
+      className="pointer-events-none absolute top-0 left-0 p-3 bg-gray-900 border-gray-50 z-50"
     >
       <div>{itemName}</div>
       <p>{item.rarity}</p>

@@ -1,4 +1,3 @@
-import { css } from "@emotion/react";
 import { useProgress } from "../../hooks/ProgressContext";
 import React from "react";
 import { AutoAction } from "../AutoAction";
@@ -22,13 +21,7 @@ export const ActionPanel = () => {
 
   return (
     <>
-      <h1
-        css={css`
-          margin-bottom: 20px;
-        `}
-      >
-        Actions
-      </h1>
+      <h1 className="mb-3">Actions</h1>
       <AutoAction
         percent={progress.kill}
         disabled={

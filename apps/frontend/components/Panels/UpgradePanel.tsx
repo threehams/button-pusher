@@ -1,5 +1,5 @@
 import { PurchasedUpgrade, selectPurchasedUpgrades } from "@botnet/store";
-import { css } from "@emotion/react";
+import classNames from "classnames";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Button } from "../Button";
@@ -43,23 +43,12 @@ export const UpgradePanel = () => {
     <div>
       {!!standardUpgrades.length && (
         <>
-          <h1
-            css={css`
-              margin-bottom: 20px;
-            `}
-          >
-            Upgrades
-          </h1>
-          <ul
-            css={css`
-              & > * {
-                margin-bottom: 10px;
-              }
-            `}
-          >
+          <h1 className="mb-3">Upgrades</h1>
+          <ul>
             {standardUpgrades.map((upgrade) => {
               return (
                 <UpgradeButton
+                  className="mb-2 last:mb-0"
                   key={upgrade.name}
                   moneys={moneys}
                   upgrade={upgrade}
@@ -71,23 +60,12 @@ export const UpgradePanel = () => {
       )}
       {!!automationUpgrades.length && (
         <>
-          <h1
-            css={css`
-              margin-bottom: 20px;
-            `}
-          >
-            Automation
-          </h1>
-          <ul
-            css={css`
-              & > * {
-                margin-bottom: 10px;
-              }
-            `}
-          >
+          <h1 className="mb-3">Automation</h1>
+          <ul>
             {automationUpgrades.map((upgrade) => {
               return (
                 <UpgradeButton
+                  className="mb-2 last:mb-0"
                   key={upgrade.name}
                   moneys={moneys}
                   upgrade={upgrade}
@@ -104,16 +82,13 @@ export const UpgradePanel = () => {
 type UpgradeButtonProps = {
   upgrade: PurchasedUpgrade;
   moneys: number;
+  className?: string;
 };
-const UpgradeButton = ({ upgrade, moneys }: UpgradeButtonProps) => {
+const UpgradeButton = ({ upgrade, moneys, className }: UpgradeButtonProps) => {
   const dispatch = useDispatch();
   return (
     <Button
-      css={css`
-        display: flex;
-        justify-content: space-between;
-        width: 100%;
-      `}
+      className={classNames("flex justify-between w-full", className)}
       disabled={!upgrade.cost || upgrade.cost > moneys}
       onClick={() => {
         dispatch({ type: "BUY_UPGRADE", payload: { id: upgrade.id } });

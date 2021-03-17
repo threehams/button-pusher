@@ -3,6 +3,7 @@ import { ThemeProvider } from "@emotion/react";
 import { setAutoFreeze } from "immer";
 import { AppProps } from "next/app";
 import React from "react";
+import "tailwindcss/tailwind.css";
 
 setAutoFreeze(false);
 

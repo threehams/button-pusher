@@ -1,5 +1,4 @@
 import { AutomatedUpgrade, PurchasedUpgrade } from "@botnet/store";
-import { css } from "@emotion/react";
 import React from "react";
 import { Progress } from "./Progress";
 import { Button } from "./Button";
@@ -24,20 +23,12 @@ export const AutoAction = ({
   const dispatch = useDispatch();
 
   return (
-    <div
-      css={css`
-        display: flex;
-        flex: row nowrap;
-      `}
-    >
+    <div className="flex flex-nowrap flex-row">
       <Progress button disabled={disabled} percent={percent} onClick={onClick}>
         {children}
       </Progress>
       <Button
-        css={css`
-          flex: 1 0 auto;
-          margin-left: 20px;
-        `}
+        className="flex-grow flex-shrink-0 flex-auto ml-3"
         onClick={() => {
           upgrade.enabled
             ? dispatch({ type: "DISABLE", payload: { upgrade: upgradeName } })

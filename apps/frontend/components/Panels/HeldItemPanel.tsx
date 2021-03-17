@@ -1,5 +1,5 @@
 import { selectHeldSlot } from "@botnet/store";
-import { css, useTheme } from "@emotion/react";
+import { theme } from "@botnet/ui";
 import React from "react";
 import { useSelector } from "react-redux";
 import { InventoryItem } from "../InventoryItem";
@@ -7,17 +7,13 @@ import { InventorySlot } from "../InventorySlot";
 
 export const HeldItemPanel = () => {
   const heldSlot = useSelector(selectHeldSlot);
-  const theme = useTheme();
   return (
     <div
-      css={css`
-        height: ${4 * theme.tileSize}px;
-        width: ${2 * theme.tileSize}px;
-        outline: 1px solid #ccc;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      `}
+      style={{
+        height: 4 * theme.tileSize,
+        width: 2 * theme.tileSize,
+      }}
+      className="border border-solid border-gray-50 flex items-center justify-center"
     >
       {heldSlot && (
         <InventorySlot

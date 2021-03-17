@@ -1,3 +1,2 @@
-export * from "./Box";
 export * from "./GlobalStyles";
-export * from "./spaceProps";
+export * from "./theme";

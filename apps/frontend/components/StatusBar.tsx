@@ -1,11 +1,9 @@
-import { selectHeldSlot } from "@botnet/store";
 import React from "react";
 import { useSelector } from "react-redux";
 import { useProgress } from "../hooks/ProgressContext";
 import { Progress } from "./Progress";
 
 export const StatusBar = () => {
-  const heldSlot = useSelector(selectHeldSlot);
   const player = useSelector((state) => state.player);
   const progress = useProgress();
   if (progress.autoSort) {
@@ -40,10 +38,6 @@ export const StatusBar = () => {
   } else if (progress.autoPack) {
     return (
       <Progress percent={progress.autoPack}>Searching for storage</Progress>
-    );
-  } else if (progress.pack) {
-    return (
-      <Progress percent={progress.pack}>Storing {heldSlot?.item.name}</Progress>
     );
   } else if (progress.autoDropJunk) {
     return (

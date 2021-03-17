@@ -1,8 +1,9 @@
 import { SlotInfo } from "@botnet/store";
-import { css, useTheme } from "@emotion/react";
-import React from "react";
+import classNames from "classnames";
+import React, { CSSProperties } from "react";
 import { useDrop } from "react-dnd";
 import { DraggableItem, DraggableResult } from "./DraggableItem";
+import { theme } from "@botnet/ui";
 
 type InventorySlotProps = {
   children?: React.ReactNode;
@@ -29,7 +30,6 @@ export const InventorySlot = React.memo(
     y,
     containerId,
   }: InventorySlotProps) => {
-    const theme = useTheme();
     const [, drop] = useDrop<DraggableItem, DraggableResult, void>({
       accept: ["ITEM"],
       canDrop: (draggable) => {
@@ -55,50 +55,42 @@ export const InventorySlot = React.memo(
     return (
       <button
         ref={drop}
-        css={css`
-          border-right: 1px solid #888;
-          border-bottom: 1px solid #888;
-          width: ${theme.tileSize * width}px;
-          height: ${theme.tileSize * height}px;
-          position: relative;
-          z-index: 2;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        `}
+        className="border border-solid border-gray-50 border-l-0 border-t-0 relative z-20 flex items-center justify-center"
+        style={{
+          width: theme.tileSize * width,
+          height: theme.tileSize * height,
+        }}
       >
-        <div
-          css={css`
-            pointer-events: none;
-            position: absolute;
-            background-color: red;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            width: 100%;
-            height: 100%;
-            opacity: ${required && state === "INVALID" ? 1 : 0};
-            z-index: 1;
-          `}
+        <Highlight
+          style={{
+            opacity: required && state === "INVALID" ? 1 : 0,
+          }}
+          className="bg-red-700"
         />
-        <div
-          css={css`
-            pointer-events: none;
-            position: absolute;
-            background-color: green;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            width: 100%;
-            height: 100%;
-            opacity: ${required && state === "VALID" ? 1 : 0};
-            z-index: 1;
-          `}
+        <Highlight
+          style={{
+            opacity: required && state === "VALID" ? 1 : 0,
+          }}
+          className="bg-green-700"
         />
         {children}
       </button>
     );
   },
 );
+
+type HighlightProps = {
+  className: string;
+  style: CSSProperties;
+};
+const Highlight = ({ className, style }: HighlightProps) => {
+  return (
+    <div
+      style={style}
+      className={classNames(
+        "pointer-events-none absolute top-0 left-0 right-0 bottom-0 z-10 w-full h-full",
+        className,
+      )}
+    ></div>
+  );
+};

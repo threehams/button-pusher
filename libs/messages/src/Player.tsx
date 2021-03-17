@@ -1,5 +1,6 @@
-import { PlayerLocation, PlayerAction } from "@botnet/messages";
 import { Record, Static, Undefined, Union } from "runtypes";
+import { PlayerAction } from "./PlayerAction";
+import { PlayerLocation } from "./PlayerLocation";
 
 export const Player = Record({
   action: PlayerAction,

@@ -1,4 +1,3 @@
-import { css } from "@emotion/react";
 import React from "react";
 import { Button } from "./Button";
 
@@ -19,38 +18,12 @@ export const Progress = ({
   const percentage = Math.min(Math.max(0, percent), 100);
   const Tag = button ? Button : "div";
   return (
-    <Tag
-      disabled={disabled}
-      onClick={onClick}
-      css={css`
-        outline: 1px solid #f8f8f8;
-        width: 100%;
-        position: relative;
-      `}
-    >
+    <Tag disabled={disabled} onClick={onClick} className="w-full relative">
       <div
-        css={css`
-          background-color: #666;
-          position: absolute;
-          width: 100%;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          height: 100%;
-          transform-origin: top left;
-          transform: scaleX(${percentage / 100});
-        `}
+        className="bg-gray-600 absolute w-full top-0 left-0 right-0 bottom-0 h-full origin-top-left"
+        style={{ transform: `scaleX(${percentage / 100})` }}
       />
-      <div
-        css={css`
-          position: relative;
-          z-index: 1;
-          text-align: center;
-        `}
-      >
-        {children}
-      </div>
+      <div className="relative z-10 text-center">{children}</div>
     </Tag>
   );
 };
