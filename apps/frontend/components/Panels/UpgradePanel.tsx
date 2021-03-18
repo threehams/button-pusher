@@ -1,4 +1,5 @@
 import { PurchasedUpgrade, selectPurchasedUpgrades } from "@botnet/store";
+import { usePlayer } from "apps/frontend/hooks/PlayerContext";
 import classNames from "classnames";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -86,12 +87,16 @@ type UpgradeButtonProps = {
 };
 const UpgradeButton = ({ upgrade, moneys, className }: UpgradeButtonProps) => {
   const dispatch = useDispatch();
+  const player = usePlayer();
   return (
     <Button
       className={classNames("flex justify-between w-full", className)}
       disabled={!upgrade.cost || upgrade.cost > moneys}
       onClick={() => {
-        dispatch({ type: "BUY_UPGRADE", payload: { id: upgrade.id } });
+        dispatch({
+          type: "BUY_UPGRADE",
+          payload: { id: upgrade.id, playerId: player.id },
+        });
       }}
     >
       <span>

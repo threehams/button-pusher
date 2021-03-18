@@ -11,7 +11,7 @@ export const autoDropJunk: Updater = ({
     delay("dropJunk", () => {
       dispatch({
         type: "DROP_JUNK_ITEM",
-        payload: { playerLocation: player.location },
+        payload: { playerLocation: player.location, playerId: player.id },
       });
     });
   }
@@ -22,10 +22,10 @@ export const autoDropJunk: Updater = ({
     upgrades.autoDropJunk.enabled
   ) {
     if (player.action === "IDLE") {
-      dispatch({ type: "AUTO_DROP_JUNK" });
+      dispatch({ type: "AUTO_DROP_JUNK", payload: { playerId: player.id } });
     } else if (player.action === "AUTO_DROPPING") {
       delay("autoDropJunk", () => {
-        dispatch({ type: "DROP_JUNK" });
+        dispatch({ type: "DROP_JUNK", payload: { playerId: player.id } });
       });
     }
   }

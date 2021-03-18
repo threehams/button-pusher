@@ -13,7 +13,7 @@ export const autoKill: Updater = ({
 
   if (player.action === "KILLING") {
     delay("kill", () => {
-      dispatch({ type: "LOOT" });
+      dispatch({ type: "LOOT", payload: { playerId: player.id } });
     });
   }
 
@@ -23,10 +23,10 @@ export const autoKill: Updater = ({
     player.location !== "TOWN"
   ) {
     if (player.action === "IDLE") {
-      dispatch({ type: "AUTO_KILL" });
+      dispatch({ type: "AUTO_KILL", payload: { playerId: player.id } });
     } else if (player.action === "AUTO_KILLING") {
       delay("autoKill", () => {
-        dispatch({ type: "ADVENTURE" });
+        dispatch({ type: "ADVENTURE", payload: { playerId: player.id } });
       });
     }
   }

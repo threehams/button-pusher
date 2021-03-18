@@ -1,23 +1,33 @@
 import { PlayerLocation, UpgradeType } from "@botnet/messages";
 import { AutomatedUpgrade } from "../AutomatedUpgrade";
 
-type Action<
+type PlayerAction<
   TName extends string,
-  TPayload extends Record<string, unknown> = Record<string, undefined>,
-  TMeta extends Record<string, unknown> = Record<string, undefined>
+  TPayload extends Record<string, unknown> = Record<string, undefined>
 > = TPayload extends Record<string, undefined>
   ? {
       type: TName;
-      meta?: TMeta;
+      payload: { playerId: string };
+    }
+  : {
+      type: TName;
+      payload: TPayload & { playerId: string };
+    };
+
+type Action<
+  TName extends string,
+  TPayload extends Record<string, unknown> = Record<string, undefined>
+> = TPayload extends Record<string, undefined>
+  ? {
+      type: TName;
     }
   : {
       type: TName;
       payload: TPayload;
-      meta?: TMeta;
     };
 
-export type LootAction = Action<"LOOT">;
-export type MoveSlotAction = Action<
+export type LootAction = PlayerAction<"LOOT">;
+export type MoveSlotAction = PlayerAction<
   "MOVE_SLOT",
   {
     slotId: string;
@@ -26,7 +36,7 @@ export type MoveSlotAction = Action<
     containerId: string;
   }
 >;
-export type AddSlotAction = Action<
+export type AddSlotAction = PlayerAction<
   "ADD_SLOT",
   {
     itemId: string;
@@ -35,44 +45,57 @@ export type AddSlotAction = Action<
     containerId: string;
   }
 >;
-export type BuyUpgradeAction = Action<"BUY_UPGRADE", { id: UpgradeType }>;
-export type BuyContainerUpgradeAction = Action<
+export type BuyUpgradeAction = PlayerAction<"BUY_UPGRADE", { id: UpgradeType }>;
+export type BuyContainerUpgradeAction = PlayerAction<
   "BUY_CONTAINER_UPGRADE",
   { id: string }
 >;
-export type PackAction = Action<"PACK">;
-export type StoreHeldItemAction = Action<"STORE_HELD_ITEM">;
-export type StartSortAction = Action<"START_SORT">;
-export type SortAction = Action<"SORT">;
-export type SellAction = Action<"SELL">;
-export type TravelAction = Action<"TRAVEL", { destination: PlayerLocation }>;
-export type AdventureAction = Action<"ADVENTURE">;
-export type SellItemAction = Action<"SELL_ITEM">;
-export type ArriveAction = Action<"ARRIVE">;
-export type BuyContainerAction = Action<"BUY_CONTAINER">;
-export type GoInventoryAction = Action<"GO_INVENTORY", { containerId: string }>;
-export type DisableAction = Action<"DISABLE", { upgrade: AutomatedUpgrade }>;
-export type EnableAction = Action<"ENABLE", { upgrade: AutomatedUpgrade }>;
-export type CheatType = "AUTOMATION" | "MIDGAME";
-export type CheatAction = Action<"CHEAT", { type: CheatType }>;
-export type ResetAction = Action<"RESET">;
-export type DropJunkAction = Action<"DROP_JUNK">;
-export type DropJunkItemAction = Action<
+export type PackAction = PlayerAction<"PACK">;
+export type StoreHeldItemAction = PlayerAction<"STORE_HELD_ITEM">;
+export type StartSortAction = PlayerAction<"START_SORT">;
+export type SortAction = PlayerAction<"SORT">;
+export type SellAction = PlayerAction<"SELL">;
+export type TravelAction = PlayerAction<
+  "TRAVEL",
+  { destination: PlayerLocation }
+>;
+export type AdventureAction = PlayerAction<"ADVENTURE">;
+export type SellItemAction = PlayerAction<"SELL_ITEM">;
+export type ArriveAction = PlayerAction<"ARRIVE">;
+export type BuyContainerAction = PlayerAction<"BUY_CONTAINER">;
+export type GoInventoryAction = PlayerAction<
+  "GO_INVENTORY",
+  { containerId: string }
+>;
+export type DisableAction = PlayerAction<
+  "DISABLE",
+  { upgrade: AutomatedUpgrade }
+>;
+export type EnableAction = PlayerAction<
+  "ENABLE",
+  { upgrade: AutomatedUpgrade }
+>;
+export type DropJunkAction = PlayerAction<"DROP_JUNK">;
+export type DropJunkItemAction = PlayerAction<
   "DROP_JUNK_ITEM",
   { playerLocation: PlayerLocation }
 >;
-export type TrashAction = Action<"TRASH">;
-export type TrashAllAction = Action<
+export type TrashAction = PlayerAction<"TRASH">;
+export type TrashAllAction = PlayerAction<
   "TRASH_ALL",
   { playerLocation: PlayerLocation }
 >;
-export type AutoDropJunkAction = Action<"AUTO_DROP_JUNK">;
-export type AutoKillAction = Action<"AUTO_KILL">;
-export type AutoSellAction = Action<"AUTO_SELL">;
-export type AutoSortAction = Action<"AUTO_SORT">;
-export type AutoStoreAction = Action<"AUTO_STORE">;
-export type AutoTrashAction = Action<"AUTO_TRASH">;
-export type AutoTravelAction = Action<"AUTO_TRAVEL">;
+export type AutoDropJunkAction = PlayerAction<"AUTO_DROP_JUNK">;
+export type AutoKillAction = PlayerAction<"AUTO_KILL">;
+export type AutoSellAction = PlayerAction<"AUTO_SELL">;
+export type AutoSortAction = PlayerAction<"AUTO_SORT">;
+export type AutoStoreAction = PlayerAction<"AUTO_STORE">;
+export type AutoTrashAction = PlayerAction<"AUTO_TRASH">;
+export type AutoTravelAction = PlayerAction<"AUTO_TRAVEL">;
+
+export type CheatType = "AUTOMATION" | "MIDGAME";
+export type CheatAction = Action<"CHEAT", { type: CheatType }>;
+export type ResetAction = Action<"RESET">;
 
 export type AnyAction =
   | AutoDropJunkAction

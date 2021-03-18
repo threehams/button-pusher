@@ -9,7 +9,7 @@ export const autoSort: Updater = ({
 }) => {
   if (player.action === "SORTING") {
     delay("sort", () => {
-      dispatch({ type: "SORT" });
+      dispatch({ type: "SORT", payload: { playerId: player.id } });
     });
   }
 
@@ -20,10 +20,10 @@ export const autoSort: Updater = ({
     !inventory.sorted
   ) {
     if (player.action === "IDLE") {
-      dispatch({ type: "AUTO_SORT" });
+      dispatch({ type: "AUTO_SORT", payload: { playerId: player.id } });
     } else if (player.action === "AUTO_SORTING") {
       delay("autoSort", () => {
-        dispatch({ type: "START_SORT" });
+        dispatch({ type: "START_SORT", payload: { playerId: player.id } });
       });
     }
   }

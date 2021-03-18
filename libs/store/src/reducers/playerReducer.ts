@@ -1,8 +1,10 @@
 import produce from "immer";
 import { PlayerState } from "../PlayerState";
 import { AnyAction } from "./actions";
+import { v4 as uuid } from "uuid";
 
 const INITIAL_STATE: PlayerState = {
+  id: uuid(),
   action: "IDLE" as const,
   location: "TOWN" as const,
   destination: undefined,

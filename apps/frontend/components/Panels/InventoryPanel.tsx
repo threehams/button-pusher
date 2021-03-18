@@ -16,6 +16,7 @@ import { AutoAction } from "../AutoAction";
 import { useProgress } from "../../hooks/ProgressContext";
 import { useDispatch, useSelector } from "react-redux";
 import { theme } from "@botnet/ui";
+import { usePlayer } from "../../hooks/PlayerContext";
 
 type Props = {
   inventory: Inventory;
@@ -26,7 +27,7 @@ export const InventoryPanel = React.memo(({ inventory }: Props) => {
   const { nextAvailable, height, width, slots, cost } = inventory;
   const moneys = useSelector((state) => state.data.moneys);
   const pages = useSelector(selectInventoryPagination);
-  const player = useSelector((state) => state.player);
+  const player = usePlayer();
   const floor = useSelector((state) =>
     selectFloor(state, { playerLocation: player.location }),
   );
@@ -64,7 +65,7 @@ export const InventoryPanel = React.memo(({ inventory }: Props) => {
             if (cost) {
               dispatch({
                 type: "BUY_CONTAINER_UPGRADE",
-                payload: { id: inventory.id },
+                payload: { playerId: player.id, id: inventory.id },
               });
             }
           }}
@@ -82,7 +83,7 @@ export const InventoryPanel = React.memo(({ inventory }: Props) => {
               pages.prev &&
                 dispatch({
                   type: "GO_INVENTORY",
-                  payload: { containerId: pages.prev },
+                  payload: { playerId: player.id, containerId: pages.prev },
                 });
             }}
             className="p-3"
@@ -148,7 +149,7 @@ export const InventoryPanel = React.memo(({ inventory }: Props) => {
               pages.next &&
                 dispatch({
                   type: "GO_INVENTORY",
-                  payload: { containerId: pages.next },
+                  payload: { playerId: player.id, containerId: pages.next },
                 });
             }}
             className="p-3"
@@ -165,7 +166,7 @@ export const InventoryPanel = React.memo(({ inventory }: Props) => {
             upgradeName="autoTrash"
             disabled={!floor.slots.length}
             onClick={() => {
-              dispatch({ type: "TRASH" });
+              dispatch({ type: "TRASH", payload: { playerId: player.id } });
             }}
           >
             Leave Behind

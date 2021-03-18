@@ -11,7 +11,7 @@ export const autoTrash: Updater = ({
     delay("trash", () => {
       dispatch({
         type: "TRASH_ALL",
-        payload: { playerLocation: player.location },
+        payload: { playerLocation: player.location, playerId: player.id },
       });
     });
   }
@@ -23,10 +23,10 @@ export const autoTrash: Updater = ({
     upgrades.autoTrash.enabled
   ) {
     if (player.action === "IDLE") {
-      dispatch({ type: "AUTO_TRASH" });
+      dispatch({ type: "AUTO_TRASH", payload: { playerId: player.id } });
     } else if (player.action === "AUTO_TRASHING") {
       delay("autoTrash", () => {
-        dispatch({ type: "TRASH" });
+        dispatch({ type: "TRASH", payload: { playerId: player.id } });
       });
     }
   }

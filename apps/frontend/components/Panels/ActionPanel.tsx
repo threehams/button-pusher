@@ -7,16 +7,17 @@ import {
   selectInventory,
   selectPurchasedUpgrades,
 } from "@botnet/store";
+import { usePlayer } from "apps/frontend/hooks/PlayerContext";
 
 export const ActionPanel = () => {
   const heldSlot = useSelector(selectHeldSlot);
-  const player = useSelector((state) => state.player);
   const purchasedUpgrades = useSelector(selectPurchasedUpgrades);
   const inventory = useSelector((state) => {
     const containerId = state.data.currentContainerId;
     return selectInventory(state, { containerId });
   });
   const progress = useProgress();
+  const player = usePlayer();
   const dispatch = useDispatch();
 
   return (
@@ -34,7 +35,7 @@ export const ActionPanel = () => {
         upgrade={purchasedUpgrades.autoKill}
         upgradeName="autoKill"
         onClick={() => {
-          dispatch({ type: "ADVENTURE" });
+          dispatch({ type: "ADVENTURE", payload: { playerId: player.id } });
         }}
       >
         Kill something {player.location === "TOWN" && "(not in town)"}
@@ -46,7 +47,7 @@ export const ActionPanel = () => {
           upgrade={purchasedUpgrades.autoPack}
           upgradeName="autoPack"
           onClick={() => {
-            dispatch({ type: "PACK" });
+            dispatch({ type: "PACK", payload: { playerId: player.id } });
           }}
         >
           Store item
@@ -59,7 +60,7 @@ export const ActionPanel = () => {
           upgrade={purchasedUpgrades.autoDropJunk}
           upgradeName="autoDropJunk"
           onClick={() => {
-            dispatch({ type: "DROP_JUNK" });
+            dispatch({ type: "DROP_JUNK", payload: { playerId: player.id } });
           }}
         >
           Drop Junk
@@ -70,7 +71,7 @@ export const ActionPanel = () => {
           disabled={!inventory.slots}
           percent={progress.sort}
           onClick={() => {
-            dispatch({ type: "START_SORT" });
+            dispatch({ type: "START_SORT", payload: { playerId: player.id } });
           }}
           upgrade={purchasedUpgrades.autoSort}
           upgradeName="autoSort"
@@ -90,7 +91,7 @@ export const ActionPanel = () => {
         upgrade={purchasedUpgrades.autoSell}
         upgradeName="autoSell"
         onClick={() => {
-          dispatch({ type: "SELL" });
+          dispatch({ type: "SELL", payload: { playerId: player.id } });
         }}
       >
         Sell something {player.location !== "TOWN" && "(only in town)"}
@@ -106,6 +107,7 @@ export const ActionPanel = () => {
           dispatch({
             type: "TRAVEL",
             payload: {
+              playerId: player.id,
               destination,
             },
           });
