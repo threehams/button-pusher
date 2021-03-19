@@ -8,11 +8,13 @@ import { useSelector } from "react-redux";
 import { selectFloor, selectHeldSlot, selectInventory } from "@botnet/store";
 import { usePlayerId } from "../hooks/PlayerContext";
 
-export const Layout = () => {
+export const Layout = React.memo(() => {
   const playerId = usePlayerId();
-  const player = useSelector(state => state.players[playerId].location)
-  const moneys = useSelector((state) => state.players[playerId].inventory.moneys);
-  const heldSlot = useSelector(state => selectHeldSlot(state, { playerId }));
+  const player = useSelector((state) => state.players[playerId].location);
+  const moneys = useSelector(
+    (state) => state.players[playerId].inventory.moneys,
+  );
+  const heldSlot = useSelector((state) => selectHeldSlot(state, { playerId }));
   const inventory = useSelector((state) => {
     return selectInventory(state, {
       containerId: state.players[playerId].inventory.currentContainerId,
@@ -73,4 +75,4 @@ export const Layout = () => {
       </>
     </div>
   );
-};
+});

@@ -1,7 +1,7 @@
 import { SlotInfo } from "@botnet/store";
 import classNames from "classnames";
 import React, { CSSProperties } from "react";
-import { useDrop } from "react-dnd";
+import { ConnectDropTarget, useDrop } from "react-dnd";
 import { DraggableItem, DraggableResult } from "./DraggableItem";
 import { theme } from "@botnet/ui";
 
@@ -52,6 +52,30 @@ export const InventorySlot = React.memo(
       },
     });
 
+    return (
+      <Slot
+        drop={drop}
+        height={height}
+        required={required}
+        state={state}
+        width={width}
+      >
+        {children}
+      </Slot>
+    );
+  },
+);
+
+type SlotProps = {
+  drop: ConnectDropTarget;
+  width: number;
+  height: number;
+  required: boolean;
+  state: "VALID" | "INVALID";
+  children?: React.ReactNode;
+};
+const Slot = React.memo(
+  ({ drop, height, required, state, width, children }: SlotProps) => {
     return (
       <button
         ref={drop}
