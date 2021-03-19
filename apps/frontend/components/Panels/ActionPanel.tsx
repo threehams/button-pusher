@@ -7,17 +7,20 @@ import {
   selectInventory,
   selectPurchasedUpgrades,
 } from "@botnet/store";
-import { usePlayer } from "apps/frontend/hooks/PlayerContext";
+import { usePlayerId } from "apps/frontend/hooks/PlayerContext";
 
 export const ActionPanel = () => {
-  const heldSlot = useSelector(selectHeldSlot);
-  const purchasedUpgrades = useSelector(selectPurchasedUpgrades);
+  const playerId = usePlayerId();
+  const player = useSelector((state) => state.players[playerId].location);
+  const heldSlot = useSelector((state) => selectHeldSlot(state, { playerId }));
+  const purchasedUpgrades = useSelector((state) =>
+    selectPurchasedUpgrades(state, { playerId }),
+  );
   const inventory = useSelector((state) => {
-    const containerId = state.data.currentContainerId;
-    return selectInventory(state, { containerId });
+    const containerId = state.players[playerId].inventory.currentContainerId;
+    return selectInventory(state, { containerId, playerId });
   });
   const progress = useProgress();
-  const player = usePlayer();
   const dispatch = useDispatch();
 
   return (
@@ -35,7 +38,7 @@ export const ActionPanel = () => {
         upgrade={purchasedUpgrades.autoKill}
         upgradeName="autoKill"
         onClick={() => {
-          dispatch({ type: "ADVENTURE", payload: { playerId: player.id } });
+          dispatch({ type: "ADVENTURE", payload: { playerId } });
         }}
       >
         Kill something {player.location === "TOWN" && "(not in town)"}
@@ -47,7 +50,7 @@ export const ActionPanel = () => {
           upgrade={purchasedUpgrades.autoPack}
           upgradeName="autoPack"
           onClick={() => {
-            dispatch({ type: "PACK", payload: { playerId: player.id } });
+            dispatch({ type: "PACK", payload: { playerId } });
           }}
         >
           Store item
@@ -60,7 +63,7 @@ export const ActionPanel = () => {
           upgrade={purchasedUpgrades.autoDropJunk}
           upgradeName="autoDropJunk"
           onClick={() => {
-            dispatch({ type: "DROP_JUNK", payload: { playerId: player.id } });
+            dispatch({ type: "DROP_JUNK", payload: { playerId } });
           }}
         >
           Drop Junk
@@ -71,7 +74,7 @@ export const ActionPanel = () => {
           disabled={!inventory.slots}
           percent={progress.sort}
           onClick={() => {
-            dispatch({ type: "START_SORT", payload: { playerId: player.id } });
+            dispatch({ type: "START_SORT", payload: { playerId } });
           }}
           upgrade={purchasedUpgrades.autoSort}
           upgradeName="autoSort"
@@ -91,7 +94,7 @@ export const ActionPanel = () => {
         upgrade={purchasedUpgrades.autoSell}
         upgradeName="autoSell"
         onClick={() => {
-          dispatch({ type: "SELL", payload: { playerId: player.id } });
+          dispatch({ type: "SELL", payload: { playerId } });
         }}
       >
         Sell something {player.location !== "TOWN" && "(only in town)"}
@@ -107,7 +110,7 @@ export const ActionPanel = () => {
           dispatch({
             type: "TRAVEL",
             payload: {
-              playerId: player.id,
+              playerId,
               destination,
             },
           });

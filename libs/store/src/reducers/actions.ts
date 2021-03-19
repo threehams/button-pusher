@@ -92,9 +92,15 @@ export type AutoSortAction = PlayerAction<"AUTO_SORT">;
 export type AutoStoreAction = PlayerAction<"AUTO_STORE">;
 export type AutoTrashAction = PlayerAction<"AUTO_TRASH">;
 export type AutoTravelAction = PlayerAction<"AUTO_TRAVEL">;
+export type CreatePlayer = Action<
+  "CREATE_PLAYER",
+  {
+    name: string;
+  }
+>;
 
 export type CheatType = "AUTOMATION" | "MIDGAME";
-export type CheatAction = Action<"CHEAT", { type: CheatType }>;
+export type CheatAction = PlayerAction<"CHEAT", { type: CheatType }>;
 export type ResetAction = Action<"RESET">;
 
 export type AnyAction =
@@ -128,4 +134,5 @@ export type AnyAction =
   | DropJunkAction
   | DropJunkItemAction
   | TrashAction
-  | TrashAllAction;
+  | TrashAllAction
+  | CreatePlayer;

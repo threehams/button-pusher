@@ -6,12 +6,13 @@ export const autoDropJunk: Updater = ({
   allInventory,
   dispatch,
   upgrades,
+  playerId,
 }) => {
   if (player.action === "DROPPING" && allInventory.junk) {
     delay("dropJunk", () => {
       dispatch({
         type: "DROP_JUNK_ITEM",
-        payload: { playerLocation: player.location, playerId: player.id },
+        payload: { playerLocation: player.location, playerId },
       });
     });
   }
@@ -22,10 +23,10 @@ export const autoDropJunk: Updater = ({
     upgrades.autoDropJunk.enabled
   ) {
     if (player.action === "IDLE") {
-      dispatch({ type: "AUTO_DROP_JUNK", payload: { playerId: player.id } });
+      dispatch({ type: "AUTO_DROP_JUNK", payload: { playerId } });
     } else if (player.action === "AUTO_DROPPING") {
       delay("autoDropJunk", () => {
-        dispatch({ type: "DROP_JUNK", payload: { playerId: player.id } });
+        dispatch({ type: "DROP_JUNK", payload: { playerId } });
       });
     }
   }

@@ -5,7 +5,7 @@ import { useDrag } from "react-dnd";
 import { getEmptyImage } from "react-dnd-html5-backend";
 import ReactDOM from "react-dom";
 import { useDispatch } from "react-redux";
-import { usePlayer } from "../hooks/PlayerContext";
+import { usePlayerId } from "../hooks/PlayerContext";
 import { DraggableItem, DraggableResult } from "./DraggableItem";
 import { ItemTile } from "./ItemTile";
 
@@ -19,7 +19,7 @@ export const InventoryItem = React.memo(
   ({ item, slotId, className, style }: InventoryItemProps) => {
     const dispatch = useDispatch();
     const [tooltipOpen, setTooltipOpen] = useState(false);
-    const player = usePlayer();
+    const playerId = usePlayerId();
     const [tooltipPosition, setTooltipPosition] = useState<
       | {
           x: number;
@@ -49,13 +49,13 @@ export const InventoryItem = React.memo(
           if (slotId) {
             dispatch({
               type: "MOVE_SLOT",
-              payload: { playerId: player.id, x, y, containerId, slotId },
+              payload: { playerId, x, y, containerId, slotId },
             });
           } else {
             dispatch({
               type: "ADD_SLOT",
               payload: {
-                playerId: player.id,
+                playerId,
                 x,
                 y,
                 containerId,

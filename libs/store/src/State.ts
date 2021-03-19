@@ -1,9 +1,5 @@
-import { Record, Static } from "runtypes";
-import { DataState } from "./DataState";
-import { PlayerState } from "./PlayerState";
+import { PlayersState } from "./PlayersState";
 
-export const State = Record({
-  data: DataState,
-  player: PlayerState,
-});
-export type State = Static<typeof State>;
+export type State = {
+  players: PlayersState;
+};

@@ -6,12 +6,13 @@ export const autoTrash: Updater = ({
   player,
   floor,
   dispatch,
+  playerId,
 }) => {
   if (player.action === "TRASHING") {
     delay("trash", () => {
       dispatch({
         type: "TRASH_ALL",
-        payload: { playerLocation: player.location, playerId: player.id },
+        payload: { playerLocation: player.location, playerId },
       });
     });
   }
@@ -23,10 +24,10 @@ export const autoTrash: Updater = ({
     upgrades.autoTrash.enabled
   ) {
     if (player.action === "IDLE") {
-      dispatch({ type: "AUTO_TRASH", payload: { playerId: player.id } });
+      dispatch({ type: "AUTO_TRASH", payload: { playerId } });
     } else if (player.action === "AUTO_TRASHING") {
       delay("autoTrash", () => {
-        dispatch({ type: "TRASH", payload: { playerId: player.id } });
+        dispatch({ type: "TRASH", payload: { playerId } });
       });
     }
   }

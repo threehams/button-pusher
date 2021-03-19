@@ -3,7 +3,7 @@ import React from "react";
 import { Progress } from "./Progress";
 import { Button } from "./Button";
 import { useDispatch } from "react-redux";
-import { usePlayer } from "../hooks/PlayerContext";
+import { usePlayerId } from "../hooks/PlayerContext";
 
 type AutoActionProps = {
   percent: number;
@@ -22,7 +22,7 @@ export const AutoAction = ({
   upgradeName,
 }: AutoActionProps) => {
   const dispatch = useDispatch();
-  const player = usePlayer();
+  const playerId = usePlayerId();
 
   return (
     <div className="flex flex-nowrap flex-row">
@@ -35,11 +35,11 @@ export const AutoAction = ({
           upgrade.enabled
             ? dispatch({
                 type: "DISABLE",
-                payload: { playerId: player.id, upgrade: upgradeName },
+                payload: { playerId, upgrade: upgradeName },
               })
             : dispatch({
                 type: "ENABLE",
-                payload: { playerId: player.id, upgrade: upgradeName },
+                payload: { playerId, upgrade: upgradeName },
               });
         }}
       >

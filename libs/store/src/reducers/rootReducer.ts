@@ -1,9 +1,7 @@
 import { combineReducers } from "redux";
 import { State } from "../State";
-import { dataReducer } from "./dataReducer";
-import { playerReducer } from "./playerReducer";
+import { playersReducer } from "./playersReducer";
 
 export const rootReducer = combineReducers<State>({
-  data: dataReducer,
-  player: playerReducer,
+  players: playersReducer,
 });

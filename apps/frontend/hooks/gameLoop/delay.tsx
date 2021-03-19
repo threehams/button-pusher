@@ -8,17 +8,19 @@ type DelayProps = {
   lastTimes: LastTimes;
   setLastTime: SetLastTime;
   upgrades: PurchasedUpgradeMap;
+  playerId: string;
 };
 export const createDelay = ({
   lastTimes,
   setLastTime,
   delta,
   upgrades,
+  playerId,
 }: DelayProps) => (name: UpgradeType, callback: () => void) => {
-  setLastTime(name, lastTimes[name] + delta);
+  setLastTime({ name, value: lastTimes[name] + delta, playerId });
   if (lastTimes[name] > upgrades[name].time) {
     callback();
-    setLastTime(name, 0);
+    setLastTime({ name, value: 0, playerId });
     return true;
   }
 };

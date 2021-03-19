@@ -1,12 +1,14 @@
 import { selectHeldSlot } from "@botnet/store";
 import { theme } from "@botnet/ui";
+import { usePlayerId } from "apps/frontend/hooks/PlayerContext";
 import React from "react";
 import { useSelector } from "react-redux";
 import { InventoryItem } from "../InventoryItem";
 import { InventorySlot } from "../InventorySlot";
 
 export const HeldItemPanel = () => {
-  const heldSlot = useSelector(selectHeldSlot);
+  const playerId = usePlayerId();
+  const heldSlot = useSelector((state) => selectHeldSlot(state, { playerId }));
   return (
     <div
       style={{

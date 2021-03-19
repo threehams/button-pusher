@@ -7,7 +7,7 @@ import {
 } from "@botnet/messages";
 import { Array, Record, Static, String, Number } from "runtypes";
 
-export const DataState = Record({
+export const InventoryState = Record({
   currentContainerId: String,
   floorIds: FloorContainerMap,
   handContainerId: String,
@@ -20,4 +20,4 @@ export const DataState = Record({
   sellableItems: Number,
   slotMap: SlotMap,
 });
-export type DataState = Static<typeof DataState>;
+export type InventoryState = Static<typeof InventoryState>;

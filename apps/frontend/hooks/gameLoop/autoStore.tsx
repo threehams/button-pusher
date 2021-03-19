@@ -7,10 +7,11 @@ export const autoStore: Updater = ({
   player,
   allInventory,
   dispatch,
+  playerId,
 }) => {
   if (player.action === "STORING" && heldSlot) {
     delay("pack", () => {
-      dispatch({ type: "STORE_HELD_ITEM", payload: { playerId: player.id } });
+      dispatch({ type: "STORE_HELD_ITEM", payload: { playerId } });
     });
   }
 
@@ -21,10 +22,10 @@ export const autoStore: Updater = ({
     heldSlot
   ) {
     if (player.action === "IDLE") {
-      dispatch({ type: "AUTO_STORE", payload: { playerId: player.id } });
+      dispatch({ type: "AUTO_STORE", payload: { playerId } });
     } else if (player.action === "AUTO_STORING") {
       delay("autoPack", () => {
-        dispatch({ type: "PACK", payload: { playerId: player.id } });
+        dispatch({ type: "PACK", payload: { playerId } });
       });
     }
   }

@@ -1,24 +1,30 @@
-import { Player } from "@botnet/messages";
 import React, { useContext } from "react";
 
-export type PlayerContextType = Player;
+export type PlayerIdContextType = string;
 
-const PlayerContext = React.createContext<PlayerContextType>(undefined as any);
+const PlayerIdContext = React.createContext<PlayerIdContextType>(
+  undefined as any,
+);
 
-type PlayerProviderProps = {
-  value: PlayerContextType;
+type PlayerIdProviderProps = {
+  value: PlayerIdContextType;
   children: React.ReactNode;
 };
-export const PlayerProvider = ({ value, children }: PlayerProviderProps) => {
+export const PlayerIdProvider = ({
+  value,
+  children,
+}: PlayerIdProviderProps) => {
   return (
-    <PlayerContext.Provider value={value}>{children} </PlayerContext.Provider>
+    <PlayerIdContext.Provider value={value}>
+      {children}{" "}
+    </PlayerIdContext.Provider>
   );
 };
 
-export const usePlayer = () => {
-  const context = useContext(PlayerContext);
+export const usePlayerId = () => {
+  const context = useContext(PlayerIdContext);
   if (!context) {
-    throw new Error("PlayerContext not found");
+    throw new Error("PlayerIdContext not found");
   }
   return context;
 };

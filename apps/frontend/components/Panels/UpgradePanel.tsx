@@ -1,14 +1,21 @@
 import { PurchasedUpgrade, selectPurchasedUpgrades } from "@botnet/store";
-import { usePlayer } from "apps/frontend/hooks/PlayerContext";
+import { usePlayerId } from "apps/frontend/hooks/PlayerContext";
 import classNames from "classnames";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Button } from "../Button";
 
 export const UpgradePanel = () => {
-  const moneys = useSelector((state) => state.data.moneys);
-  const highestMoneys = useSelector((state) => state.data.highestMoneys);
-  const purchasedUpgrades = useSelector(selectPurchasedUpgrades);
+  const playerId = usePlayerId();
+  const moneys = useSelector(
+    (state) => state.players[playerId].inventory.moneys,
+  );
+  const highestMoneys = useSelector(
+    (state) => state.players[playerId].inventory.highestMoneys,
+  );
+  const purchasedUpgrades = useSelector((state) =>
+    selectPurchasedUpgrades(state, { playerId }),
+  );
   if (!purchasedUpgrades) {
     return <div>Nothing here</div>;
   }
@@ -87,7 +94,7 @@ type UpgradeButtonProps = {
 };
 const UpgradeButton = ({ upgrade, moneys, className }: UpgradeButtonProps) => {
   const dispatch = useDispatch();
-  const player = usePlayer();
+  const playerId = usePlayerId();
   return (
     <Button
       className={classNames("flex justify-between w-full", className)}
@@ -95,7 +102,7 @@ const UpgradeButton = ({ upgrade, moneys, className }: UpgradeButtonProps) => {
       onClick={() => {
         dispatch({
           type: "BUY_UPGRADE",
-          payload: { id: upgrade.id, playerId: player.id },
+          payload: { id: upgrade.id, playerId },
         });
       }}
     >

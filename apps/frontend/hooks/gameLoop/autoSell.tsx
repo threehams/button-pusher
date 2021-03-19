@@ -6,10 +6,11 @@ export const autoSell: Updater = ({
   player,
   allInventory,
   dispatch,
+  playerId,
 }) => {
   if (player.action === "SELLING") {
     delay("sell", () => {
-      dispatch({ type: "SELL_ITEM", payload: { playerId: player.id } });
+      dispatch({ type: "SELL_ITEM", payload: { playerId } });
     });
   }
   if (
@@ -19,10 +20,10 @@ export const autoSell: Updater = ({
     allInventory.slots
   ) {
     if (player.action === "IDLE") {
-      dispatch({ type: "AUTO_SELL", payload: { playerId: player.id } });
+      dispatch({ type: "AUTO_SELL", payload: { playerId } });
     } else if (player.action === "AUTO_SELLING") {
       delay("autoSell", () => {
-        dispatch({ type: "SELL", payload: { playerId: player.id } });
+        dispatch({ type: "SELL", payload: { playerId } });
       });
     }
   }

@@ -1,10 +1,12 @@
 import React from "react";
 import { useSelector } from "react-redux";
+import { usePlayerId } from "../hooks/PlayerContext";
 import { useProgress } from "../hooks/ProgressContext";
 import { Progress } from "./Progress";
 
 export const StatusBar = () => {
-  const player = useSelector((state) => state.player);
+  const playerId = usePlayerId();
+  const player = useSelector((state) => state.players[playerId].location);
   const progress = useProgress();
   if (progress.autoSort) {
     return (

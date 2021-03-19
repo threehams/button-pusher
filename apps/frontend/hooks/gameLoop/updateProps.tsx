@@ -12,6 +12,7 @@ export type UpdateProps = {
   heldSlot: (Slot & { item: Item }) | undefined;
   floor: Inventory;
   inventory: Inventory;
+  playerId: string;
 };
 
 export type Updater = (props: UpdateProps) => boolean;

@@ -6,18 +6,21 @@ import { StatusBar } from "./StatusBar";
 import { dialogue } from "@botnet/data";
 import { useSelector } from "react-redux";
 import { selectFloor, selectHeldSlot, selectInventory } from "@botnet/store";
+import { usePlayerId } from "../hooks/PlayerContext";
 
 export const Layout = () => {
-  const moneys = useSelector((state) => state.data.moneys);
-  const player = useSelector((state) => state.player);
-  const heldSlot = useSelector(selectHeldSlot);
+  const playerId = usePlayerId();
+  const player = useSelector(state => state.players[playerId].location)
+  const moneys = useSelector((state) => state.players[playerId].inventory.moneys);
+  const heldSlot = useSelector(state => selectHeldSlot(state, { playerId }));
   const inventory = useSelector((state) => {
     return selectInventory(state, {
-      containerId: state.data.currentContainerId,
+      containerId: state.players[playerId].inventory.currentContainerId,
+      playerId,
     });
   });
   const floor = useSelector((state) =>
-    selectFloor(state, { playerLocation: player.location }),
+    selectFloor(state, { playerLocation: player.location, playerId }),
   );
 
   return (

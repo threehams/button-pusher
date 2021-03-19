@@ -6,10 +6,11 @@ export const autoTravel: Updater = ({
   allInventory,
   player,
   dispatch,
+  playerId,
 }) => {
   if (player.action === "TRAVELLING") {
     delay("travel", () => {
-      dispatch({ type: "ARRIVE", payload: { playerId: player.id } });
+      dispatch({ type: "ARRIVE", payload: { playerId } });
     });
   }
 
@@ -19,23 +20,23 @@ export const autoTravel: Updater = ({
 
   if (player.location === "TOWN" && allInventory.slots === 0) {
     if (player.action === "IDLE") {
-      dispatch({ type: "AUTO_TRAVEL", payload: { playerId: player.id } });
+      dispatch({ type: "AUTO_TRAVEL", payload: { playerId } });
     } else if (player.action === "AUTO_TRAVELLING") {
       delay("autoTravel", () => {
         dispatch({
           type: "TRAVEL",
-          payload: { destination: "KILLING_FIELDS", playerId: player.id },
+          payload: { destination: "KILLING_FIELDS", playerId },
         });
       });
     }
   } else if (player.location !== "TOWN" && allInventory.full) {
     if (player.action === "IDLE") {
-      dispatch({ type: "AUTO_TRAVEL", payload: { playerId: player.id } });
+      dispatch({ type: "AUTO_TRAVEL", payload: { playerId } });
     } else if (player.action === "AUTO_TRAVELLING") {
       delay("autoTravel", () => {
         dispatch({
           type: "TRAVEL",
-          payload: { destination: "TOWN", playerId: player.id },
+          payload: { destination: "TOWN", playerId },
         });
       });
     }

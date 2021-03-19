@@ -1,19 +1,17 @@
 import produce from "immer";
-import { PlayerState } from "../PlayerState";
+import { LocationState } from "../LocationState";
 import { AnyAction } from "./actions";
-import { v4 as uuid } from "uuid";
 
-const INITIAL_STATE: PlayerState = {
-  id: uuid(),
+const INITIAL_STATE: LocationState = {
   action: "IDLE" as const,
   location: "TOWN" as const,
   destination: undefined,
 };
 
-export const playerReducer = (
-  state: PlayerState = INITIAL_STATE,
+export const locationReducer = (
+  state: LocationState = INITIAL_STATE,
   action: AnyAction,
-): PlayerState => {
+): LocationState => {
   return produce(state, (draft) => {
     switch (action.type) {
       case "AUTO_DROP_JUNK":
