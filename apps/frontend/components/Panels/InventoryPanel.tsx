@@ -9,7 +9,6 @@ import React, { useCallback, useState } from "react";
 import { range } from "lodash";
 import { InventorySlot } from "../InventorySlot";
 import { InventoryItem } from "../InventoryItem";
-import deepEqual from "deep-equal";
 import { getTargetCoords } from "@botnet/store";
 import { Button } from "../Button";
 import { AutoAction } from "../AutoAction";
@@ -39,16 +38,7 @@ export const InventoryPanel = React.memo(({ inventory }: Props) => {
   const purchasedUpgrades = useSelector((state) =>
     selectPurchasedUpgrades(state, { playerId }),
   );
-  const [target, setTargetState] = useState<SlotInfo | undefined>();
-
-  const setTarget = useCallback(
-    (tgt: SlotInfo | undefined) => {
-      if (!deepEqual(target, tgt)) {
-        setTargetState(tgt);
-      }
-    },
-    [target],
-  );
+  const [target, setTarget] = useState<SlotInfo | undefined>();
 
   const canDrop = useCallback(
     (tgt: SlotInfo) => {

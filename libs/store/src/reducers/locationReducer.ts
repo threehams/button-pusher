@@ -71,8 +71,6 @@ export const locationReducer = (
           draft.action = "STORING";
         }
         break;
-      case "RESET":
-        return INITIAL_STATE;
       case "SELL":
         if (
           draft.location === "TOWN" &&

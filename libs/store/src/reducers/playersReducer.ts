@@ -19,6 +19,9 @@ export const playersReducer = (
   state: PlayersState = INITIAL_STATE,
   action: AnyAction,
 ): PlayersState => {
+  if (action.type === "RESET") {
+    return {};
+  }
   if (action.type === "CREATE_PLAYER") {
     return produce(state, (draft) => {
       const id = uuid();

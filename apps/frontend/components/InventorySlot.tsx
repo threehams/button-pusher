@@ -1,16 +1,17 @@
 import { SlotInfo } from "@botnet/store";
 import classNames from "classnames";
-import React, { CSSProperties } from "react";
+import React, { CSSProperties, Dispatch, SetStateAction } from "react";
 import { ConnectDropTarget, useDrop } from "react-dnd";
 import { DraggableItem, DraggableResult } from "./DraggableItem";
 import { theme } from "@botnet/ui";
+import deepEqual from "deep-equal";
 
 type InventorySlotProps = {
   children?: React.ReactNode;
   state: "VALID" | "INVALID";
   required: boolean;
   canDrop: (target: SlotInfo) => boolean;
-  setTarget: (target: SlotInfo | undefined) => void;
+  setTarget: Dispatch<SetStateAction<SlotInfo | undefined>>;
   x: number;
   y: number;
   width?: number;
@@ -44,7 +45,19 @@ export const InventorySlot = React.memo(
       },
       hover: (draggable) => {
         const { item, slotId } = draggable;
-        setTarget({ x, y, width: item.width, height: item.height, slotId });
+        setTarget((current) => {
+          const target = {
+            x,
+            y,
+            width: item.width,
+            height: item.height,
+            slotId,
+          };
+          if (!deepEqual(current, target)) {
+            return target;
+          }
+          return current;
+        });
       },
       drop: () => {
         setTarget(undefined);
