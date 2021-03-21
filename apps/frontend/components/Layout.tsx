@@ -10,7 +10,7 @@ import { usePlayerId } from "../hooks/PlayerContext";
 
 export const Layout = React.memo(() => {
   const playerId = usePlayerId();
-  const player = useSelector((state) => state.players[playerId].location);
+  const player = useSelector((state) => state.players[playerId]);
   const moneys = useSelector(
     (state) => state.players[playerId].inventory.moneys,
   );
@@ -22,12 +22,12 @@ export const Layout = React.memo(() => {
     });
   });
   const floor = useSelector((state) =>
-    selectFloor(state, { playerLocation: player.location, playerId }),
+    selectFloor(state, { playerLocation: player.location.location, playerId }),
   );
 
   return (
     <div
-      className="grid grid-cols-3 grid-rows-3 items-start justify-center min-h-screen max-w-7xl mx-auto"
+      className="grid grid-cols-3 grid-rows-3 items-start justify-center max-w-7xl mx-auto"
       style={{
         gridTemplateAreas: `"header header header"
       "inventory inventory hand"
@@ -40,12 +40,14 @@ export const Layout = React.memo(() => {
       <>
         <CustomDragLayer />
         <header style={{ gridArea: "header" }} className="flex justify-between">
+          <h2 className="mr-4">{player?.name}</h2>
           <div className="mr-10">${Math.floor(moneys)}</div>
           <div className="flex-auto">
             <StatusBar />
           </div>
           <div className="ml-10">
-            Location: {player.location === "TOWN" ? "Town" : "Killing Fields"}
+            Location:{" "}
+            {player.location.location === "TOWN" ? "Town" : "Killing Fields"}
           </div>
         </header>
         <div

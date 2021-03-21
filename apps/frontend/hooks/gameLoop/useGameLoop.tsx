@@ -7,7 +7,7 @@ import { autoSort } from "./autoSort";
 import { autoTrash } from "./autoTrash";
 import { autoTravel } from "./autoTravel";
 import { autoKill } from "./autoKill";
-import { INITIAL_LAST_TIMES, useLastTimes } from "./lastTimes";
+import { getInitialLastTimes, useLastTimes } from "./lastTimes";
 import { useDispatch, useSelector } from "react-redux";
 import {
   selectInventory,
@@ -81,7 +81,7 @@ export const useGameLoop = (): ProgressContextType => {
 
   return Object.fromEntries(
     Object.keys(state.players).map((id) => {
-      return [id, allTimes[id] ?? INITIAL_LAST_TIMES];
+      return [id, allTimes[id] ?? getInitialLastTimes()];
     }),
   );
 };

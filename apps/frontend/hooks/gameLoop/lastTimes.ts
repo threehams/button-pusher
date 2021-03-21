@@ -1,7 +1,8 @@
 import { UpgradeType } from "@botnet/messages";
 import { useImmer } from "use-immer";
 
-export const INITIAL_LAST_TIMES: { [Key in UpgradeType]: number } = {
+export type LastTimes = { [Key in UpgradeType]: number };
+export const getInitialLastTimes = (): LastTimes => ({
   kill: 0,
   autoKill: 0,
   pack: 0,
@@ -16,9 +17,8 @@ export const INITIAL_LAST_TIMES: { [Key in UpgradeType]: number } = {
   autoDropJunk: 0,
   trash: 0,
   autoTrash: 0,
-};
+});
 
-export type LastTimes = typeof INITIAL_LAST_TIMES;
 export type AllTimes = {
   [key: string]: LastTimes;
 };
@@ -32,12 +32,12 @@ export const useLastTimes = () => {
   const [allTimes, setLastTimesState] = useImmer<AllTimes>({});
   const setLastTime: SetLastTime = ({ name, value, playerId }) => {
     setLastTimesState((draft) => {
-      draft[playerId] ??= INITIAL_LAST_TIMES;
+      draft[playerId] ??= getInitialLastTimes();
       draft[playerId]![name] = value;
     });
   };
   const getPlayerTimes = (playerId: string) => {
-    return allTimes[playerId] ?? INITIAL_LAST_TIMES;
+    return allTimes[playerId] ?? getInitialLastTimes();
   };
   return { allTimes, getPlayerTimes, setLastTime } as const;
 };
