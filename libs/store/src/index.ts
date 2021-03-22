@@ -9,5 +9,6 @@ export * from "./Inventory";
 export * from "./PlayerState";
 export * from "./PurchasedUpgrade";
 export * from "./PurchasedUpgradeMap";
+export * from "./SkillsState";
 export * from "./State";
 export * from "./reducers";

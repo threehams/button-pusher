@@ -20,7 +20,6 @@ import { findSlot } from "../findSlot";
 import { getNextLevel } from "../getNextLevel";
 import { initializeGrid } from "../initializeGrid";
 import { AnyAction } from "./actions";
-import { PurchasedUpgradeMap } from "../PurchasedUpgradeMap";
 import { Inventory } from "../Inventory";
 import { FullSlot } from "../FullSlot";
 
@@ -80,64 +79,6 @@ const getInitialState = (): InventoryState => {
     itemMap: {},
     slotMap: {},
     moneys: 0,
-    purchasedUpgradeMap: {
-      autoPack: {
-        level: 0,
-        enabled: true,
-      },
-      autoSell: {
-        level: 0,
-        enabled: true,
-      },
-      autoTravel: {
-        level: 0,
-        enabled: true,
-      },
-      autoSort: {
-        level: 0,
-        enabled: true,
-      },
-      sort: {
-        level: 0,
-        enabled: true,
-      },
-      pack: {
-        level: 0,
-        enabled: true,
-      },
-      autoKill: {
-        level: 0,
-        enabled: true,
-      },
-      kill: {
-        level: 0,
-        enabled: true,
-      },
-      sell: {
-        level: 0,
-        enabled: true,
-      },
-      travel: {
-        level: 0,
-        enabled: true,
-      },
-      dropJunk: {
-        level: 0,
-        enabled: true,
-      },
-      autoDropJunk: {
-        level: 0,
-        enabled: true,
-      },
-      trash: {
-        level: 0,
-        enabled: true,
-      },
-      autoTrash: {
-        level: 0,
-        enabled: true,
-      },
-    },
     purchasedContainerIds: [
       STARTING_CONTAINER.id,
       HAND_CONTAINER.id,
@@ -151,13 +92,11 @@ const getInitialState = (): InventoryState => {
       [KILLING_FIELDS_FLOOR_CONTAINER.id]: KILLING_FIELDS_FLOOR_CONTAINER,
     },
     highestMoneys: 0,
-    sellableItems: 0,
   };
 };
 
 type Bonus = {
   currentCapacity: number;
-  purchasedUpgrades: PurchasedUpgradeMap;
   bags: string[];
   floor: Inventory;
   heldSlot: FullSlot | undefined;
@@ -171,14 +110,7 @@ export const inventoryReducer = (
   if (!bonus) {
     return state;
   }
-  const {
-    currentCapacity,
-    purchasedUpgrades,
-    bags,
-    floor,
-    heldSlot,
-    getInventory,
-  } = bonus;
+  const { currentCapacity, bags, floor, heldSlot, getInventory } = bonus;
   return produce(state, (draft) => {
     switch (action.type) {
       case "ADD_SLOT": {
@@ -197,9 +129,6 @@ export const inventoryReducer = (
         draft.purchasedContainerMap[containerId].sorted = false;
         break;
       }
-      case "ARRIVE":
-        draft.sellableItems = 1; // TODO probably bad design anyway
-        break;
       case "BUY_CONTAINER": {
         const cont = availableContainers[1];
         const next = getNextLevel(
@@ -228,15 +157,6 @@ export const inventoryReducer = (
         }
         break;
       }
-      case "BUY_UPGRADE": {
-        const { id } = action.payload;
-        const upgrade = purchasedUpgrades[id];
-        if (draft.moneys >= upgrade.cost) {
-          draft.moneys = draft.moneys - upgrade.cost;
-          draft.purchasedUpgradeMap[id].level += 1;
-        }
-        break;
-      }
       case "BUY_CONTAINER_UPGRADE": {
         const { id } = action.payload;
         const current = draft.purchasedContainerMap[id];
@@ -249,17 +169,6 @@ export const inventoryReducer = (
         }
         break;
       }
-      case "CHEAT":
-        if (action.payload.type !== "AUTOMATION") {
-          return state;
-        }
-        Object.values(draft.purchasedUpgradeMap).forEach((upgrade) => {
-          upgrade.level += 1;
-        });
-        break;
-      case "DISABLE":
-        draft.purchasedUpgradeMap[action.payload.upgrade].enabled = false;
-        break;
       case "DROP_JUNK_ITEM": {
         for (const id of bags) {
           const container = draft.purchasedContainerMap[id];
@@ -286,9 +195,6 @@ export const inventoryReducer = (
         }
         break;
       }
-      case "ENABLE":
-        draft.purchasedUpgradeMap[action.payload.upgrade].enabled = true;
-        break;
       case "GO_INVENTORY": {
         draft.currentContainerId = action.payload.containerId;
         break;
@@ -323,7 +229,7 @@ export const inventoryReducer = (
         const slotId = container.slotIds[0];
         draft.moneys += Math.floor(
           draft.itemMap[draft.slotMap[slotId].itemId].value *
-            getSellMultiplier(draft.sellableItems),
+            getSellMultiplier(1),
         );
         draft.highestMoneys = Math.max(draft.moneys, draft.highestMoneys);
         container.slotIds = container.slotIds.filter((id) => id !== slotId);
@@ -419,9 +325,6 @@ export const inventoryReducer = (
         ].slotIds = [];
         break;
       }
-      case "TRAVEL":
-        draft.sellableItems = 1;
-        break;
       default:
         return draft;
     }

@@ -16,7 +16,8 @@ type PlayerProps = {
   playerId: string;
 };
 export const selectAllInventory = createCachedSelector(
-  (state: State, props: PlayerProps) => state.players[props.playerId],
+  (state: Pick<State, "players">, props: PlayerProps) =>
+    state.players[props.playerId],
   (player) => {
     const { inventory } = player;
     let slots = 0;
@@ -52,23 +53,21 @@ export const selectAllInventory = createCachedSelector(
 });
 
 export const selectPurchasedUpgrades = createCachedSelector(
-  (state: State, props: PlayerProps) => state.players[props.playerId],
-  (state) => {
-    return Object.entries(state.inventory.purchasedUpgradeMap).reduce(
-      (result, [id, purchasedUpgrade]) => {
-        const upgrade = availableUpgrades[id];
-        result[id] = {
-          ...purchasedUpgrade,
-          id,
-          name: upgrade.name,
-          upgradeName: upgrade.upgradeName,
-          time: 2000 * (1 / (purchasedUpgrade.level + 1)),
-          cost: upgrade.baseCost * (purchasedUpgrade.level + 1) ** 2,
-        };
-        return result;
-      },
-      {} as PurchasedUpgradeMap,
-    );
+  (state: Pick<State, "players">, props: PlayerProps) =>
+    state.players[props.playerId].skills,
+  (skills) => {
+    return Object.entries(skills).reduce((result, [id, purchasedUpgrade]) => {
+      const upgrade = availableUpgrades[id];
+      result[id] = {
+        ...purchasedUpgrade,
+        id,
+        name: upgrade.name,
+        upgradeName: upgrade.upgradeName,
+        time: 2000 * (1 / (purchasedUpgrade.level + 1)),
+        cost: upgrade.baseCost * (purchasedUpgrade.level + 1) ** 2,
+      };
+      return result;
+    }, {} as PurchasedUpgradeMap);
   },
 )((state, props) => {
   return props.playerId;

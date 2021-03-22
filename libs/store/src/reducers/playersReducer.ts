@@ -2,6 +2,7 @@ import { AnyAction } from "./actions";
 import { inventoryReducer } from "./inventoryReducer";
 import { PlayersState } from "../PlayersState";
 import { locationReducer } from "./locationReducer";
+import { skillsReducer } from "./skillsReducer";
 import produce from "immer";
 import {
   selectBags,
@@ -9,7 +10,6 @@ import {
   selectFloor,
   selectHeldSlot,
   selectInventory,
-  selectPurchasedUpgrades,
 } from "./selectors";
 import { v4 as uuid } from "uuid";
 
@@ -27,9 +27,10 @@ export const playersReducer = (
       const id = uuid();
       draft[id] = {
         id,
+        name: action.payload.name,
         inventory: inventoryReducer(undefined, action),
         location: locationReducer(undefined, action),
-        name: action.payload.name,
+        skills: skillsReducer(undefined, action),
       };
     });
   }
@@ -41,10 +42,6 @@ export const playersReducer = (
     const bags = selectBags({ players: state }, { playerId });
     const heldSlot = selectHeldSlot({ players: state }, { playerId });
     const currentCapacity = selectCurrentCapacity(
-      { players: state },
-      { playerId },
-    );
-    const purchasedUpgrades = selectPurchasedUpgrades(
       { players: state },
       { playerId },
     );
@@ -63,7 +60,6 @@ export const playersReducer = (
         heldSlot,
         currentCapacity,
         floor,
-        purchasedUpgrades,
         getInventory,
       },
     );
@@ -71,6 +67,7 @@ export const playersReducer = (
       state[playerId].location,
       action,
     );
+    draft[playerId].skills = skillsReducer(state[playerId].skills, action);
   });
 };
 
