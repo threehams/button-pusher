@@ -8,13 +8,14 @@ import { autoTrash } from "./autoTrash";
 import { autoTravel } from "./autoTravel";
 import { autoKill } from "./autoKill";
 import { getInitialLastTimes, useLastTimes } from "./lastTimes";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector, useStore } from "react-redux";
 import {
   selectInventory,
   selectHeldSlot,
   selectAllInventory,
   selectPurchasedUpgrades,
   selectFloor,
+  State,
 } from "@botnet/store";
 import { createDelay } from "./delay";
 
@@ -29,48 +30,50 @@ const updateList = [
 ];
 
 export const useGameLoop = (): ProgressContextType => {
-  const state = useSelector((all) => all);
+  const store = useStore<State>();
+  const playerIds = useSelector((state) => Object.keys(state.players));
 
   const { allTimes, getPlayerTimes, setLastTime } = useLastTimes();
   const dispatch = useDispatch();
 
   const loop = (delta: number) => {
-    for (const playerId of Object.keys(state.players)) {
-      const inventory = selectInventory(state, {
-        containerId: state.players[playerId].inventory.currentContainerId,
-        playerId,
-      });
-      const allInventory = selectAllInventory(state, { playerId });
-      const heldSlot = selectHeldSlot(state, { playerId });
-      const player = state.players[playerId].location;
-      const floor = selectFloor(state, {
-        playerLocation: player.location,
-        playerId,
-      });
-      const purchasedUpgrades = selectPurchasedUpgrades(state, { playerId });
-      const lastTimes = getPlayerTimes(playerId);
-
-      const upgrades = purchasedUpgrades;
-      const delay = createDelay({
-        delta,
-        lastTimes,
-        setLastTime,
-        upgrades,
-        playerId,
-      });
-      const updateProps = {
-        dispatch,
-        player,
-        delay,
-        upgrades,
-        allInventory,
-        heldSlot,
-        floor,
-        inventory,
-        playerId,
-      };
-
+    for (const playerId of playerIds) {
       for (const updater of updateList) {
+        const state = store.getState();
+        const inventory = selectInventory(state, {
+          containerId: state.players[playerId].inventory.currentContainerId,
+          playerId,
+        });
+        const allInventory = selectAllInventory(state, { playerId });
+        const heldSlot = selectHeldSlot(state, { playerId });
+        const player = state.players[playerId].location;
+        const floor = selectFloor(state, {
+          playerLocation: player.location,
+          playerId,
+        });
+        const purchasedUpgrades = selectPurchasedUpgrades(state, { playerId });
+        const lastTimes = getPlayerTimes(playerId);
+
+        const upgrades = purchasedUpgrades;
+        const delay = createDelay({
+          delta,
+          lastTimes,
+          setLastTime,
+          upgrades,
+          playerId,
+        });
+        const updateProps = {
+          dispatch,
+          player,
+          delay,
+          upgrades,
+          allInventory,
+          heldSlot,
+          floor,
+          inventory,
+          playerId,
+        };
+
         if (updater(updateProps)) {
           break;
         }
@@ -80,7 +83,7 @@ export const useGameLoop = (): ProgressContextType => {
   useLoop(loop);
 
   return Object.fromEntries(
-    Object.keys(state.players).map((id) => {
+    playerIds.map((id) => {
       return [id, allTimes[id] ?? getInitialLastTimes()];
     }),
   );
