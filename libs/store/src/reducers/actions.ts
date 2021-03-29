@@ -50,11 +50,14 @@ export type BuyUpgradeAction = PlayerAction<
   { id: UpgradeType; cost: number }
 >;
 export type BuyContainerUpgradeAction = PlayerAction<
-  "BUY_CONTAINER_UPGRADE",
+  "UPGRADE_CONTAINER",
   { id: string; cost: number }
 >;
 export type PackAction = PlayerAction<"PACK">;
-export type StoreHeldItemAction = PlayerAction<"STORE_HELD_ITEM">;
+export type StoreHeldItemAction = PlayerAction<
+  "STORE_ITEM",
+  { slotId: string }
+>;
 export type StartSortAction = PlayerAction<"START_SORT">;
 export type SortAction = PlayerAction<"SORT">;
 export type SellAction = PlayerAction<"SELL">;
@@ -66,12 +69,8 @@ export type AdventureAction = PlayerAction<"ADVENTURE">;
 export type SellItemAction = PlayerAction<"SELL_ITEM">;
 export type ArriveAction = PlayerAction<"ARRIVE">;
 export type BuyContainerAction = PlayerAction<
-  "BUY_CONTAINER",
+  "ADD_CONTAINER",
   { cost: number }
->;
-export type GoInventoryAction = PlayerAction<
-  "GO_INVENTORY",
-  { containerId: string }
 >;
 export type DisableAction = PlayerAction<
   "DISABLE",
@@ -132,7 +131,6 @@ export type AnyAction =
   | SellItemAction
   | ArriveAction
   | BuyContainerAction
-  | GoInventoryAction
   | DisableAction
   | EnableAction
   | CheatAction

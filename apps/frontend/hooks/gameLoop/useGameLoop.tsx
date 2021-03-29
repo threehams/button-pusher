@@ -62,19 +62,20 @@ export const useGameLoop = (): ProgressContextType => {
           upgrades,
           playerId,
         });
-        const updateProps = {
-          dispatch,
-          player,
-          delay,
-          upgrades,
-          allInventory,
-          heldSlot,
-          floor,
-          inventory,
-          playerId,
-        };
 
-        if (updater(updateProps)) {
+        if (
+          updater({
+            dispatch,
+            player,
+            delay,
+            upgrades,
+            allInventory,
+            heldSlot,
+            floor,
+            inventory,
+            playerId,
+          })
+        ) {
           break;
         }
       }

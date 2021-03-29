@@ -12,7 +12,6 @@ import {
 } from "@botnet/messages";
 import { isNonNullable } from "@botnet/utils";
 import produce, { Draft } from "immer";
-import { range } from "lodash";
 import { v4 as uuid } from "uuid";
 import { choice } from "../choice";
 import { InventoryState } from "../InventoryState";
@@ -22,6 +21,7 @@ import { initializeGrid } from "../initializeGrid";
 import { AnyAction } from "./actions";
 import { Inventory } from "../Inventory";
 import { FullSlot } from "../FullSlot";
+import { recalculateGrid } from "./recalculateGrid";
 
 const getInitialState = (): InventoryState => {
   const STARTING_CONTAINER: PurchasedContainer = {
@@ -97,7 +97,6 @@ type Bonus = {
   currentCapacity: number;
   bags: string[];
   floor: Inventory;
-  heldSlot: FullSlot | undefined;
   getInventory: (options: { containerId: string }) => Inventory;
 };
 export const inventoryReducer = (
@@ -108,7 +107,7 @@ export const inventoryReducer = (
   if (!bonus) {
     return state;
   }
-  const { currentCapacity, bags, floor, heldSlot, getInventory } = bonus;
+  const { currentCapacity, bags, floor, getInventory } = bonus;
   return produce(state, (draft) => {
     switch (action.type) {
       case "ADD_SLOT": {
@@ -126,7 +125,7 @@ export const inventoryReducer = (
         draft.purchasedContainerMap[containerId].sorted = false;
         break;
       }
-      case "BUY_CONTAINER": {
+      case "ADD_CONTAINER": {
         const cont = availableContainers[1];
         const id = uuid();
         draft.purchasedContainerIds.push(id);
@@ -143,7 +142,7 @@ export const inventoryReducer = (
         };
         break;
       }
-      case "BUY_CONTAINER_UPGRADE": {
+      case "UPGRADE_CONTAINER": {
         const { id } = action.payload;
         const current = draft.purchasedContainerMap[id];
         const next = getNextLevel(current, currentCapacity);
@@ -162,7 +161,7 @@ export const inventoryReducer = (
                 containerInv: floor,
                 height: item.height,
                 width: item.width,
-                method: "vertical",
+                method: "horizontal",
               });
               if (target) {
                 moveSlot(draft, {
@@ -176,10 +175,6 @@ export const inventoryReducer = (
             }
           }
         }
-        break;
-      }
-      case "GO_INVENTORY": {
-        draft.currentContainerId = action.payload.containerId;
         break;
       }
       case "LOOT": {
@@ -251,11 +246,11 @@ export const inventoryReducer = (
         });
         break;
       }
-      case "STORE_HELD_ITEM": {
-        if (!heldSlot) {
-          return;
-        }
-        const { width, height } = heldSlot.item;
+      case "STORE_ITEM": {
+        const { slotId } = action.payload;
+        const slot = draft.slotMap[slotId];
+        const item = draft.itemMap[slot.itemId];
+        const { width, height } = item;
         for (const containerId of bags) {
           const container = state.purchasedContainerMap[containerId];
           const containerInv = getInventory({ containerId: container.id });
@@ -269,7 +264,7 @@ export const inventoryReducer = (
             const { x, y } = target;
             moveSlot(draft, {
               containerId: container.id,
-              slotId: heldSlot.id,
+              slotId,
               x,
               y,
             });
@@ -393,20 +388,3 @@ const addSlot = (
   draft.purchasedContainerMap[containerId].slotIds.push(slot.id);
   draft.purchasedContainerMap[containerId].sorted = false;
 };
-
-// TODO move to shared place
-function recalculateGrid({
-  slots,
-  grid,
-}: {
-  slots: FullSlot[];
-  grid: (string | false)[][];
-}) {
-  slots.forEach((slot) => {
-    range(0, slot.item.height).forEach((row) => {
-      range(0, slot.item.width).forEach((col) => {
-        grid[slot.y + row][slot.x + col] = slot.id;
-      });
-    });
-  });
-}

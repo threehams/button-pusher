@@ -9,7 +9,6 @@ import {
   selectBags,
   selectCurrentCapacity,
   selectFloor,
-  selectHeldSlot,
   selectInventory,
 } from "./selectors";
 import { v4 as uuid } from "uuid";
@@ -60,7 +59,6 @@ export const playersReducer = (
     }
 
     const bags = selectBags({ players: draft }, { playerId });
-    const heldSlot = selectHeldSlot({ players: draft }, { playerId });
     const currentCapacity = selectCurrentCapacity(
       { players: draft },
       { playerId },
@@ -77,7 +75,6 @@ export const playersReducer = (
       action,
       {
         bags,
-        heldSlot,
         currentCapacity,
         floor,
         getInventory,

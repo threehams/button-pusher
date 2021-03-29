@@ -15,8 +15,8 @@ export const moneysReducer = (
 ): MoneysState => {
   return produce(state, (draft) => {
     switch (action.type) {
-      case "BUY_CONTAINER":
-      case "BUY_CONTAINER_UPGRADE":
+      case "ADD_CONTAINER":
+      case "UPGRADE_CONTAINER":
       case "BUY_UPGRADE":
         draft.moneys -= action.payload.cost;
         break;

@@ -11,7 +11,10 @@ export const autoStore: Updater = ({
 }) => {
   if (player.action === "STORING" && heldSlot) {
     delay("pack", () => {
-      dispatch({ type: "STORE_HELD_ITEM", payload: { playerId } });
+      dispatch({
+        type: "STORE_ITEM",
+        payload: { playerId, slotId: heldSlot.id },
+      });
     });
   }
 

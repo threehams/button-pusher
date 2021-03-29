@@ -1,16 +1,15 @@
 import { PlayerLocation } from "@botnet/messages";
-import { range } from "lodash";
-import { createSelector } from "reselect";
 import { createCachedSelector } from "re-reselect";
-import { getTargetCoords } from "../getTargetCoords";
-import { Inventory } from "../Inventory";
 import { State } from "../State";
 import {
   upgrades as availableUpgrades,
   availableContainers as availableContainers,
 } from "@botnet/data";
 import { PurchasedUpgradeMap } from "../PurchasedUpgradeMap";
-import { FullSlot } from "../FullSlot";
+import { findSlot } from "../findSlot";
+import { recalculateGrid } from "./recalculateGrid";
+import { getNextLevel } from "../getNextLevel";
+import { initializeGrid } from "../initializeGrid";
 
 type PlayerProps = {
   playerId: string;
@@ -197,7 +196,7 @@ export const selectInventory = createCachedSelector(
         },
         height: heldSlot.item.height,
         width: heldSlot.item.width,
-        method: "vertical",
+        method: "horizontal",
       });
       if (!slot) {
         full = true;
@@ -227,151 +226,6 @@ export const selectInventory = createCachedSelector(
 )((state, props) => {
   return `${props.containerId}${props.playerId}`;
 });
-
-const initializeGrid = ({
-  width,
-  height,
-}: {
-  width: number;
-  height: number;
-}) => {
-  const grid: Inventory["grid"] = range(0, height).map(() => {
-    return range(0, width).map(() => false);
-  });
-  return grid;
-};
-
-const recalculateGrid = ({
-  slots,
-  grid,
-}: {
-  slots: FullSlot[];
-  grid: (string | false)[][];
-}) => {
-  slots.forEach((slot) => {
-    range(0, slot.item.height).forEach((row) => {
-      range(0, slot.item.width).forEach((col) => {
-        grid[slot.y + row][slot.x + col] = slot.id;
-      });
-    });
-  });
-};
-
-const TILE_COST = 25;
-
-const getNextLevel = (
-  container: {
-    width: number;
-    height: number;
-    maxHeight: number;
-    maxWidth: number;
-  },
-  currentCapacity: number,
-) => {
-  const { width, height, maxWidth, maxHeight } = container;
-  let diff;
-  let newWidth;
-  let newHeight;
-  if (width >= maxWidth && height >= maxHeight) {
-    return {
-      cost: 0,
-      width,
-      height,
-    };
-  } else if (width >= maxWidth) {
-    diff = width;
-    newWidth = width;
-    newHeight = height + 1;
-  } else if (width >= maxWidth) {
-    diff = height;
-    newWidth = width + 1;
-    newHeight = height;
-  } else if (width <= height) {
-    diff = height;
-    newWidth = width + 1;
-    newHeight = height;
-  } else {
-    diff = width;
-    newWidth = width;
-    newHeight = height + 1;
-  }
-
-  return {
-    width: newWidth,
-    height: newHeight,
-    // scale this better
-    cost: Math.floor(
-      TILE_COST * (currentCapacity * Math.log(currentCapacity - 13) + diff),
-    ),
-  };
-};
-
-type SortMethod = "horizontal" | "vertical";
-const findSlot = ({
-  containerInv,
-  width,
-  height,
-  method,
-}: {
-  containerInv: Pick<Inventory, "width" | "height" | "grid">;
-  width: number;
-  height: number;
-  method: SortMethod;
-}) => {
-  if (method === "horizontal") {
-    for (const y of range(0, containerInv.height)) {
-      for (const x of range(0, containerInv.width)) {
-        const targetCoords = getTargetCoords({
-          inventory: containerInv,
-          target: {
-            x,
-            y,
-            width,
-            height,
-            slotId: undefined,
-          },
-        });
-        if (targetCoords.valid) {
-          return { x, y };
-        }
-      }
-    }
-  } else if (method === "vertical") {
-    for (const x of range(0, containerInv.width)) {
-      for (const y of range(0, containerInv.height)) {
-        const targetCoords = getTargetCoords({
-          inventory: containerInv,
-          target: {
-            x,
-            y,
-            width,
-            height,
-            slotId: undefined,
-          },
-        });
-        if (targetCoords.valid) {
-          return { x, y };
-        }
-      }
-    }
-  }
-};
-
-export const selectInventoryPagination = createSelector(
-  selectBags,
-  (state: Pick<State, "players">, props: PlayerProps) =>
-    state.players[props.playerId].inventory.currentContainerId,
-  (bags, currentContainerId) => {
-    const current = bags.indexOf(currentContainerId);
-    const next = bags[current + 1];
-    const prev = bags[current - 1];
-
-    return {
-      prev,
-      next,
-    };
-  },
-);
 
 type SelectFloorProps = {
   playerLocation: PlayerLocation;

@@ -1,7 +1,6 @@
 import {
   Inventory,
   selectFloor,
-  selectInventoryPagination,
   selectPurchasedUpgrades,
   SlotInfo,
 } from "@botnet/store";
@@ -27,9 +26,6 @@ export const InventoryPanel = React.memo(({ inventory }: Props) => {
   const dispatch = useDispatch();
   const { nextAvailable, height, width, slots, cost } = inventory;
   const moneys = useSelector((state) => state.players[playerId].moneys.moneys);
-  const pages = useSelector((state) =>
-    selectInventoryPagination(state, { playerId }),
-  );
   const floor = useSelector((state) =>
     selectFloor(state, { playerLocation: player.location, playerId }),
   );
@@ -59,7 +55,7 @@ export const InventoryPanel = React.memo(({ inventory }: Props) => {
           onClick={() => {
             if (cost) {
               dispatch({
-                type: "BUY_CONTAINER_UPGRADE",
+                type: "UPGRADE_CONTAINER",
                 payload: { playerId, id: inventory.id, cost },
               });
             }
@@ -71,21 +67,6 @@ export const InventoryPanel = React.memo(({ inventory }: Props) => {
       )}
 
       <div className="flex items-center">
-        {!!(pages.prev || pages.next) && (
-          <button
-            disabled={!pages.prev}
-            onClick={() => {
-              pages.prev &&
-                dispatch({
-                  type: "GO_INVENTORY",
-                  payload: { playerId, containerId: pages.prev },
-                });
-            }}
-            className="p-3"
-          >
-            &lt;
-          </button>
-        )}
         <div className="relative">
           {slots.map((slot) => {
             return (
@@ -137,21 +118,6 @@ export const InventoryPanel = React.memo(({ inventory }: Props) => {
             })}
           </div>
         </div>
-        {!!(pages.prev || pages.next) && (
-          <button
-            disabled={!pages.next}
-            onClick={() => {
-              pages.next &&
-                dispatch({
-                  type: "GO_INVENTORY",
-                  payload: { playerId, containerId: pages.next },
-                });
-            }}
-            className="p-3"
-          >
-            &gt;
-          </button>
-        )}
       </div>
       {inventory.type === "FLOOR" && (
         <div className="w-1/2 mt-3 pr-3">
