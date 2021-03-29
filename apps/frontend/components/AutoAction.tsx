@@ -4,6 +4,7 @@ import { Progress } from "./Progress";
 import { Button } from "./Button";
 import { useDispatch } from "react-redux";
 import { usePlayerId } from "../hooks/PlayerContext";
+import classNames from "classnames";
 
 type AutoActionProps = {
   percent: number;
@@ -12,6 +13,7 @@ type AutoActionProps = {
   onClick: React.MouseEventHandler;
   upgrade: PurchasedUpgrade;
   upgradeName: AutomatedUpgrade;
+  className?: string;
 };
 export const AutoAction = ({
   children,
@@ -20,12 +22,13 @@ export const AutoAction = ({
   upgrade,
   percent,
   upgradeName,
+  className,
 }: AutoActionProps) => {
   const dispatch = useDispatch();
   const playerId = usePlayerId();
 
   return (
-    <div className="flex flex-nowrap flex-row">
+    <div className={classNames("flex flex-nowrap flex-row", className)}>
       <Progress button disabled={disabled} percent={percent} onClick={onClick}>
         {children}
       </Progress>
@@ -43,7 +46,7 @@ export const AutoAction = ({
               });
         }}
       >
-        Auto: {upgrade.enabled ? "On" : "Off"}
+        Auto: {upgrade.enabled ? "On\u00A0" : "Off"}
       </Button>
     </div>
   );
