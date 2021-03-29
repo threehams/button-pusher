@@ -11,9 +11,7 @@ import { usePlayerId } from "../hooks/PlayerContext";
 export const Layout = React.memo(() => {
   const playerId = usePlayerId();
   const player = useSelector((state) => state.players[playerId]);
-  const moneys = useSelector(
-    (state) => state.players[playerId].inventory.moneys,
-  );
+  const moneys = useSelector((state) => state.players[playerId].moneys.moneys);
   const heldSlot = useSelector((state) => selectHeldSlot(state, { playerId }));
   const inventory = useSelector((state) => {
     return selectInventory(state, {

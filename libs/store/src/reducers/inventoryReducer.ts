@@ -78,7 +78,6 @@ const getInitialState = (): InventoryState => {
     currentContainerId: STARTING_CONTAINER.id,
     itemMap: {},
     slotMap: {},
-    moneys: 0,
     purchasedContainerIds: [
       STARTING_CONTAINER.id,
       HAND_CONTAINER.id,
@@ -91,7 +90,6 @@ const getInitialState = (): InventoryState => {
       [TOWN_FLOOR_CONTAINER.id]: TOWN_FLOOR_CONTAINER,
       [KILLING_FIELDS_FLOOR_CONTAINER.id]: KILLING_FIELDS_FLOOR_CONTAINER,
     },
-    highestMoneys: 0,
   };
 };
 
@@ -123,7 +121,6 @@ export const inventoryReducer = (
           containerId,
         };
 
-        // need to check overlaps here
         draft.slotMap[slot.id] = slot;
         draft.purchasedContainerMap[containerId].slotIds.push(slot.id);
         draft.purchasedContainerMap[containerId].sorted = false;
@@ -131,42 +128,28 @@ export const inventoryReducer = (
       }
       case "BUY_CONTAINER": {
         const cont = availableContainers[1];
-        const next = getNextLevel(
-          {
-            height: cont.baseHeight,
-            width: cont.baseWidth,
-            maxHeight: cont.maxHeight,
-            maxWidth: cont.maxWidth,
-          },
-          currentCapacity,
-        );
-        if (next.cost <= state.moneys) {
-          const id = uuid();
-          draft.purchasedContainerIds.push(id);
-          draft.purchasedContainerMap[id] = {
-            id,
-            height: cont.baseHeight,
-            width: cont.baseWidth,
-            type: cont.type,
-            level: 0,
-            maxHeight: cont.maxHeight,
-            maxWidth: cont.maxWidth,
-            slotIds: [],
-            sorted: false,
-          };
-        }
+        const id = uuid();
+        draft.purchasedContainerIds.push(id);
+        draft.purchasedContainerMap[id] = {
+          id,
+          height: cont.baseHeight,
+          width: cont.baseWidth,
+          type: cont.type,
+          level: 0,
+          maxHeight: cont.maxHeight,
+          maxWidth: cont.maxWidth,
+          slotIds: [],
+          sorted: false,
+        };
         break;
       }
       case "BUY_CONTAINER_UPGRADE": {
         const { id } = action.payload;
         const current = draft.purchasedContainerMap[id];
         const next = getNextLevel(current, currentCapacity);
-        if (next.cost && draft.moneys >= next.cost) {
-          draft.moneys = draft.moneys - next.cost;
-          draft.purchasedContainerMap[id].level += 1;
-          draft.purchasedContainerMap[id].width = next.width;
-          draft.purchasedContainerMap[id].height = next.height;
-        }
+        draft.purchasedContainerMap[id].level += 1;
+        draft.purchasedContainerMap[id].width = next.width;
+        draft.purchasedContainerMap[id].height = next.height;
         break;
       }
       case "DROP_JUNK_ITEM": {
@@ -217,25 +200,6 @@ export const inventoryReducer = (
       case "ADD_SLOT":
         addSlot(draft, action.payload);
         break;
-      case "SELL_ITEM": {
-        const container = Object.values(draft.purchasedContainerMap).filter(
-          (cont) =>
-            cont.slotIds.length &&
-            (cont.type === "BAG" || cont.type === "EQUIP"),
-        )[0];
-        if (!container) {
-          return;
-        }
-        const slotId = container.slotIds[0];
-        draft.moneys += Math.floor(
-          draft.itemMap[draft.slotMap[slotId].itemId].value *
-            getSellMultiplier(1),
-        );
-        draft.highestMoneys = Math.max(draft.moneys, draft.highestMoneys);
-        container.slotIds = container.slotIds.filter((id) => id !== slotId);
-        draft.slotMap[slotId] = undefined!; // it's fine as long as I removed all references
-        break;
-      }
       case "SORT": {
         const container = state.purchasedContainerMap[state.currentContainerId];
         const currentSlots = container.slotIds.map((slotId) => {
@@ -329,10 +293,6 @@ export const inventoryReducer = (
         return draft;
     }
   });
-};
-
-const getSellMultiplier = (count: number) => {
-  return Math.sqrt(count) + count / 10;
 };
 
 const randomLoot = (available: ItemDefinition[]): Item => {

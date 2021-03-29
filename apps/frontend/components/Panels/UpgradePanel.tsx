@@ -7,11 +7,9 @@ import { Button } from "../Button";
 
 export const UpgradePanel = () => {
   const playerId = usePlayerId();
-  const moneys = useSelector(
-    (state) => state.players[playerId].inventory.moneys,
-  );
+  const moneys = useSelector((state) => state.players[playerId].moneys.moneys);
   const highestMoneys = useSelector(
-    (state) => state.players[playerId].inventory.highestMoneys,
+    (state) => state.players[playerId].moneys.highestMoneys,
   );
   const purchasedUpgrades = useSelector((state) =>
     selectPurchasedUpgrades(state, { playerId }),
@@ -102,7 +100,7 @@ const UpgradeButton = ({ upgrade, moneys, className }: UpgradeButtonProps) => {
       onClick={() => {
         dispatch({
           type: "BUY_UPGRADE",
-          payload: { id: upgrade.id, playerId },
+          payload: { id: upgrade.id, playerId, cost: upgrade.cost },
         });
       }}
     >

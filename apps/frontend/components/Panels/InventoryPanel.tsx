@@ -26,9 +26,7 @@ export const InventoryPanel = React.memo(({ inventory }: Props) => {
   const progress = useProgress();
   const dispatch = useDispatch();
   const { nextAvailable, height, width, slots, cost } = inventory;
-  const moneys = useSelector(
-    (state) => state.players[playerId].inventory.moneys,
-  );
+  const moneys = useSelector((state) => state.players[playerId].moneys.moneys);
   const pages = useSelector((state) =>
     selectInventoryPagination(state, { playerId }),
   );
@@ -62,7 +60,7 @@ export const InventoryPanel = React.memo(({ inventory }: Props) => {
             if (cost) {
               dispatch({
                 type: "BUY_CONTAINER_UPGRADE",
-                payload: { playerId, id: inventory.id },
+                payload: { playerId, id: inventory.id, cost },
               });
             }
           }}

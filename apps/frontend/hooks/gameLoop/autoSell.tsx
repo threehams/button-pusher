@@ -17,7 +17,7 @@ export const autoSell: Updater = ({
     upgrades.autoSell.level &&
     upgrades.autoSell.enabled &&
     player.location === "TOWN" &&
-    allInventory.slots
+    allInventory.slots > 0
   ) {
     if (player.action === "IDLE") {
       dispatch({ type: "AUTO_SELL", payload: { playerId } });

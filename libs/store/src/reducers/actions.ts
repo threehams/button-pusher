@@ -45,10 +45,13 @@ export type AddSlotAction = PlayerAction<
     containerId: string;
   }
 >;
-export type BuyUpgradeAction = PlayerAction<"BUY_UPGRADE", { id: UpgradeType }>;
+export type BuyUpgradeAction = PlayerAction<
+  "BUY_UPGRADE",
+  { id: UpgradeType; cost: number }
+>;
 export type BuyContainerUpgradeAction = PlayerAction<
   "BUY_CONTAINER_UPGRADE",
-  { id: string }
+  { id: string; cost: number }
 >;
 export type PackAction = PlayerAction<"PACK">;
 export type StoreHeldItemAction = PlayerAction<"STORE_HELD_ITEM">;
@@ -62,7 +65,10 @@ export type TravelAction = PlayerAction<
 export type AdventureAction = PlayerAction<"ADVENTURE">;
 export type SellItemAction = PlayerAction<"SELL_ITEM">;
 export type ArriveAction = PlayerAction<"ARRIVE">;
-export type BuyContainerAction = PlayerAction<"BUY_CONTAINER">;
+export type BuyContainerAction = PlayerAction<
+  "BUY_CONTAINER",
+  { cost: number }
+>;
 export type GoInventoryAction = PlayerAction<
   "GO_INVENTORY",
   { containerId: string }
