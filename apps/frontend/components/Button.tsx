@@ -1,5 +1,5 @@
 import React, { CSSProperties } from "react";
-import clsx from "classnames";
+import clsx from "clsx";
 
 type ButtonProps = {
   children: React.ReactNode;

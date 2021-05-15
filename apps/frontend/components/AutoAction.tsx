@@ -4,7 +4,7 @@ import { Progress } from "./Progress";
 import { Button } from "./Button";
 import { useDispatch } from "react-redux";
 import { usePlayerId } from "../hooks/PlayerContext";
-import clsx from "classnames";
+import clsx from "clsx";
 
 type AutoActionProps = {
   percent: number;

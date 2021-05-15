@@ -1,5 +1,5 @@
 import { SlotInfo } from "@botnet/store";
-import clsx from "classnames";
+import clsx from "clsx";
 import React, { CSSProperties, Dispatch, SetStateAction } from "react";
 import { ConnectDropTarget, useDrop } from "react-dnd";
 import { DraggableItem, DraggableResult } from "./DraggableItem";

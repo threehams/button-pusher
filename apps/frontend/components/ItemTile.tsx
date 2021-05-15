@@ -1,6 +1,6 @@
 import { Item, Rarity } from "@botnet/messages";
 import { theme } from "@botnet/ui";
-import clsx from "classnames";
+import clsx from "clsx";
 import React from "react";
 
 const FILTERS: { [Key in Rarity]: string } = {
