@@ -1,6 +1,6 @@
 import { Item, Rarity } from "@botnet/messages";
 import { theme } from "@botnet/ui";
-import classNames from "classnames";
+import clsx from "classnames";
 import React from "react";
 
 const FILTERS: { [Key in Rarity]: string } = {
@@ -39,7 +39,7 @@ export const ItemTile = React.forwardRef<HTMLDivElement, Props>(
           background: `url(${item.image}) center no-repeat`,
           pointerEvents: visible && !preview ? "auto" : "none",
         }}
-        className={classNames("cursor-pointer z-30", className)}
+        className={clsx("cursor-pointer z-30", className)}
         {...rest}
       />
     );

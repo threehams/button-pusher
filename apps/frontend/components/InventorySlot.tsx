@@ -1,5 +1,5 @@
 import { SlotInfo } from "@botnet/store";
-import classNames from "classnames";
+import clsx from "classnames";
 import React, { CSSProperties, Dispatch, SetStateAction } from "react";
 import { ConnectDropTarget, useDrop } from "react-dnd";
 import { DraggableItem, DraggableResult } from "./DraggableItem";
@@ -124,7 +124,7 @@ const Highlight = ({ className, style }: HighlightProps) => {
   return (
     <div
       style={style}
-      className={classNames(
+      className={clsx(
         "pointer-events-none absolute top-0 left-0 right-0 bottom-0 z-10 w-full h-full",
         className,
       )}

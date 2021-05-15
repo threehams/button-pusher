@@ -4,7 +4,7 @@ import { Progress } from "./Progress";
 import { Button } from "./Button";
 import { useDispatch } from "react-redux";
 import { usePlayerId } from "../hooks/PlayerContext";
-import classNames from "classnames";
+import clsx from "classnames";
 
 type AutoActionProps = {
   percent: number;
@@ -28,7 +28,7 @@ export const AutoAction = ({
   const playerId = usePlayerId();
 
   return (
-    <div className={classNames("flex flex-nowrap flex-row", className)}>
+    <div className={clsx("flex flex-nowrap flex-row", className)}>
       <Progress button disabled={disabled} percent={percent} onClick={onClick}>
         {children}
       </Progress>

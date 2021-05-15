@@ -1,5 +1,5 @@
 import React, { CSSProperties } from "react";
-import classNames from "classnames";
+import clsx from "classnames";
 
 type ButtonProps = {
   children: React.ReactNode;
@@ -22,7 +22,7 @@ export const Button = ({
           onClick?.(event);
         }
       }}
-      className={classNames(
+      className={clsx(
         "border border-solid border-gray-50 relative cursor-pointer px-3",
         className,
       )}

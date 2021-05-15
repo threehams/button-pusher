@@ -114,7 +114,7 @@ const Tooltip = ({ item, position }: TooltipProps) => {
         maxWidth: 350,
         transform: `translate(${position.x}px, ${position.y}px)`,
       }}
-      className="pointer-events-none absolute top-0 left-0 p-3 bg-gray border-gray-50 z-50"
+      className="pointer-events-none absolute top-0 left-0 p-3 bg-gray-900 border-gray-50 z-50"
     >
       <div>{itemName}</div>
       <p>{item.rarity}</p>
