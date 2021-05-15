@@ -23,7 +23,7 @@ export const Layout = React.memo(() => {
 
   return (
     <div
-      className="grid grid-cols-3 grid-rows-3 items-start justify-center mx-auto max-w-7xl"
+      className="grid grid-cols-3 grid-rows-3 items-start justify-center max-w-7xl mx-auto"
       style={{
         gridTemplateAreas: `"header header header"
       "inventory inventory inventory"
@@ -62,7 +62,7 @@ export const Layout = React.memo(() => {
           {floor && <InventoryPanel inventory={floor} />}
         </div>
         <div className="pt-3" style={{ gridArea: "upgrades" }}>
-          <div className="flex flex-row flex-nowrap">
+          <div className="flex flex-nowrap flex-row">
             <div className="pr-3 w-1/2">
               <ActionPanel />
             </div>

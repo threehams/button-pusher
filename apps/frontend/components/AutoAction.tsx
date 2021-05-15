@@ -28,7 +28,7 @@ export const AutoAction = ({
   const playerId = usePlayerId();
 
   return (
-    <div className={clsx("flex flex-row flex-nowrap", className)}>
+    <div className={clsx("flex flex-nowrap flex-row", className)}>
       <Progress button disabled={disabled} percent={percent} onClick={onClick}>
         {children}
       </Progress>

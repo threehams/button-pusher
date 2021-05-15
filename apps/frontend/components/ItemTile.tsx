@@ -36,7 +36,7 @@ export const ItemTile = React.forwardRef<HTMLDivElement, Props>(
           background: `url(${item.image}) center no-repeat`,
           pointerEvents: visible && !preview ? "auto" : "none",
         }}
-        className={clsx("z-30 cursor-pointer", className)}
+        className={clsx("cursor-pointer z-30", className)}
         {...rest}
       />
     );

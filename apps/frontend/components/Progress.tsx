@@ -20,10 +20,10 @@ export const Progress = ({
   return (
     <Tag disabled={disabled} onClick={onClick} className="relative w-full">
       <div
-        className="absolute bottom-0 left-0 right-0 top-0 w-full h-full bg-gray-600 origin-top-left"
+        className="absolute bg-gray-600 bottom-0 h-full left-0 origin-top-left right-0 top-0 w-full"
         style={{ transform: `scaleX(${percentage / 100})` }}
       />
-      <div className="relative z-10 text-center">{children}</div>
+      <div className="relative text-center z-10">{children}</div>
     </Tag>
   );
 };

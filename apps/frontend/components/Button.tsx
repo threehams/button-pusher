@@ -23,7 +23,7 @@ export const Button = ({
         }
       }}
       className={clsx(
-        "relative px-3 border border-solid border-gray-50 cursor-pointer",
+        "border border-gray-50 border-solid cursor-pointer px-3 relative",
         className,
       )}
     >

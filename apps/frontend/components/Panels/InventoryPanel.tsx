@@ -85,7 +85,7 @@ export const InventoryPanel = React.memo(({ inventory }: Props) => {
             );
           })}
           <div
-            className="grid border border-b-0 border-r-0 border-solid border-gray-50"
+            className="border border-b-0 border-gray-50 border-r-0 border-solid grid"
             style={{
               width: width * theme.tileSize,
               height: height * theme.tileSize,

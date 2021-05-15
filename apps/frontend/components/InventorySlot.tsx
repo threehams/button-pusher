@@ -92,7 +92,7 @@ const Slot = React.memo(
     return (
       <button
         ref={drop}
-        className="relative z-20 flex items-center justify-center border border-l-0 border-t-0 border-solid border-gray-50"
+        className="border border-gray-50 border-l-0 border-solid border-t-0 flex items-center justify-center relative z-20"
         style={{
           width: theme.tileSize * width,
           height: theme.tileSize * height,
@@ -125,7 +125,7 @@ const Highlight = ({ className, style }: HighlightProps) => {
     <div
       style={style}
       className={clsx(
-        "absolute z-10 bottom-0 left-0 right-0 top-0 w-full h-full pointer-events-none",
+        "absolute bottom-0 h-full left-0 pointer-events-none right-0 top-0 w-full z-10",
         className,
       )}
     ></div>
