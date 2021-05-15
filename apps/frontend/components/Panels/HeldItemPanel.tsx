@@ -15,7 +15,7 @@ export const HeldItemPanel = () => {
         height: 4 * theme.tileSize,
         width: 2 * theme.tileSize,
       }}
-      className="border border-solid border-gray-50 flex items-center justify-center"
+      className="flex items-center justify-center border border-solid border-gray-50"
     >
       {heldSlot && (
         <InventorySlot

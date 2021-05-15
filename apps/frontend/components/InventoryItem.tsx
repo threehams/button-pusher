@@ -20,13 +20,14 @@ export const InventoryItem = React.memo(
     const dispatch = useDispatch();
     const [tooltipOpen, setTooltipOpen] = useState(false);
     const playerId = usePlayerId();
-    const [tooltipPosition, setTooltipPosition] = useState<
-      | {
-          x: number;
-          y: number;
-        }
-      | undefined
-    >(undefined);
+    const [tooltipPosition, setTooltipPosition] =
+      useState<
+        | {
+            x: number;
+            y: number;
+          }
+        | undefined
+      >(undefined);
     const [{ isDragging }, drag, preview] = useDrag<
       DraggableItem,
       DraggableResult,
@@ -114,7 +115,7 @@ const Tooltip = ({ item, position }: TooltipProps) => {
         maxWidth: 350,
         transform: `translate(${position.x}px, ${position.y}px)`,
       }}
-      className="pointer-events-none absolute top-0 left-0 p-3 bg-gray-900 border-gray-50 z-50"
+      className="absolute z-50 left-0 top-0 p-3 bg-gray-900 border-gray-50 pointer-events-none"
     >
       <div>{itemName}</div>
       <p>{item.rarity}</p>

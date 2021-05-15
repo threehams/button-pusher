@@ -27,7 +27,7 @@ export const ActionPanel = () => {
     <>
       <h1 className="mb-3">Actions</h1>
       <AutoAction
-        className="mb-2 last:mb-0"
+        className="last:mb-0 mb-2"
         percent={progress.kill}
         disabled={
           !(
@@ -46,7 +46,7 @@ export const ActionPanel = () => {
       </AutoAction>
       {!!purchasedUpgrades.pack.level && (
         <AutoAction
-          className="mb-2 last:mb-0"
+          className="last:mb-0 mb-2"
           disabled={!(heldSlot && player.action === "IDLE" && !inventory.full)}
           percent={progress.pack}
           upgrade={purchasedUpgrades.autoPack}
@@ -60,7 +60,7 @@ export const ActionPanel = () => {
       )}
       {!!purchasedUpgrades.dropJunk.level && (
         <AutoAction
-          className="mb-2 last:mb-0"
+          className="last:mb-0 mb-2"
           disabled={!inventory.junk}
           percent={progress.dropJunk}
           upgrade={purchasedUpgrades.autoDropJunk}
@@ -74,7 +74,7 @@ export const ActionPanel = () => {
       )}
       {!!purchasedUpgrades.sort.level && (
         <AutoAction
-          className="mb-2 last:mb-0"
+          className="last:mb-0 mb-2"
           disabled={!inventory.slots}
           percent={progress.sort}
           onClick={() => {
@@ -87,7 +87,7 @@ export const ActionPanel = () => {
         </AutoAction>
       )}
       <AutoAction
-        className="mb-2 last:mb-0"
+        className="last:mb-0 mb-2"
         percent={progress.sell}
         disabled={
           !(
@@ -106,7 +106,7 @@ export const ActionPanel = () => {
       </AutoAction>
       {(player.location === "KILLING_FIELDS" || player.location === "SHOP") && (
         <AutoAction
-          className="mb-2 last:mb-0"
+          className="last:mb-0 mb-2"
           upgrade={purchasedUpgrades.autoTravel}
           upgradeName="autoTravel"
           disabled={player.action === "TRAVELLING"}
@@ -128,7 +128,7 @@ export const ActionPanel = () => {
       )}
       {player.location === "TOWN" && (
         <AutoAction
-          className="mb-2 last:mb-0"
+          className="last:mb-0 mb-2"
           upgrade={purchasedUpgrades.autoTravel}
           upgradeName="autoTravel"
           disabled={player.action === "TRAVELLING"}
@@ -150,7 +150,7 @@ export const ActionPanel = () => {
       )}
       {player.location === "TOWN" && (
         <AutoAction
-          className="mb-2 last:mb-0"
+          className="last:mb-0 mb-2"
           upgrade={purchasedUpgrades.autoTravel}
           upgradeName="autoTravel"
           disabled={player.action === "TRAVELLING"}

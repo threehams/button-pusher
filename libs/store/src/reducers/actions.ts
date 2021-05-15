@@ -3,7 +3,7 @@ import { AutomatedUpgrade } from "../AutomatedUpgrade";
 
 type PlayerAction<
   TName extends string,
-  TPayload extends Record<string, unknown> = Record<string, undefined>
+  TPayload extends Record<string, unknown> = Record<string, undefined>,
 > = TPayload extends Record<string, undefined>
   ? {
       type: TName;
@@ -16,7 +16,7 @@ type PlayerAction<
 
 type Action<
   TName extends string,
-  TPayload extends Record<string, unknown> = Record<string, undefined>
+  TPayload extends Record<string, unknown> = Record<string, undefined>,
 > = TPayload extends Record<string, undefined>
   ? {
       type: TName;

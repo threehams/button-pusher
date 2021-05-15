@@ -23,7 +23,7 @@ export const Layout = React.memo(() => {
 
   return (
     <div
-      className="grid grid-cols-3 grid-rows-3 items-start justify-center max-w-7xl mx-auto"
+      className="grid grid-cols-3 grid-rows-3 items-start justify-center mx-auto max-w-7xl"
       style={{
         gridTemplateAreas: `"header header header"
       "inventory inventory inventory"
@@ -48,12 +48,12 @@ export const Layout = React.memo(() => {
         </header>
         <div
           style={{ gridArea: "inventory" }}
-          className="flex flex-nowrap align-items-center"
+          className="align-items-center flex flex-nowrap"
         >
-          <div className="w-40 mt-20">
+          <div className="mt-20 w-40">
             <HeldItemPanel />
           </div>
-          <div className="w-full justify-self-end">
+          <div className="justify-self-end w-full">
             <InventoryPanel inventory={inventory} />
           </div>
         </div>
@@ -63,7 +63,7 @@ export const Layout = React.memo(() => {
         </div>
         <div className="pt-3" style={{ gridArea: "upgrades" }}>
           <div className="flex flex-row flex-nowrap">
-            <div className="w-1/2 pr-3">
+            <div className="pr-3 w-1/2">
               <ActionPanel />
             </div>
             <div className="w-1/2">

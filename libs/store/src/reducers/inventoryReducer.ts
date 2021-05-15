@@ -285,9 +285,8 @@ export const inventoryReducer = (
           delete draft.itemMap[slot.item.id];
           delete draft.slotMap[slot.id];
         }
-        draft.purchasedContainerMap[
-          draft.floorIds[playerLocation]
-        ].slotIds = [];
+        draft.purchasedContainerMap[draft.floorIds[playerLocation]].slotIds =
+          [];
         break;
       }
       default:
@@ -358,11 +357,10 @@ const moveSlot = (
   const slot = draft.slotMap[slotId];
   const currentContainerId = slot.containerId;
   if (currentContainerId !== containerId) {
-    draft.purchasedContainerMap[
-      currentContainerId
-    ].slotIds = draft.purchasedContainerMap[currentContainerId].slotIds.filter(
-      (currentSlotId) => currentSlotId !== slotId,
-    );
+    draft.purchasedContainerMap[currentContainerId].slotIds =
+      draft.purchasedContainerMap[currentContainerId].slotIds.filter(
+        (currentSlotId) => currentSlotId !== slotId,
+      );
     draft.purchasedContainerMap[containerId].slotIds.push(slot.id);
     draft.purchasedContainerMap[containerId].sorted = false;
   }

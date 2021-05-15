@@ -54,7 +54,7 @@ export const UpgradePanel = () => {
             {standardUpgrades.map((upgrade) => {
               return (
                 <UpgradeButton
-                  className="mb-2 last:mb-0"
+                  className="last:mb-0 mb-2"
                   key={upgrade.name}
                   moneys={moneys}
                   upgrade={upgrade}
@@ -71,7 +71,7 @@ export const UpgradePanel = () => {
             {automationUpgrades.map((upgrade) => {
               return (
                 <UpgradeButton
-                  className="mb-2 last:mb-0"
+                  className="last:mb-0 mb-2"
                   key={upgrade.name}
                   moneys={moneys}
                   upgrade={upgrade}

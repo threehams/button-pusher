@@ -40,13 +40,13 @@ const Reset = () => {
     }
   }, [confirm, reset]);
   return (
-    <div className="w-full min-h-screen flex items-center justify-center text-center">
+    <div className="flex items-center justify-center w-full min-h-screen text-center">
       <div className="max-w-2xl">
         <div>Something has gone very wrong. Try reloading the page.</div>
         <div>If that doesn&apos;t work,</div>
 
         <Button
-          className="block w-full my-3"
+          className="block my-3 w-full"
           onClick={() => {
             setConfirm(true);
           }}
@@ -54,7 +54,7 @@ const Reset = () => {
           click here to reset your game.
         </Button>
         <Button
-          className="block w-full my-3"
+          className="block my-3 w-full"
           style={{
             visibility: confirm ? "visible" : "hidden",
             pointerEvents: confirm ? "auto" : "none",

@@ -4,5 +4,7 @@
 .vscode
 /dist
 /coverage
+.next
+apps/frontend/out
 node_modules
 package.json

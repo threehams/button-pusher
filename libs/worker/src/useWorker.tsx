@@ -3,9 +3,8 @@ import { Message } from "@botnet/messages";
 
 const useWorkerLoader = () => {
   const workerRef = useRef<Worker>();
-  const [lastMessage, setLastMessage] = useState<Message | undefined>(
-    undefined,
-  );
+  const [lastMessage, setLastMessage] =
+    useState<Message | undefined>(undefined);
 
   useEffect(() => {
     workerRef.current = new Worker("./worker.ts", { type: "module" });
@@ -80,9 +79,8 @@ export const useWorker = () => {
       return null;
     }
   }, [lastMessageUnsafe]);
-  return useMemo(() => ({ lastMessage, sendMessage, ready }), [
-    lastMessage,
-    ready,
-    sendMessage,
-  ]);
+  return useMemo(
+    () => ({ lastMessage, sendMessage, ready }),
+    [lastMessage, ready, sendMessage],
+  );
 };

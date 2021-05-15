@@ -85,7 +85,7 @@ export const InventoryPanel = React.memo(({ inventory }: Props) => {
             );
           })}
           <div
-            className="grid border border-solid border-gray-50 border-r-0 border-b-0"
+            className="grid border border-b-0 border-r-0 border-solid border-gray-50"
             style={{
               width: width * theme.tileSize,
               height: height * theme.tileSize,
@@ -120,7 +120,7 @@ export const InventoryPanel = React.memo(({ inventory }: Props) => {
         </div>
       </div>
       {inventory.type === "FLOOR" && (
-        <div className="w-1/2 mt-3 pr-3">
+        <div className="mt-3 pr-3 w-1/2">
           <AutoAction
             percent={progress.trash}
             upgrade={purchasedUpgrades.autoTrash}
