@@ -48,7 +48,7 @@ export const Layout = React.memo(() => {
         </header>
         <div
           style={{ gridArea: "inventory" }}
-          className="align-items-center flex flex-nowrap"
+          className="flex flex-nowrap items-center"
         >
           <div className="mt-20 w-40">
             <HeldItemPanel />
