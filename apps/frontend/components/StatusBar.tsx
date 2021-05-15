@@ -24,7 +24,11 @@ export const StatusBar = () => {
     return (
       <Progress percent={progress.travel}>
         Travelling to{" "}
-        {player.destination === "TOWN" ? "Town" : "the Killing Fields"}
+        {player.destination === "TOWN"
+          ? "Town"
+          : player.destination === "KILLING_FIELDS"
+          ? "the Killing Fields"
+          : "the Shop"}
       </Progress>
     );
   } else if (progress.autoSell) {

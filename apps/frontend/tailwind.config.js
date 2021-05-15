@@ -1,4 +1,5 @@
 module.exports = {
+  mode: "jit",
   purge: [
     "./pages/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
@@ -6,7 +7,9 @@ module.exports = {
   ],
   darkMode: false, // or 'media' or 'class'
   theme: {
-    extend: {},
+    // colors: {
+    //   gray: "#343434",
+    // },
   },
   variants: {
     extend: {},

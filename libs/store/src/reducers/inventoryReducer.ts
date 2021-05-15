@@ -96,7 +96,7 @@ const getInitialState = (): InventoryState => {
 type Bonus = {
   currentCapacity: number;
   bags: string[];
-  floor: Inventory;
+  floor: Inventory | undefined;
   getInventory: (options: { containerId: string }) => Inventory;
 };
 export const inventoryReducer = (
@@ -152,6 +152,9 @@ export const inventoryReducer = (
         break;
       }
       case "DROP_JUNK_ITEM": {
+        if (!floor) {
+          return;
+        }
         for (const id of bags) {
           const container = draft.purchasedContainerMap[id];
           for (const slotId of container.slotIds) {
@@ -275,6 +278,9 @@ export const inventoryReducer = (
       }
       case "TRASH_ALL": {
         const { playerLocation } = action.payload;
+        if (!floor || playerLocation === "SHOP") {
+          return;
+        }
         for (const slot of floor.slots) {
           delete draft.itemMap[slot.item.id];
           delete draft.slotMap[slot.id];

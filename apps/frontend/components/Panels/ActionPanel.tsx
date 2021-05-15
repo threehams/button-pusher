@@ -104,27 +104,70 @@ export const ActionPanel = () => {
       >
         Sell something {player.location !== "TOWN" && "(only in town)"}
       </AutoAction>
-      <AutoAction
-        className="mb-2 last:mb-0"
-        upgrade={purchasedUpgrades.autoTravel}
-        upgradeName="autoTravel"
-        disabled={player.action === "TRAVELLING"}
-        percent={progress.travel}
-        onClick={() => {
-          const destination =
-            player.location === "TOWN" ? "KILLING_FIELDS" : "TOWN";
-          dispatch({
-            type: "TRAVEL",
-            payload: {
-              playerId,
-              destination,
-            },
-          });
-        }}
-      >
-        Travel to{" "}
-        {player.location === "KILLING_FIELDS" ? "Town" : "the Killing Fields"}
-      </AutoAction>
+      {(player.location === "KILLING_FIELDS" || player.location === "SHOP") && (
+        <AutoAction
+          className="mb-2 last:mb-0"
+          upgrade={purchasedUpgrades.autoTravel}
+          upgradeName="autoTravel"
+          disabled={player.action === "TRAVELLING"}
+          percent={progress.travel}
+          onClick={() => {
+            dispatch({
+              type: "TRAVEL",
+              payload: {
+                playerId,
+                destination: "TOWN",
+              },
+            });
+          }}
+        >
+          {player.location === "KILLING_FIELDS"
+            ? "Travel to Town"
+            : "Exit the Shop"}
+        </AutoAction>
+      )}
+      {player.location === "TOWN" && (
+        <AutoAction
+          className="mb-2 last:mb-0"
+          upgrade={purchasedUpgrades.autoTravel}
+          upgradeName="autoTravel"
+          disabled={player.action === "TRAVELLING"}
+          percent={
+            player.destination === "KILLING_FIELDS" ? progress.travel : 0
+          }
+          onClick={() => {
+            dispatch({
+              type: "TRAVEL",
+              payload: {
+                playerId,
+                destination: "KILLING_FIELDS",
+              },
+            });
+          }}
+        >
+          Travel to the Killing Fields
+        </AutoAction>
+      )}
+      {player.location === "TOWN" && (
+        <AutoAction
+          className="mb-2 last:mb-0"
+          upgrade={purchasedUpgrades.autoTravel}
+          upgradeName="autoTravel"
+          disabled={player.action === "TRAVELLING"}
+          percent={player.destination === "SHOP" ? progress.travel : 0}
+          onClick={() => {
+            dispatch({
+              type: "TRAVEL",
+              payload: {
+                playerId,
+                destination: "SHOP",
+              },
+            });
+          }}
+        >
+          Travel to the Shop
+        </AutoAction>
+      )}
     </>
   );
 };

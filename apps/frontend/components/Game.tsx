@@ -27,28 +27,32 @@ export const Game = () => {
       <ProgressProvider value={progress}>
         <DndProvider backend={HTML5Backend}>
           <Layout />
-          <Button
-            onClick={() => {
-              dispatch({
-                type: "CREATE_PLAYER",
-                payload: { name: "Killy McLootFast" },
-              });
-            }}
-          >
-            Create Player
-          </Button>
-          {allPlayers.map((play) => {
-            return (
-              <Button
-                key={play.id}
-                onClick={() => {
-                  setPlayerId(play.id);
-                }}
-              >
-                View {play.name}
-              </Button>
-            );
-          })}
+          <div className="mb-2">
+            <Button
+              className="mr-2"
+              onClick={() => {
+                dispatch({
+                  type: "CREATE_PLAYER",
+                  payload: { name: "Killy McLootFast" },
+                });
+              }}
+            >
+              Create Player
+            </Button>
+            {allPlayers.map((play) => {
+              return (
+                <Button
+                  className="mr-2"
+                  key={play.id}
+                  onClick={() => {
+                    setPlayerId(play.id);
+                  }}
+                >
+                  View {play.name}
+                </Button>
+              );
+            })}
+          </div>
           <div id="tooltip"></div>
           <Debug />
         </DndProvider>

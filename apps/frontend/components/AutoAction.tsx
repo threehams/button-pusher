@@ -34,6 +34,7 @@ export const AutoAction = ({
       </Progress>
       <Button
         className="flex-grow flex-shrink-0 flex-auto ml-3"
+        disabled={upgrade.level === 0}
         onClick={() => {
           upgrade.enabled
             ? dispatch({

@@ -1,5 +1,4 @@
 const path = require("path");
-const WorkerPlugin = require("worker-plugin");
 const withBundleAnalyzer = require("@next/bundle-analyzer")({
   enabled: process.env.ANALYZE === "true",
 });
@@ -20,7 +19,7 @@ module.exports = {
     ignoreBuildErrors: true,
   },
   webpack: (config, { isServer }) => {
-    config.module.rules[0].include.unshift(path.resolve(appRootPath, "libs"));
+    config.module.rules[1].include.unshift(path.resolve(appRootPath, "libs"));
     config.resolve.alias["lodash"] = "lodash-es";
     if (process.env.PROFILE) {
       config.resolve.alias["react-dom$"] = "react-dom/profiling";
@@ -29,5 +28,8 @@ module.exports = {
     }
 
     return config;
+  },
+  future: {
+    webpack5: true,
   },
 };

@@ -1,5 +1,4 @@
 import "@testing-library/cypress/add-commands";
-import { Server } from "mock-socket";
 
 type Aliases = {
   mockServer: { mockServer: Server; closeServer: () => void };

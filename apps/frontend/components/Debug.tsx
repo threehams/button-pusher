@@ -11,6 +11,7 @@ export const Debug = () => {
     <div>
       <div>
         <Button
+          className="mr-2"
           onClick={() => {
             dispatch({ type: "RESET" });
           }}
@@ -18,6 +19,7 @@ export const Debug = () => {
           Reset
         </Button>
         <Button
+          className="mr-2"
           onClick={() => {
             dispatch({
               type: "CHEAT",
@@ -28,6 +30,7 @@ export const Debug = () => {
           Cheat: All Automation
         </Button>
         <Button
+          className="mr-2"
           onClick={() => {
             dispatch({ type: "CHEAT", payload: { type: "MIDGAME", playerId } });
           }}

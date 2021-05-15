@@ -235,6 +235,9 @@ export const selectFloor = (
   state: Pick<State, "players">,
   props: SelectFloorProps,
 ) => {
+  if (props.playerLocation === "SHOP") {
+    return undefined;
+  }
   return selectInventory(state, {
     containerId:
       state.players[props.playerId].inventory.floorIds[props.playerLocation],

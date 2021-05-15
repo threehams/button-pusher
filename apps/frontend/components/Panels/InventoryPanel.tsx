@@ -125,7 +125,7 @@ export const InventoryPanel = React.memo(({ inventory }: Props) => {
             percent={progress.trash}
             upgrade={purchasedUpgrades.autoTrash}
             upgradeName="autoTrash"
-            disabled={!floor.slots.length}
+            disabled={!floor || !floor.slots.length}
             onClick={() => {
               dispatch({ type: "TRASH", payload: { playerId } });
             }}

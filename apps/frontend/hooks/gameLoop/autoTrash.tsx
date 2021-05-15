@@ -18,8 +18,8 @@ export const autoTrash: Updater = ({
   }
 
   if (
-    floor.allJunk &&
-    floor.full &&
+    floor?.allJunk &&
+    floor?.full &&
     upgrades.autoTrash.level &&
     upgrades.autoTrash.enabled
   ) {

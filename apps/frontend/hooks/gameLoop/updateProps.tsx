@@ -10,7 +10,7 @@ export type UpdateProps = {
   delay: Delay;
   player: Player;
   heldSlot: (Slot & { item: Item }) | undefined;
-  floor: Inventory;
+  floor: Inventory | undefined;
   inventory: Inventory;
   playerId: string;
 };

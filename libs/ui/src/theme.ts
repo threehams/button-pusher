@@ -1,3 +1,3 @@
 export const theme = {
-  tileSize: 50,
+  tileSize: 40,
 };
