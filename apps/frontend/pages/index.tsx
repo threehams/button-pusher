@@ -5,6 +5,7 @@ import { Game } from "../components/Game";
 import { makeStore } from "@botnet/store";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
+import { useResetMachine } from "../lib/useResetMachine";
 
 const { store, persistor } = makeStore();
 
@@ -30,15 +31,8 @@ export const Index = () => {
 export default Index;
 
 const Reset = () => {
-  const [confirm, setConfirm] = useState(false);
-  const [reset, setReset] = useState(false);
+  const [state, send] = useResetMachine();
 
-  useEffect(() => {
-    if (confirm && reset) {
-      localStorage.clear();
-      location.reload();
-    }
-  }, [confirm, reset]);
   return (
     <div className="flex items-center justify-center min-h-screen text-center w-full">
       <div className="max-w-2xl">
@@ -48,7 +42,7 @@ const Reset = () => {
         <Button
           className="block my-3 w-full"
           onClick={() => {
-            setConfirm(true);
+            send("RESET");
           }}
         >
           click here to reset your game.
@@ -56,11 +50,13 @@ const Reset = () => {
         <Button
           className="block my-3 w-full"
           style={{
-            visibility: confirm ? "visible" : "hidden",
-            pointerEvents: confirm ? "auto" : "none",
+            visibility:
+              state.value === "needsConfirmation" ? "visible" : "hidden",
+            pointerEvents:
+              state.value === "needsConfirmation" ? "auto" : "none",
           }}
           onClick={() => {
-            setReset(true);
+            send("CONFIRM");
           }}
         >
           click here to confirm.
