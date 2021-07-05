@@ -49,7 +49,6 @@ export const UpgradePanel = () => {
     <div>
       {!!standardUpgrades.length && (
         <>
-          <h1 className="mb-3">Upgrades</h1>
           <ul>
             {standardUpgrades.map((upgrade) => {
               return (

@@ -28,12 +28,12 @@ export const AutoAction = ({
   const playerId = usePlayerId();
 
   return (
-    <div className={clsx("flex flex-nowrap flex-row", className)}>
+    <div className={clsx("flex flex-nowrap flex-row gap-3", className)}>
       <Progress button disabled={disabled} percent={percent} onClick={onClick}>
         {children}
       </Progress>
       <Button
-        className="flex-basis-auto flex-grow flex-shrink-0 ml-3"
+        className="flex-basis-auto flex-grow flex-shrink-0"
         disabled={upgrade.level === 0}
         onClick={() => {
           upgrade.enabled

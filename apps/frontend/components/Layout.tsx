@@ -25,12 +25,12 @@ export const Layout = React.memo(() => {
     <div
       className="grid grid-cols-3 grid-rows-3 items-start justify-center max-w-7xl mx-auto"
       style={{
-        gridTemplateAreas: `"header header header"
-      "inventory inventory inventory"
-      "floor floor floor"
-      "upgrades upgrades upgrades"`,
-        gridTemplateRows: "auto auto 1fr",
-        gridTemplateColumns: "1fr 1fr 1fr",
+        gridTemplateAreas: `"header header"
+      "inventory upgrades"
+      "floor upgrades"
+      "floor upgrades"`,
+        gridTemplateRows: "auto",
+        gridTemplateColumns: "700px 1fr",
       }}
     >
       <>
@@ -46,15 +46,15 @@ export const Layout = React.memo(() => {
             {player.location.location === "TOWN" ? "Town" : "Killing Fields"}
           </div>
         </header>
-        <div
-          style={{ gridArea: "inventory" }}
-          className="flex flex-nowrap items-center"
-        >
-          <div className="mt-20 w-40">
-            <HeldItemPanel />
-          </div>
-          <div className="justify-self-end w-full">
-            <InventoryPanel inventory={inventory} />
+        <div className="pt-3" style={{ gridArea: "inventory" }}>
+          <h1 className="mb-3">Character</h1>
+          <div className="flex flex-nowrap items-center">
+            <div className="mt-20 mr-[40px]">
+              <HeldItemPanel />
+            </div>
+            <div className="justify-self-end w-full">
+              <InventoryPanel inventory={inventory} />
+            </div>
           </div>
         </div>
         <div className="pt-3" style={{ gridArea: "floor" }}>
@@ -62,14 +62,10 @@ export const Layout = React.memo(() => {
           {floor && <InventoryPanel inventory={floor} />}
         </div>
         <div className="pt-3" style={{ gridArea: "upgrades" }}>
-          <div className="flex flex-nowrap flex-row">
-            <div className="pr-3 w-1/2">
-              <ActionPanel />
-            </div>
-            <div className="w-1/2">
-              <UpgradePanel />
-            </div>
-          </div>
+          <h1 className="mb-3">Actions</h1>
+          <ActionPanel />
+          <h1 className="mb-3">Upgrades</h1>
+          <UpgradePanel />
         </div>
       </>
     </div>

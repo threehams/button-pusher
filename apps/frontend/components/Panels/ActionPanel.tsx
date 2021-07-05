@@ -25,7 +25,6 @@ export const ActionPanel = () => {
 
   return (
     <>
-      <h1 className="mb-3">Actions</h1>
       <AutoAction
         className="last:mb-0 mb-2"
         percent={progress.kill}

@@ -16,8 +16,8 @@ export const availableContainers: Container[] = [
     name: "Backpack",
     baseHeight: 5,
     baseWidth: 5,
-    maxHeight: 7,
-    maxWidth: 11,
+    maxHeight: 11,
+    maxWidth: 9,
   },
   {
     id: "FLOOR",
