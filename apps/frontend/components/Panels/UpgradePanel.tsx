@@ -1,5 +1,5 @@
 import { PurchasedUpgrade, selectPurchasedUpgrades } from "@botnet/store";
-import { usePlayerId } from "apps/frontend/hooks/PlayerContext";
+import { usePlayerId } from "../../hooks/PlayerContext";
 import clsx from "clsx";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";

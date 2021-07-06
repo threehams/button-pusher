@@ -1,15 +1,9 @@
 const path = require("path");
-const withBundleAnalyzer = require("@next/bundle-analyzer")({
-  enabled: process.env.ANALYZE === "true",
-});
 const appRootPath = require("app-root-path").toString();
 
 module.exports = {
   assetPrefix: "",
-  exportPathMap: async function (
-    defaultPathMap,
-    { dev, dir, outDir, distDir, buildId },
-  ) {
+  async exportPathMap() {
     return {
       "/": { page: "/" },
     };
@@ -18,7 +12,7 @@ module.exports = {
     ignoreDevErrors: true,
     ignoreBuildErrors: true,
   },
-  webpack: (config, { isServer }) => {
+  webpack: (config) => {
     config.module.rules[1].include.unshift(path.resolve(appRootPath, "libs"));
     config.resolve.alias["lodash"] = "lodash-es";
     if (process.env.PROFILE) {

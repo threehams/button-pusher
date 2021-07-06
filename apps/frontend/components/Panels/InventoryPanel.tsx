@@ -112,6 +112,8 @@ export const InventoryPanel = React.memo(({ inventory }: Props) => {
                     state={
                       required && targetCoords?.valid ? "VALID" : "INVALID"
                     }
+                    data-test="inventorySlot"
+                    data-test-item={x + y}
                   />
                 );
               });

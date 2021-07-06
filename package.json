@@ -8,9 +8,14 @@
     "build": "cd apps/frontend && cross-env NODE_ENV=production npx next build",
     "build:profile": "cd apps/frontend && cross-env NODE_ENV=production PROFILE=true npx next build",
     "export": "cd apps/frontend && cross-env NODE_ENV=production npx next export",
-    "test": "nx test",
-    "lint": "nx workspace-lint && nx lint",
-    "format": "prettier --write"
+    "test": "jest",
+    "lint": "eslint",
+    "format": "prettier --write",
+    "cy:test": "start-server-and-test build:start http://localhost:3000 cy:run",
+    "cy:open": "cypress open --project ./apps/frontend-e2e",
+    "cy:run": "cypress run --project ./apps/frontend-e2e",
+    "cy:dev": "start-server-and-test dev http://localhost:3000 cy:open",
+    "cy:prod": "start-server-and-test build:start http://localhost:3000 cy:open"
   },
   "private": true,
   "dependencies": {

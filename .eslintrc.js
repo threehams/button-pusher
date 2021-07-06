@@ -6,7 +6,7 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 6,
     sourceType: "module",
-    project: ["./tsconfig.json"],
+    project: ["./tsconfig.json", "./apps/frontend-e2e/tsconfig.json"],
     ecmaFeatures: {
       modules: true,
     },

@@ -62,7 +62,7 @@ export const selectPurchasedUpgrades = createCachedSelector(
         id,
         name: upgrade.name,
         upgradeName: upgrade.upgradeName,
-        time: 2000 * (1 / (purchasedUpgrade.level + 1)),
+        time: 40 * (1 / (purchasedUpgrade.level + 1)),
         cost: upgrade.baseCost * (purchasedUpgrade.level + 1) ** 2,
       };
       return result;

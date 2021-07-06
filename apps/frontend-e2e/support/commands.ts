@@ -1,7 +1,9 @@
 import "@testing-library/cypress/add-commands";
 
 type Aliases = {
-  mockServer: { mockServer: Server; closeServer: () => void };
+  source: { left: number; top: number };
+  target: { left: number; top: number };
+  [key: string]: unknown;
 };
 
 type ItemLocator<T> = {
@@ -18,7 +20,7 @@ type Locator<T> = string | ItemLocator<T> | IndexLocator<T>;
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Cypress {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+    // eslint-disable-next-line @typescript-eslint/consistent-type-definitions, @typescript-eslint/no-unused-vars
     interface Chainable<Subject> {
       /**
        * Get an element by data-test attribute.
@@ -30,9 +32,7 @@ declare global {
         options?: Partial<Loggable & Timeoutable>,
       ): Chainable<JQuery<HTMLElement>>;
 
-      alias<TAlias extends keyof Aliases>(
-        name: TAlias,
-      ): Chainable<Aliases[TAlias]>;
+      alias: typeof getAlias;
     }
   }
 }
@@ -90,6 +90,9 @@ Cypress.Commands.add(
   },
 );
 
-Cypress.Commands.add("alias", <TAlias extends keyof Aliases>(alias: TAlias) => {
-  return cy.get<any>(`@${alias}`);
-});
+const getAlias = <TAlias extends keyof Aliases>(
+  alias: TAlias,
+): Cypress.Chainable<Aliases[TAlias]> => {
+  return cy.get(`@${alias}`) as any;
+};
+Cypress.Commands.add("alias", getAlias);

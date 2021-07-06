@@ -30,6 +30,7 @@ export const InventorySlot = React.memo(
     x,
     y,
     containerId,
+    ...rest
   }: InventorySlotProps) => {
     const [, drop] = useDrop<DraggableItem, DraggableResult, void>({
       accept: ["ITEM"],
@@ -72,6 +73,7 @@ export const InventorySlot = React.memo(
         required={required}
         state={state}
         width={width}
+        {...rest}
       >
         {children}
       </Slot>
@@ -88,7 +90,7 @@ type SlotProps = {
   children?: React.ReactNode;
 };
 const Slot = React.memo(
-  ({ drop, height, required, state, width, children }: SlotProps) => {
+  ({ drop, height, required, state, width, children, ...rest }: SlotProps) => {
     return (
       <button
         ref={drop}
@@ -97,6 +99,7 @@ const Slot = React.memo(
           width: theme.tileSize * width,
           height: theme.tileSize * height,
         }}
+        {...rest}
       >
         <Highlight
           style={{

@@ -12,14 +12,4 @@
 // You can read more here:
 // https://on.cypress.io/configuration
 // ***********************************************************
-import "core-js/features/string/replace-all";
-
-// Import commands.js using ES2015 syntax:
 import "./commands";
-
-// Alternatively you can use CommonJS syntax:
-// require('./commands')
-
-afterEach(() => {
-  cy.alias("mockServer").then(({ closeServer }) => closeServer());
-});

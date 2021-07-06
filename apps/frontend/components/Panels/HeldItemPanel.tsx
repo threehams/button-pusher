@@ -1,6 +1,6 @@
 import { selectHeldSlot } from "@botnet/store";
 import { theme } from "@botnet/ui";
-import { usePlayerId } from "apps/frontend/hooks/PlayerContext";
+import { usePlayerId } from "../../hooks/PlayerContext";
 import React from "react";
 import { useSelector } from "react-redux";
 import { InventoryItem } from "../InventoryItem";
@@ -28,6 +28,7 @@ export const HeldItemPanel = () => {
           height={4}
           required={false}
           state={heldSlot ? "VALID" : "INVALID"}
+          data-test="handSlot"
         >
           <InventoryItem item={heldSlot.item} slotId={heldSlot.id} />
         </InventorySlot>

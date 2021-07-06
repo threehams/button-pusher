@@ -7,7 +7,7 @@ import {
   selectInventory,
   selectPurchasedUpgrades,
 } from "@botnet/store";
-import { usePlayerId } from "apps/frontend/hooks/PlayerContext";
+import { usePlayerId } from "../../hooks/PlayerContext";
 
 export const ActionPanel = () => {
   const playerId = usePlayerId();

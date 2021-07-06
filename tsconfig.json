@@ -14,19 +14,24 @@
     "outDir": "./dist/out-tsc",
     "resolveJsonModule": true,
     "paths": {
-      "@botnet/messages": ["libs/messages/src/index.ts"],
-      "@botnet/ui": ["libs/ui/src/index.ts"],
-      "@botnet/commands": ["libs/commands/src/index.ts"],
-      "@botnet/utils": ["libs/utils/src/index.ts"],
-      "@botnet/store": ["libs/store/src/index.ts"],
-      "@botnet/worker": ["libs/worker/src/index.ts"],
-      "@botnet/data": ["libs/data/src/index.ts"]
+      "@botnet/messages": ["./libs/messages/src/index.ts"],
+      "@botnet/ui": ["./libs/ui/src/index.ts"],
+      "@botnet/commands": ["./libs/commands/src/index.ts"],
+      "@botnet/utils": ["./libs/utils/src/index.ts"],
+      "@botnet/store": ["./libs/store/src/index.ts"],
+      "@botnet/worker": ["./libs/worker/src/index.ts"],
+      "@botnet/data": ["./libs/data/src/index.ts"]
     },
     "rootDir": ".",
-    "skipLibCheck": false,
+    "skipLibCheck": true,
     "strict": true,
     "target": "es2015",
-    "typeRoots": ["node_modules/@types"]
+    "typeRoots": ["./node_modules/@types"]
   },
-  "exclude": ["node_modules", "tmp", "apps/frontend-e2e/**"]
+  "exclude": ["./node_modules", "./tmp", "./apps/frontend-e2e/**"],
+  "references": [
+    {
+      "path": "./apps/frontend-e2e"
+    }
+  ]
 }
