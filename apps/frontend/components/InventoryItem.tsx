@@ -1,78 +1,42 @@
 import { Item } from "@botnet/messages";
 import { isNonNullable } from "@botnet/utils";
 import React, { CSSProperties, useState } from "react";
-import { useDrag } from "react-dnd";
-import { getEmptyImage } from "react-dnd-html5-backend";
 import ReactDOM from "react-dom";
-import { useDispatch } from "react-redux";
-import { usePlayerId } from "../hooks/PlayerContext";
-import { DraggableItem, DraggableResult } from "./DraggableItem";
 import { ItemTile } from "./ItemTile";
+import { useDraggable } from "@dnd-kit/core";
 
 type InventoryItemProps = {
   item: Item;
-  slotId?: string;
+  dragId: string;
   className?: string;
   style?: CSSProperties;
 };
 export const InventoryItem = React.memo(
-  ({ item, slotId, className, style }: InventoryItemProps) => {
-    const dispatch = useDispatch();
+  ({ item, dragId, className, style }: InventoryItemProps) => {
     const [tooltipOpen, setTooltipOpen] = useState(false);
-    const playerId = usePlayerId();
-    const [tooltipPosition, setTooltipPosition] =
-      useState<
-        | {
-            x: number;
-            y: number;
-          }
-        | undefined
-      >(undefined);
-    const [{ isDragging }, drag, preview] = useDrag<
-      DraggableItem,
-      DraggableResult,
-      { isDragging: boolean }
-    >({
-      type: "ITEM",
-      item: {
-        item,
-        slotId,
-      },
-      collect: (monitor) => {
-        return {
-          isDragging: !!monitor.isDragging(),
-        };
-      },
-      end: (_, monitor) => {
-        const result = monitor.getDropResult();
-        if (result) {
-          const { x, y, containerId } = result;
-          if (slotId) {
-            dispatch({
-              type: "MOVE_SLOT",
-              payload: { playerId, x, y, containerId, slotId },
-            });
-          } else {
-            dispatch({
-              type: "ADD_SLOT",
-              payload: {
-                playerId,
-                x,
-                y,
-                containerId,
-                itemId: item.id,
-              },
-            });
-          }
+    const [tooltipPosition, setTooltipPosition] = useState<
+      | {
+          x: number;
+          y: number;
         }
-      },
-    });
-    preview(getEmptyImage());
+      | undefined
+    >(undefined);
+    const { listeners, attributes, setNodeRef, isDragging, transform } =
+      useDraggable({
+        id: dragId,
+      });
 
     return (
       <>
         <ItemTile
-          style={style}
+          {...attributes}
+          {...listeners}
+          style={{
+            ...style,
+            transform: transform
+              ? `translate3d(${transform.x}px, ${transform.y}px, 1px)`
+              : "none",
+          }}
           onMouseEnter={() => {
             setTooltipOpen(true);
           }}
@@ -82,8 +46,7 @@ export const InventoryItem = React.memo(
           onMouseMove={(event) => {
             setTooltipPosition({ x: event.clientX, y: event.clientY });
           }}
-          ref={drag}
-          visible={!isDragging}
+          ref={setNodeRef}
           item={item}
           className={className}
         />

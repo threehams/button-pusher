@@ -8,6 +8,8 @@
   "pluginsFile": "./plugins/index",
   "supportFile": "./support/index.js",
   "video": true,
+  "viewportWidth": 1280,
+  "viewportHeight": 720,
   "videosFolder": "../../dist/cypress/apps/frontend-e2e/videos",
   "screenshotsFolder": "../../dist/cypress/apps/frontend-e2e/screenshots",
   "chromeWebSecurity": false,

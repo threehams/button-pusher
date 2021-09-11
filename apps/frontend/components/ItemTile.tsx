@@ -17,11 +17,9 @@ const FILTERS: { [Key in Rarity]: string } = {
 
 type Props = React.ComponentProps<"div"> & {
   item: Item;
-  visible: boolean;
-  preview?: boolean;
 };
 export const ItemTile = React.forwardRef<HTMLDivElement, Props>(
-  ({ item, visible, preview, className, style, ...rest }, ref) => {
+  ({ item, className, style, ...rest }, ref) => {
     return (
       <div
         id="dragging-item"
@@ -32,9 +30,7 @@ export const ItemTile = React.forwardRef<HTMLDivElement, Props>(
           width: item.width * theme.tileSize,
           height: item.height * theme.tileSize,
           filter: FILTERS[item.rarity],
-          opacity: visible ? 1 : 0,
           background: `url(${item.image}) center no-repeat`,
-          pointerEvents: visible && !preview ? "auto" : "none",
         }}
         className={clsx("cursor-pointer z-30", className)}
         {...rest}

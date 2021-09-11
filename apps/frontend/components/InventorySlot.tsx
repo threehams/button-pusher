@@ -1,78 +1,47 @@
-import { SlotInfo } from "@botnet/store";
 import clsx from "clsx";
-import React, { CSSProperties, Dispatch, SetStateAction } from "react";
-import { ConnectDropTarget, useDrop } from "react-dnd";
-import { DraggableItem, DraggableResult } from "./DraggableItem";
+import React, { CSSProperties } from "react";
 import { theme } from "@botnet/ui";
-import deepEqual from "deep-equal";
+import { useDroppable } from "@dnd-kit/core";
+import { serializeDragId } from "../lib/dragId";
 
 type InventorySlotProps = {
   children?: React.ReactNode;
   state: "VALID" | "INVALID";
   required: boolean;
-  canDrop: (target: SlotInfo) => boolean;
-  setTarget: Dispatch<SetStateAction<SlotInfo | undefined>>;
   x: number;
   y: number;
   width?: number;
   height?: number;
   containerId: string;
+  slotId: string;
 };
 export const InventorySlot = React.memo(
   ({
+    containerId,
     children,
-    canDrop,
     required,
-    setTarget,
     width = 1,
     height = 1,
-    state,
     x,
     y,
-    containerId,
+    slotId,
+    state,
     ...rest
   }: InventorySlotProps) => {
-    const [, drop] = useDrop<DraggableItem, DraggableResult, void>({
-      accept: ["ITEM"],
-      canDrop: (draggable) => {
-        const { item, slotId } = draggable;
-        return canDrop({
-          x,
-          y,
-          width: item.width,
-          height: item.height,
-          slotId,
-        });
-      },
-      hover: (draggable) => {
-        const { item, slotId } = draggable;
-        setTarget((current) => {
-          const target = {
-            x,
-            y,
-            width: item.width,
-            height: item.height,
-            slotId,
-          };
-          if (!deepEqual(current, target)) {
-            return target;
-          }
-          return current;
-        });
-      },
-      drop: () => {
-        setTarget(undefined);
-        return { x, y, containerId };
-      },
-    });
-
     return (
       <Slot
-        drop={drop}
         height={height}
         required={required}
         state={state}
         width={width}
+        dropId={serializeDragId({
+          x,
+          y,
+          width,
+          height,
+          containerId,
+          slotId,
+        })}
         {...rest}
       >
         {children}
@@ -82,19 +51,31 @@ export const InventorySlot = React.memo(
 );
 
 type SlotProps = {
-  drop: ConnectDropTarget;
   width: number;
   height: number;
   required: boolean;
   state: "VALID" | "INVALID";
   children?: React.ReactNode;
+  dropId: string;
 };
 const Slot = React.memo(
-  ({ drop, height, required, state, width, children, ...rest }: SlotProps) => {
+  ({
+    height,
+    required,
+    state,
+    width,
+    children,
+    dropId,
+    ...rest
+  }: SlotProps) => {
+    const { setNodeRef } = useDroppable({
+      id: dropId,
+    });
+
     return (
       <button
-        ref={drop}
-        className="border border-gray-50 border-l-0 border-solid border-t-0 flex items-center justify-center relative z-20"
+        ref={setNodeRef}
+        className="relative z-20 flex items-center justify-center border border-t-0 border-l-0 border-solid border-gray-50"
         style={{
           width: theme.tileSize * width,
           height: theme.tileSize * height,
@@ -128,7 +109,7 @@ const Highlight = ({ className, style }: HighlightProps) => {
     <div
       style={style}
       className={clsx(
-        "absolute bottom-0 h-full left-0 pointer-events-none right-0 top-0 w-full z-10",
+        "absolute bottom-0 h-full left-0 pointer-events-none right-0 top-0 w-full",
         className,
       )}
     ></div>

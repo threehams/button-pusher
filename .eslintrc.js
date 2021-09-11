@@ -64,14 +64,6 @@ module.exports = {
     "react/no-unknown-property": "error",
     "react/prop-types": "off",
     "react/react-in-jsx-scope": "off",
-    // "tailwindcss/no-custom-classname": "error",
   },
-  plugins: [
-    "@typescript-eslint",
-    "jsx-a11y",
-    "mocha",
-    "react-hooks",
-    "react",
-    "tailwindcss",
-  ],
+  plugins: ["@typescript-eslint", "jsx-a11y", "mocha", "react-hooks", "react"],
 };

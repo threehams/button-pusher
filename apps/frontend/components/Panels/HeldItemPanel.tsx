@@ -5,8 +5,13 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { InventoryItem } from "../InventoryItem";
 import { InventorySlot } from "../InventorySlot";
+import { serializeDragId } from "apps/frontend/lib/dragId";
+import { CanDrop } from "apps/frontend/lib/canDrop";
 
-export const HeldItemPanel = () => {
+type Props = {
+  canDrop: CanDrop;
+};
+export const HeldItemPanel = ({ canDrop }: Props) => {
   const playerId = usePlayerId();
   const heldSlot = useSelector((state) => selectHeldSlot(state, { playerId }));
   return (
@@ -19,18 +24,34 @@ export const HeldItemPanel = () => {
     >
       {heldSlot && (
         <InventorySlot
+          slotId={heldSlot.id}
           containerId={heldSlot.containerId}
-          setTarget={() => {}}
-          canDrop={() => !heldSlot}
           x={0}
           y={0}
           width={2}
           height={4}
-          required={false}
-          state={heldSlot ? "VALID" : "INVALID"}
+          required={
+            canDrop({ x: 0, y: 0, containerId: heldSlot.containerId }).required
+          }
+          state={
+            canDrop({ x: 0, y: 0, containerId: heldSlot.containerId }).valid
+              ? "VALID"
+              : "INVALID"
+          }
           data-test="handSlot"
         >
-          <InventoryItem item={heldSlot.item} slotId={heldSlot.id} />
+          <InventoryItem
+            item={heldSlot.item}
+            dragId={serializeDragId({
+              x: 0,
+              y: 0,
+              width: heldSlot.item.width,
+              height: heldSlot.item.height,
+              slotId: heldSlot.id,
+              containerId: heldSlot.containerId,
+            })}
+            className="relative"
+          />
         </InventorySlot>
       )}
     </div>

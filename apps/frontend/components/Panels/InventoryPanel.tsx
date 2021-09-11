@@ -1,25 +1,22 @@
-import {
-  Inventory,
-  selectFloor,
-  selectPurchasedUpgrades,
-  SlotInfo,
-} from "@botnet/store";
-import React, { useCallback, useState } from "react";
+import { Inventory, selectFloor, selectPurchasedUpgrades } from "@botnet/store";
+import React from "react";
 import { range } from "lodash";
 import { InventorySlot } from "../InventorySlot";
 import { InventoryItem } from "../InventoryItem";
-import { getTargetCoords } from "@botnet/store";
 import { Button } from "../Button";
 import { AutoAction } from "../AutoAction";
 import { useProgress } from "../../hooks/ProgressContext";
 import { useDispatch, useSelector } from "react-redux";
 import { theme } from "@botnet/ui";
 import { usePlayerId } from "../../hooks/PlayerContext";
+import { serializeDragId } from "apps/frontend/lib/dragId";
+import { CanDrop } from "apps/frontend/lib/canDrop";
 
 type Props = {
   inventory: Inventory;
+  canDrop: CanDrop;
 };
-export const InventoryPanel = React.memo(({ inventory }: Props) => {
+export const InventoryPanel = React.memo(({ canDrop, inventory }: Props) => {
   const playerId = usePlayerId();
   const player = useSelector((state) => state.players[playerId].location);
   const progress = useProgress();
@@ -32,20 +29,6 @@ export const InventoryPanel = React.memo(({ inventory }: Props) => {
   const purchasedUpgrades = useSelector((state) =>
     selectPurchasedUpgrades(state, { playerId }),
   );
-  const [target, setTarget] = useState<SlotInfo | undefined>();
-
-  const canDrop = useCallback(
-    (tgt: SlotInfo) => {
-      return !!getTargetCoords({ inventory, target: tgt })?.valid;
-    },
-    [inventory],
-  );
-  const targetCoords = target
-    ? getTargetCoords({
-        inventory,
-        target,
-      })
-    : undefined;
 
   return (
     <div>
@@ -80,7 +63,14 @@ export const InventoryPanel = React.memo(({ inventory }: Props) => {
                   left: theme.tileSize * slot.x,
                 }}
                 item={slot.item}
-                slotId={slot.id}
+                dragId={serializeDragId({
+                  x: slot.x,
+                  y: slot.y,
+                  width: slot.item.width,
+                  height: slot.item.height,
+                  slotId: slot.id,
+                  containerId: inventory.id,
+                })}
               />
             );
           })}
@@ -99,19 +89,19 @@ export const InventoryPanel = React.memo(({ inventory }: Props) => {
           >
             {range(0, height).map((y) => {
               return range(0, width).map((x) => {
-                const required = !!targetCoords?.required.includes(`${y},${x}`);
+                const { required, valid } = canDrop({
+                  x: y,
+                  y: x,
+                  containerId: inventory.id,
+                });
                 return (
                   <InventorySlot
                     containerId={inventory.id}
-                    setTarget={setTarget}
-                    canDrop={canDrop}
                     x={x}
                     y={y}
                     key={`${y}${x}`}
                     required={required}
-                    state={
-                      required && targetCoords?.valid ? "VALID" : "INVALID"
-                    }
+                    state={valid ? "VALID" : "INVALID"}
                     data-test="inventorySlot"
                     data-test-item={x + y}
                   />

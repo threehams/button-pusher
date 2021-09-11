@@ -1,7 +1,5 @@
 import { PlayerState } from "@botnet/store";
 import React, { useEffect, useState } from "react";
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
 import { useDispatch, useSelector } from "react-redux";
 import { useGameLoop } from "../hooks/gameLoop";
 import { PlayerIdProvider } from "../hooks/PlayerContext";
@@ -25,37 +23,35 @@ export const Game = () => {
   return (
     <PlayerIdProvider value={player.id}>
       <ProgressProvider value={progress}>
-        <DndProvider backend={HTML5Backend}>
-          <Layout />
-          <div className="mb-2">
-            <Button
-              className="mr-2"
-              onClick={() => {
-                dispatch({
-                  type: "CREATE_PLAYER",
-                  payload: { name: "Killy McLootFast" },
-                });
-              }}
-            >
-              Create Player
-            </Button>
-            {allPlayers.map((play) => {
-              return (
-                <Button
-                  className="mr-2"
-                  key={play.id}
-                  onClick={() => {
-                    setPlayerId(play.id);
-                  }}
-                >
-                  View {play.name}
-                </Button>
-              );
-            })}
-          </div>
-          <div id="tooltip"></div>
-          <Debug />
-        </DndProvider>
+        <Layout />
+        <div className="mb-2">
+          <Button
+            className="mr-2"
+            onClick={() => {
+              dispatch({
+                type: "CREATE_PLAYER",
+                payload: { name: "Killy McLootFast" },
+              });
+            }}
+          >
+            Create Player
+          </Button>
+          {allPlayers.map((play) => {
+            return (
+              <Button
+                className="mr-2"
+                key={play.id}
+                onClick={() => {
+                  setPlayerId(play.id);
+                }}
+              >
+                View {play.name}
+              </Button>
+            );
+          })}
+        </div>
+        <div id="tooltip"></div>
+        <Debug />
       </ProgressProvider>
     </PlayerIdProvider>
   );
