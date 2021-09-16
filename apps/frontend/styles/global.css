@@ -5,6 +5,9 @@
 @layer base {
   body {
     overflow-y: scroll;
+    margin: 0;
+    @apply bg-black;
+    min-height: 100vh;
   }
 }
 
@@ -17,13 +20,8 @@ html {
   box-sizing: inherit;
 }
 
-body {
-  margin: 0;
-  background-color: #060606;
-  min-height: 100vh;
-}
-
 button {
+  text-align: left;
   border: 0;
   background: none;
 }
@@ -45,7 +43,7 @@ body,
 button,
 input {
   color: #f8f8f8;
-  font-size: 20px;
+  font-size: 16px;
 }
 
 pre {
